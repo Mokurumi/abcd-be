@@ -8,14 +8,12 @@ const envVarsSchema = Joi.object()
   .keys({
     NODE_ENV: Joi.string().valid("prod", "dev", "qa").required(),
     PORT: Joi.number().default(3000),
-    // DB_CONNECTION: Joi.string().required().description("Mongo DB url"),
+    // MONGO DB
+    DB_CONNECTION: Joi.string().required().description("Mongo DB url"),
+    SESSION_SEC: Joi.string().required().description("Session secret key"),
     // JWT
     JWT_SECRET: Joi.string().required().description("JWT secret key"),
-    JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(60).description("minutes after which access tokens expire"),
-    JWT_REFRESH_EXPIRATION_DAYS: Joi.number().default(30).description("days after which refresh tokens expire"),
-    JWT_RESET_PASSWORD_EXPIRATION_MINUTES: Joi.number().default(1440).description("minutes after which reset password token expires"),
-    JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: Joi.number().default(1440).description("minutes after which verify email token expires"),
-    JWT_VERIFY_ONBOARDING_EMAIL_EXPIRATION_MINUTES: Joi.number().default(1440).description("minutes after which verify onboarding email token expires"),
+    JWT_EXPIRE: Joi.string().required().description("JWT expire time"),
     // EMAIL
     SMTP_HOST: Joi.string().description("server that will send the emails"),
     SMTP_PORT: Joi.number().description("port to connect to the email server"),
@@ -39,21 +37,14 @@ if (error) {
 module.exports = {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
-  // mongoose: {
-  //   url: envVars.DB_CONNECTION + (envVars.NODE_ENV === "qa" ? "-qa" : ""),
-  //   options: {
-  //     useCreateIndex: true,
-  //     useNewUrlParser: true,
-  //     useUnifiedTopology: true,
-  //   },
-  // },
+  mongoose: {
+    url: envVars.DB_CONNECTION + (envVars.NODE_ENV === "qa" ? "-qa" : ""),
+    options: {},
+    session_secret: envVars.SESSION_SEC
+  },
   jwt: {
     secret: envVars.JWT_SECRET,
-    accessExpirationMinutes: envVars.JWT_ACCESS_EXPIRATION_MINUTES,
-    refreshExpirationDays: envVars.JWT_REFRESH_EXPIRATION_DAYS,
-    resetPasswordExpirationMinutes: envVars.JWT_RESET_PASSWORD_EXPIRATION_MINUTES,
-    verifyEmailExpirationMinutes: envVars.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES,
-    verifyOnboardingEmailExpirationMinutes: envVars.JWT_VERIFY_ONBOARDING_EMAIL_EXPIRATION_MINUTES,
+    expire: envVars.JWT_EXPIRE
   },
   email: {
     smtp: {

@@ -1,6 +1,8 @@
 const express = require("express");
 const helmet = require("helmet");
 const xss = require("xss-clean");
+const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 const mongoSanitize = require("express-mongo-sanitize");
 const compression = require("compression");
 const cors = require("cors");
@@ -28,11 +30,31 @@ app.use(helmet());
 app.use(express.json());
 
 // parse urlencoded request body
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false, limit: "50mb" }));
+app.use(express.json({ limit: "50mb" }));
 
 // sanitize request data
 app.use(xss());
 app.use(mongoSanitize());
+
+// Store Session in mongodb
+const store = new MongoDBStore({
+  uri: config.mongoose.url,
+  collection: 'mySessions'
+});
+
+// Catch errors from store session
+store.on('error', (error) => {
+  console.log(error);
+});
+
+app.use(session({
+  secret: config.mongoose.session_secret, // Use the same secret for sessions
+  resave: false,
+  saveUninitialized: false,
+  store,
+  cookie: { secure: false, httpOnly: true, path: '/', sameSite: true } // Adjust settings as needed
+}));
 
 // gzip compression
 app.use(compression());
