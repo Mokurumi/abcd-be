@@ -41,14 +41,13 @@ roleSchema.plugin(paginate);
  * @param {ObjectId} [excludeRoleId] - The id of the role to be excluded
  * @returns {Promise<boolean>}
  */
-roleSchema.statics.isRoleExisting = async function (label, excludeRoleId) {
+roleSchema.statics.isRoleExisting = async (label, excludeRoleId) => {
   const role = await this.findOne({
     label,
     _id: { $ne: excludeRoleId }
   });
   return !!role;
 };
-
 /**
  * @typedef Role
  */

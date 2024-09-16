@@ -3,7 +3,7 @@ const tokenTypes = {
   REFRESH: "refresh",
   RESET_PASSWORD: "resetPassword",
   VERIFY_EMAIL: "verifyEmail",
-  VERIFY_ONBOARDING: "verifyOnboarding",
+  VERIFY_REGISTRATION: "verifyRegistration",
 };
 
 module.exports = {
