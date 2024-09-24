@@ -1,7 +1,7 @@
 // routes index file
 const express = require("express");
 const config = require("../config/config");
-// const docsRoute = require("./docs.route");
+const docsRoute = require("./docs.route");
 // const cron = require("node-cron");
 
 
@@ -32,24 +32,24 @@ const defaultRoutes = [
   },
 ];
 
-// const devRoutes = [
-//   // routes available only in development mode
-//   {
-//     path: "/docs",
-//     route: docsRoute,
-//   },
-// ];
+const devRoutes = [
+  // routes available only in development mode
+  {
+    path: "/docs",
+    route: docsRoute,
+  },
+];
 
 
 defaultRoutes.forEach((route) => {
   router.use(route.path, route.route);
 });
 
-// if (config.env === "dev") {
-//   devRoutes.forEach((route) => {
-//     router.use(route.path, route.route);
-//   });
-// }
+if (config.env === "dev") {
+  devRoutes.forEach((route) => {
+    router.use(route.path, route.route);
+  });
+}
 
 router.get("/", (req, res) => {
   res.json({ message: "Hello World!" });

@@ -63,7 +63,7 @@ app.use(compression());
 app.use(
   cors({
     origin: [
-      "http://localhost:3000",
+      "http://localhost:3100",
       "http://localhost:3101",
       "http://localhost:3102",
     ],

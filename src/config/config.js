@@ -7,6 +7,7 @@ dotenv.config({ path: path.join(__dirname, "../../.env") });
 const envVarsSchema = Joi.object()
   .keys({
     NODE_ENV: Joi.string().valid("prod", "dev", "qa").required(),
+    VERSION: Joi.string().required().description("Version of the app"),
     PORT: Joi.number().default(3000),
     LOGO: Joi.string().required().description("Logo path"),
     // MONGO DB
@@ -46,6 +47,7 @@ if (error) {
 
 module.exports = {
   env: envVars.NODE_ENV,
+  version: envVars.VERSION,
   port: envVars.PORT,
   logo: envVars.LOGO,
   mongoose: {
