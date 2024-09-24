@@ -3,7 +3,7 @@ const { objectId } = require("./custom.validation");
 
 const createPermission = {
   body: Joi.object().keys({
-    permissionName: Joi.string().required(),
+    name: Joi.string().required(),
     value: Joi.string().required(),
     status: Joi.string(),
   }),
@@ -11,7 +11,7 @@ const createPermission = {
 
 const getPermissions = {
   query: Joi.object().keys({
-    permissionName: Joi.string(),
+    name: Joi.string(),
     value: Joi.string(),
     status: Joi.string(),
     sortBy: Joi.string(),
@@ -32,11 +32,17 @@ const updatePermission = {
   }),
   body: Joi.object()
     .keys({
-      permissionName: Joi.string(),
+      name: Joi.string(),
       value: Joi.string(),
       status: Joi.string(),
     })
     .min(1),
+};
+
+const deletePermission = {
+  params: Joi.object().keys({
+    permissionId: Joi.string().custom(objectId),
+  }),
 };
 
 module.exports = {
@@ -44,4 +50,5 @@ module.exports = {
   getPermissions,
   getPermission,
   updatePermission,
+  deletePermission,
 };

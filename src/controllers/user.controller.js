@@ -17,8 +17,8 @@ const createUser = catchAsync(async (req, res) => {
   // Assign permissions to a user
   const userPermissions = {};
   for (const permission of availablePermissions) {
-    const { permissionName, value } = permission;
-    userPermissions[permissionName] = value === "Active";
+    const { name, value } = permission;
+    userPermissions[name] = value === "Active";
   }
 
   // Create user account

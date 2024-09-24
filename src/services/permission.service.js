@@ -8,10 +8,10 @@ const { Permission } = require("../models");
  * @returns {Promise<Permission>}
  */
 const createPermission = async (permissionBody) => {
-  const { permissionName } = permissionBody;
+  const { name } = permissionBody;
 
   // Check if the permission already exists
-  const permissionExists = await Permission.isPermissionExisting(permissionName);
+  const permissionExists = await Permission.isPermissionExisting(name);
   if (permissionExists) {
     // Throw an error if the permission already exists
     throw new ApiError(httpStatus.BAD_REQUEST, "Permission already exists");
@@ -52,15 +52,15 @@ const getPermissionById = async (id) => {
  * @returns {Promise<Permission>}
  */
 const updatePermissionById = async (permissionId, updateBody) => {
-  const { permissionName } = updateBody;
+  const { name } = updateBody;
 
   const permission = await getPermissionById(permissionId);
   if (!permission) {
     throw new ApiError(httpStatus.NOT_FOUND, "Permission not found");
   }
   if (
-    permissionName &&
-    (await Permission.isPermissionExisting(permissionName, permissionId))
+    name &&
+    (await Permission.isPermissionExisting(name, permissionId))
   ) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Permission already exists");
   }
@@ -69,9 +69,24 @@ const updatePermissionById = async (permissionId, updateBody) => {
   return permission;
 };
 
+/**
+ * Delete Permission by id
+ * @param {ObjectId} permissionId
+ * @returns {Promise<Permission>}
+ */
+const deletePermissionById = async (permissionId) => {
+  const permission = await getPermissionById(permissionId);
+  if (!permission) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Permission not found");
+  }
+  await Permission.findByIdAndDelete(permissionId);
+  return permission;
+};
+
 module.exports = {
   createPermission,
   queryPermission,
   getPermissionById,
   updatePermissionById,
+  deletePermissionById,
 };

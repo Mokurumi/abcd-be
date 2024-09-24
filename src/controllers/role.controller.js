@@ -10,7 +10,7 @@ const createRole = catchAsync(async (req, res) => {
 });
 
 const getRoles = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ["label"]);
+  const filter = pick(req.query, ["name"]);
   const options = pick(req.query, ["sortBy", "size", "page"]);
   const result = await roleService.queryRoles(filter, options);
   res.send(result);
@@ -29,9 +29,15 @@ const updateRole = catchAsync(async (req, res) => {
   res.send(role);
 });
 
+const deleteRole = catchAsync(async (req, res) => {
+  await roleService.deleteRoleById(req.params.roleId);
+  res.status(httpStatus.NO_CONTENT).send();
+});
+
 module.exports = {
   createRole,
   getRoles,
   getRole,
   updateRole,
+  deleteRole,
 };

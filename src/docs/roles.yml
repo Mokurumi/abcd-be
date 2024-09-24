@@ -1,0 +1,205 @@
+# tags:
+#   name: Roles
+#   description: Roles management
+
+components:
+  schemas:
+    Roles:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        value:
+          type: string
+        status:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+      example:
+        id: 5ebac534954b54139806c112
+        name: Admin
+        value: Active
+        status: Active
+
+  responses:
+
+    # Role already defined
+    DuplicateRole:
+      description: Role duplicate
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 400
+            message: Role already defined
+
+/roles:
+  # create a role
+  post:
+    summary: Create a role
+    description: Only admins can create roles.
+    tags: [Admin]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - value
+              - status
+            properties:
+              name:
+                type: string
+                description: must be unique
+              value:
+                type: string
+              status:
+                type: string
+                enum: [Active, Inactive]
+              permissions:
+                type: array
+                items:
+                  type: string
+    responses:
+      "201":
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Roles'
+      "400":
+        $ref: '#/components/responses/DuplicateRole'
+      "401":
+        $ref: '#/components/responses/Unauthorized'
+      "403":
+        $ref: '#/components/responses/Forbidden'
+
+  # get all roles
+  get:
+    summary: Get all roles
+    description: Only admins can get all roles.
+    tags: [Admin]
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Roles'
+      "401":
+        $ref: '#/components/responses/Unauthorized'
+      "403":
+        $ref: '#/components/responses/Forbidden'
+
+/roles/{id}:
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+      description: Role ID
+
+  # get a role
+  get:
+    summary: Get a role
+    description: Only admins can get roles.
+    tags: [Admin]
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Roles'
+      "401":
+        $ref: '#/components/responses/Unauthorized'
+      "403":
+        $ref: '#/components/responses/Forbidden'
+
+  # update a role
+  patch:
+    summary: Update a role
+    description: Only admins can update roles.
+    tags: [Admin]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - value
+              - status
+            properties:
+              name:
+                type: string
+                description: must be unique
+              value:
+                type: string
+              status:
+                type: string
+                enum: [Active, Inactive]
+              permissions:
+                type: array
+                items:
+                  type: string
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Roles'
+      "400":
+        $ref: '#/components/responses/DuplicateRole'
+      "401":
+        $ref: '#/components/responses/Unauthorized'
+      "403":
+        $ref: '#/components/responses/Forbidden'
+
+  # delete a role
+  delete:
+    summary: Delete a role
+    description: Only admins can delete roles.
+    tags: [Admin]
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Roles'
+      "401":
+        $ref: '#/components/responses/Unauthorized'
+      "403":
+        $ref: '#/components/responses/Forbidden'

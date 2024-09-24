@@ -10,7 +10,7 @@ const createPermission = catchAsync(async (req, res) => {
   // Save new permission to DB
   const newPermission = await permissionService.createPermission(req.body);
 
-  const { permissionName, value } = newPermission;
+  const { name, value } = newPermission;
   const isPermissionActive = value === "Active";
 
   // Fetch all users that need to be updated
@@ -23,7 +23,7 @@ const createPermission = catchAsync(async (req, res) => {
     }
 
     // Update the user's permission object based on the new permission
-    user.permission[permissionName] = isPermissionActive;
+    user.permission[name] = isPermissionActive;
     return {
       updateOne: {
         filter: { _id: user.id },
@@ -41,7 +41,7 @@ const createPermission = catchAsync(async (req, res) => {
 });
 
 const getPermissions = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ["permissionName", "status"]);
+  const filter = pick(req.query, ["name", "status"]);
   const options = pick(req.query, ["sortBy", "size", "page"]);
   const result = await permissionService.queryPermission(filter, options);
   res.send(result);
@@ -61,9 +61,15 @@ const updatePermission = catchAsync(async (req, res) => {
   res.send(permission);
 });
 
+const deletePermission = catchAsync(async (req, res) => {
+  await permissionService.deletePermissionById(req.params.permissionId);
+  res.status(httpStatus.NO_CONTENT).send();
+});
+
 module.exports = {
   createPermission,
   getPermissions,
   getPermission,
   updatePermission,
+  deletePermission,
 };

@@ -3,17 +3,19 @@ const { objectId } = require("./custom.validation");
 
 const createRole = {
   body: Joi.object().keys({
-    label: Joi.string().required(),
+    name: Joi.string().required(),
     value: Joi.string().required(),
     status: Joi.string(),
+    permissions: Joi.array().items(Joi.string().custom(objectId)),
   }),
 };
 
 const getRoles = {
   query: Joi.object().keys({
-    label: Joi.string(),
+    name: Joi.string(),
     value: Joi.string(),
     status: Joi.string(),
+    permission: Joi.string(),
     sortBy: Joi.string(),
     size: Joi.number().integer(),
     page: Joi.number().integer(),
@@ -32,10 +34,17 @@ const updateRole = {
   }),
   body: Joi.object()
     .keys({
-      label: Joi.string(),
+      name: Joi.string(),
       status: Joi.string(),
+      permissions: Joi.array().items(Joi.string().custom(objectId)),
     })
     .min(1),
+};
+
+const deleteRole = {
+  params: Joi.object().keys({
+    roleId: Joi.string().custom(objectId),
+  }),
 };
 
 module.exports = {
@@ -43,4 +52,5 @@ module.exports = {
   getRoles,
   getRole,
   updateRole,
+  deleteRole,
 };

@@ -1,6 +1,6 @@
 const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
-const { Role } = require("../models");
+const { Role, Permission } = require("../models");
 
 /**
  * Add Role
@@ -8,9 +8,20 @@ const { Role } = require("../models");
  * @returns {Promise<Role>}
  */
 const createRole = async (roleBody) => {
-  if (await Role.isRoleExisting(roleBody.label)) {
+  if (await Role.isRoleExisting(roleBody.name)) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Role already exists");
   }
+
+  // check if permissions are valid such that they exist in the database
+  const permissions = roleBody.permissions;
+  if (permissions) {
+    for (let i = 0; i < permissions.length; i++) {
+      if (!(await Permission.findById(permissions[i]))) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Permission does not exist");
+      }
+    }
+  }
+
   return Role.create(roleBody);
 };
 
@@ -49,13 +60,38 @@ const updateRoleById = async (roleId, updateBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, "Role not found");
   }
   if (
-    updateBody.label &&
-    (await Role.isRoleExisting(updateBody.label, roleId))
+    updateBody.name &&
+    (await Role.isRoleExisting(updateBody.name, roleId))
   ) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Role already exists");
   }
+
+  // check if permissions are valid such that they exist in the database
+  const permissions = updateBody.permissions;
+  if (permissions) {
+    for (let i = 0; i < permissions.length; i++) {
+      if (!(await Permission.findById(permissions[i]))) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Permission does not exist");
+      }
+    }
+  }
+
   Object.assign(role, updateBody);
   await role.save();
+  return role;
+};
+
+/**
+ * Delete Role by id
+ * @param {ObjectId} roleId
+ * @returns {Promise<Role>}
+ */
+const deleteRoleById = async (roleId) => {
+  const role = await getRoleById(roleId);
+  if (!role) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Role not found");
+  }
+  await Role.findByIdAndDelete(roleId);
   return role;
 };
 
@@ -64,4 +100,5 @@ module.exports = {
   queryRoles,
   getRoleById,
   updateRoleById,
+  deleteRoleById,
 };

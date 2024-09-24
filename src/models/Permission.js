@@ -3,7 +3,7 @@ const { toJSON, paginate } = require("./plugins");
 
 const permissionSchema = mongoose.Schema(
   {
-    label: {
+    name: {
       type: String,
       required: true,
     },
@@ -32,13 +32,13 @@ permissionSchema.plugin(paginate);
 
 /**
  * Check if permission exists
- * @param {string} permissionName - permissionName
+ * @param {string} name - name
  * @param {ObjectId} [excludePermissionId] - The id of the permission to be excluded
  * @returns {Promise<boolean>}
  */
-permissionSchema.statics.isPermissionExisting = async (permissionName, excludePermissionId) => {
-  const permission = await this.findOne({
-    permissionName,
+permissionSchema.statics.isPermissionExisting = async (name, excludePermissionId) => {
+  const permission = await Permission.findOne({
+    name,
     _id: { $ne: excludePermissionId },
   });
   return !!permission;

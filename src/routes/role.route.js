@@ -34,4 +34,11 @@ router.patch(
   roleController.updateRole
 );
 
+router.delete(
+  "/:roleId",
+  // auth("GOD_VIEW"),
+  validate(roleValidation.deleteRole),
+  roleController.deleteRole
+);
+
 module.exports = router;

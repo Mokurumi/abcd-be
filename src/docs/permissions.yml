@@ -1,0 +1,187 @@
+# tags:
+#   name: Permissions
+#   description: Permissions management
+
+components:
+  schemas:
+    Permission:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        value:
+          type: string
+        status:
+          type: string
+      example:
+        id: 5ebac534954b54139806c112
+        name: Admin
+        value: Active
+        status: Active
+
+  responses:
+
+    # Permission already defined
+    DuplicatePermission:
+      description: Permission duplicate
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 400
+            message: Permission already defined
+
+/permissions:
+  # create a permission
+  post:
+    summary: Create a permission
+    description: Only admins can create permissions.
+    tags: [Admin]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - value
+              - status
+            properties:
+              name:
+                type: string
+                description: must be unique
+              value:
+                type: string
+              status:
+                type: string
+            example:
+              name: Admin
+              value: Active
+              status: Active
+    responses:
+      "201":
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Permission'
+      "400":
+        $ref: '#/components/responses/DuplicatePermission'
+      "401":
+        $ref: '#/components/responses/Unauthorized'
+      "403":
+        $ref: '#/components/responses/Forbidden'
+
+  # get all permissions
+  get:
+    summary: Get all permissions
+    description: Only admins can get all permissions.
+    tags: [Admin]
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Permission'
+      "401":
+        $ref: '#/components/responses/Unauthorized'
+      "403":
+        $ref: '#/components/responses/Forbidden'
+
+/permissions/{id}:
+
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+      description: Permission ID
+
+  # get a permission
+  get:
+    summary: Get a permission
+    description: Only admins can get a permission.
+    tags: [Admin]
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Permission'
+      "401":
+        $ref: '#/components/responses/Unauthorized'
+      "403":
+        $ref: '#/components/responses/Forbidden'
+
+  # update a permission
+  patch:
+    summary: Update a permission
+    description: Only admins can update a permission.
+    tags: [Admin]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - value
+              - status
+            properties:
+              name:
+                type: string
+                description: must be unique
+              value:
+                type: string
+              status:
+                type: string
+            example:
+              name: Admin
+              value: Active
+              status: Active
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Permission'
+      "400":
+        $ref: '#/components/responses/DuplicatePermission'
+      "401":
+        $ref: '#/components/responses/Unauthorized'
+      "403":
+        $ref: '#/components/responses/Forbidden'
+
+  # delete a permission
+  delete:
+    summary: Delete a permission
+    description: Only admins can delete a permission.
+    tags: [Admin]
+    security:
+      - bearerAuth: []
+    responses:
+      "204":
+        description: No Content
+      "401":
+        $ref: '#/components/responses/Unauthorized'
+      "403":
+        $ref: '#/components/responses/Forbidden'

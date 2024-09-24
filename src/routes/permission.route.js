@@ -34,4 +34,11 @@ router.patch(
   permissionController.updatePermission
 );
 
+router.delete(
+  "/:permissionId",
+  // auth("GOD_VIEW"),
+  validate(permissionValidation.deletePermission),
+  permissionController.deletePermission
+);
+
 module.exports = router;
