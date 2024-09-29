@@ -1,19 +1,29 @@
 const httpStatus = require("http-status");
-const { User } = require("../models");
 const ApiError = require("../utils/ApiError");
+const { generateTempPassword } = require("../utils");
+const { User, Role } = require("../models");
 
 /**
- * Create a user: Job_Seeker, Employer, Super_admins (cvstudio admins) => others to be added
+ * Create a user:
  * @param {Object} userBody
  * @returns {Promise<User>}
  */
 const createUser = async (userBody) => {
-  const checkEmail = await User.isEmailTaken(userBody.email);
-  const checkPhoneNumber = await User.isMobileNumberTaken(userBody.mobileNumber);
+  const checkEmail = await User.isEmailTaken(userBody.emailAddress);
+  const checkPhoneNumber = await User.isPhoneNumberTaken(userBody.phoneNumber);
 
   if (checkEmail || checkPhoneNumber) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User already exists.");
   }
+
+  // check if role exists
+  const role = await Role.findById(userBody.role);
+  if (!role) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Role does not exist");
+  }
+
+  const tempPassword = generateTempPassword();
+  userBody.password = tempPassword;
 
   return User.create(userBody);
 };
@@ -70,9 +80,15 @@ const updateUserById = async (userId, updateBody) => {
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
-  if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
+
+  if (updateBody.emailAddress && (await User.isEmailTaken(updateBody.emailAddress, userId))) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
   }
+
+  if (updateBody.phoneNumber && (await User.isPhoneNumberTaken(updateBody.phoneNumber, userId))) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Mobile number already taken");
+  }
+
   Object.assign(user, updateBody);
   await user.save();
   return user;
@@ -89,8 +105,7 @@ const deleteUserById = async (userId) => {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
   // await user.remove();
-  await user.findByIdAndUpdate(userId, { isDeleted: true });
-  return user;
+  return User.findByIdAndUpdate(userId, { isDeleted: true });
 };
 
 module.exports = {

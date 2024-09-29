@@ -1,32 +1,14 @@
 const Joi = require("joi");
-const { password, objectId } = require("./custom.validation");
+const { objectId, phoneNumber } = require("./custom.validation");
 
 const createUser = {
   body: Joi.object().keys({
     firstName: Joi.string().required(),
     middleName: Joi.string(),
     lastName: Joi.string().required(),
-    email: Joi.string().email().required(),
-    mobileNumber: Joi.string().required(),
-    prefix: Joi.string(),
-    country: Joi.string().required(),
-    countryName: Joi.string(),
-    phoneCountry: Joi.string(),
-    phoneNumber: Joi.string(),
-    userType: Joi.string().required(),
-    role: Joi.string().required().valid("user", "admin"),
-    companyId: Joi.string(),
-    companyRole: Joi.string(),
-    tnc: Joi.boolean().required(),
-    image: Joi.object(),
-    permission: Joi.object(),
-    password: Joi.string().custom(password).required(),
-  }),
-};
-
-const importUser = {
-  body: Joi.object().keys({
-    file: Joi.string(),
+    emailAddress: Joi.string().email().required(),
+    phoneNumber: Joi.string().required().custom(phoneNumber),
+    role: Joi.string().required().custom(objectId),
   }),
 };
 
@@ -35,27 +17,12 @@ const getUsers = {
     firstName: Joi.string(),
     middleName: Joi.string(),
     lastName: Joi.string(),
-    email: Joi.string().email(),
-    mobileNumber: Joi.string(),
-    prefix: Joi.string(),
-    country: Joi.string(),
-    phoneCountry: Joi.string(),
-    phoneNumber: Joi.string(),
-    countryName: Joi.string(),
-    status: Joi.string(),
-    companyId: Joi.string(),
-    companyRole: Joi.string(),
-    userType: Joi.string(),
-    role: Joi.string().valid("user", "admin"),
-    tnc: Joi.boolean(),
-    image: Joi.object(),
-    permission: Joi.object(),
-    membership: Joi.string(),
-    isMobileNumberVerified: Joi.boolean(),
+    emailAddress: Joi.string().email(),
+    phoneNumber: Joi.string().custom(phoneNumber),
+    active: Joi.boolean(),
+    role: Joi.string().custom(objectId),
+    isPhoneVerified: Joi.boolean(),
     isEmailVerified: Joi.boolean(),
-    password: Joi.string().custom(password),
-    startDate: Joi.date(),
-    endDate: Joi.date(),
     dateCreated: Joi.date(),
     sortBy: Joi.string(),
     size: Joi.number().integer(),
@@ -65,7 +32,7 @@ const getUsers = {
 
 const getUser = {
   params: Joi.object().keys({
-    userId: Joi.string().custom(objectId),
+    userId: Joi.required().custom(objectId),
   }),
 };
 
@@ -76,23 +43,11 @@ const updateUser = {
   body: Joi.object()
     .keys({
       firstName: Joi.string(),
-      middleName: Joi.string(),
+      middleName: Joi.string().allow("").allow(null),
       lastName: Joi.string(),
-      email: Joi.string().email(),
-      mobileNumber: Joi.string(),
-      prefix: Joi.string(),
-      country: Joi.string(),
-      countryName: Joi.string(),
-      phoneCountry: Joi.string(),
-      phoneNumber: Joi.string(),
-      status: Joi.string(),
-      companyId: Joi.string(),
-      companyRole: Joi.string(),
-      userType: Joi.string(),
-      role: Joi.string().valid("user", "admin"),
-      tnc: Joi.boolean(),
-      image: Joi.object(),
-      permission: Joi.object(),
+      emailAddress: Joi.string().email(),
+      phoneNumber: Joi.string().custom(phoneNumber),
+      role: Joi.string().custom(objectId),
     })
     .min(1),
 };
@@ -105,7 +60,6 @@ const deleteUser = {
 
 module.exports = {
   createUser,
-  importUser,
   getUsers,
   getUser,
   updateUser,

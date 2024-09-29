@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const { toJSON, paginate } = require("./plugins");
-const { roles } = require("../config/roles");
 
 
 const userSchema = new mongoose.Schema(
@@ -20,6 +19,7 @@ const userSchema = new mongoose.Schema(
     middleName: {
       type: String,
       trim: true,
+      default: null,
     },
     emailAddress: {
       type: String,
@@ -62,8 +62,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: roles,
-      default: "user",
+      ref: "Role",
     },
     isPhoneVerified: {
       type: Boolean,
@@ -76,23 +75,26 @@ const userSchema = new mongoose.Schema(
     emailVerificationToken: {
       type: String,
       default: null,
+      private: true,
     },
     emailVerificationTokenExpires: {
       type: Date,
       default: null,
+      private: true,
     },
     passwordResetToken: {
       type: String,
       default: null,
+      private: true,
     },
     passwordResetTokenExpires: {
       type: Date,
       default: null,
+      private: true,
     },
-    status: {
-      type: String,
-      enum: ["active", "inactive"],
-      default: "active",
+    active: {
+      type: Boolean,
+      default: false,
     },
     createdAt: {
       type: Date,
@@ -141,7 +143,7 @@ userSchema.statics.isEmailTaken = async (emailAddress, excludeUserId) => {
  * @param {ObjectId} [excludeUserId] - The id of the user to be excluded
  * @returns {Promise<boolean>}
  */
-userSchema.statics.isPhoneTaken = async (phoneNumber, excludeUserId) => {
+userSchema.statics.isPhoneNumberTaken = async (phoneNumber, excludeUserId) => {
   const user = await User.findOne({ phoneNumber, _id: { $ne: excludeUserId } });
   return !!user;
 };
@@ -176,8 +178,7 @@ userSchema.methods.setPassword = async (password) => {
  * @param {Function} next - The next function
  * @returns {void}
  */
-// userSchema.pre("save", async function (next) {
-userSchema.pre("save", async (next) => {
+userSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 8);
   }

@@ -1,0 +1,270 @@
+# tags:
+#   name: Users
+#   description: Users management
+
+components:
+  schemas:
+    Users:
+      type: object
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        emailAddress:
+          type: string
+          description: must be unique
+        phoneNumber:
+          type: string
+          description: must be unique
+        image:
+          type: string
+        # password:
+        #   type: string
+        role:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            value:
+              type: string
+            active:
+              type: boolean
+            permissions:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  value:
+                    type: string
+                  active:
+                    type: boolean
+        isPhoneVerified:
+          type: boolean
+        isEmailVerified:
+          type: boolean
+        # emailVerificationToken:
+        #   type: string
+        # emailVerificationTokenExpires:
+        #   type: string
+        # passwordResetToken:
+        #   type: string
+        # passwordResetTokenExpires:
+        #   type: string
+        active:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        lastLogin:
+          type: string
+        lastFailedLogin:
+          type: string
+        isDeleted:
+          type: boolean
+      example:
+        id: 5ebac534954b54139806c112
+        firstName: John
+        lastName: Doe
+        middleName: Doe
+        emailAddress: johndoe@gmail.com
+        phoneNumber: 2547XXXXXXX
+        image: https://example.com/image.jpg
+        # password: password
+        role:
+          id: 5ebac534954b54139806c112
+          name: Admin
+          value: active
+          active: true
+          permissions:
+            - id: 5ebac534954b54139806c112
+              name: Admin
+              value: active
+              active: true
+        isPhoneVerified: true
+        isEmailVerified: true
+        active: true
+        createdAt: 2020-05-12T09:00:00.000Z
+        updatedAt: 2020-05-12T09:00:00.000Z
+        lastLogin: 2020-05-12T09:00:00.000Z
+        lastFailedLogin: 2020-05-12T09:00:00.000Z
+        isDeleted: false
+
+  responses:
+
+    # Email already taken
+    DuplicateEmail:
+      description: Duplicate Data
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            code: 400
+            message: Email already taken
+
+/users:
+  # create a user
+  post:
+    operationId: createUser
+    summary: Create a user
+    tags: [Users]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            # $ref: "#/components/schemas/Users"
+            type: object
+            required:
+              - firstName
+              - lastName
+              - emailAddress
+              - phoneNumber
+              # - password
+              - role
+            properties:
+              firstName:
+                type: string
+              middleName:
+                type: string
+              lastName:
+                type: string
+              emailAddress:
+                type: string
+                description: must be unique
+              phoneNumber:
+                type: string
+                description: must be unique
+              role:
+                type: string
+    responses:
+      "201":
+        description: User created
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+      "400":
+        $ref: "#/components/responses/DuplicateEmail"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+  # get all users
+  get:
+    operationId: getUsers
+    summary: Get all users
+    tags: [Users]
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/Users"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+/users/{id}:
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: User ID
+
+  # get a user
+  get:
+    operationId: getUser
+    summary: Get a user
+    tags: [Users]
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+  # update a user
+  patch:
+    operationId: updateUser
+    summary: Update a user
+    tags: [Users]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              firstName:
+                type: string
+              middleName:
+                type: string
+              lastName:
+                type: string
+              emailAddress:
+                type: string
+                description: must be unique
+              phoneNumber:
+                type: string
+                description: must be unique
+              role:
+                type: string
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+      "400":
+        $ref: "#/components/responses/DuplicateEmail"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+  # delete a user
+  delete:
+    operationId: deleteUser
+    summary: Delete a user
+    tags: [Users]
+    security:
+      - bearerAuth: []
+    responses:
+      "204":
+        description: No Content
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"

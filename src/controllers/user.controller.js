@@ -2,36 +2,23 @@ const httpStatus = require("http-status");
 const pick = require("../utils/pick");
 const ApiError = require("../utils/ApiError");
 const { catchAsync } = require("../utils/catchAsync");
-const { Permission } = require("../models");
 const {
   userService,
   emailService,
   tokenService,
 } = require("../services");
 
+
 const createUser = catchAsync(async (req, res) => {
 
-  // Get all available permissions
-  const availablePermissions = await Permission.find({ status: "Active" });
-
-  // Assign permissions to a user
-  const userPermissions = {};
-  for (const permission of availablePermissions) {
-    const { name, value } = permission;
-    userPermissions[name] = value === "Active";
-  }
-
   // Create user account
-  const user = await userService.createUser({
-    ...req.body,
-    permission: userPermissions,
-  });
+  const user = await userService.createUser(req.body);
 
-  // Generate registration token
-  const registrationToken = await tokenService.generateRegisterEmailToken(user);
+  // // Generate registration token
+  // const registrationToken = await tokenService.generateRegisterEmailToken(user);
 
-  // Send user one time registration email to set up their account credentials
-  await emailService.sendRegistrationEmail(user, registrationToken);
+  // // Send user one time registration email to set up their account credentials
+  // await emailService.sendRegistrationEmail(user, registrationToken);
 
   // return user object
   res.status(httpStatus.CREATED).send(user);
@@ -48,7 +35,7 @@ const getUsers = catchAsync(async (req, res) => {
     "isEmailVerified",
     "image",
     "role",
-    "status",
+    "active",
     "createdAt",
     "updatedAt",
     "isDeleted",
@@ -90,12 +77,12 @@ const updateUser = catchAsync(async (req, res) => {
 const deleteUser = catchAsync(async (req, res) => {
   const { userId } = req.params;
 
-  const user = await userService.getUserById(userId);
-  await emailService.sendUserProfileDeleteEmail(user);
+  // const user = await userService.getUserById(userId);
+  // await emailService.sendUserProfileDeleteEmail(user);
 
-  await userService.deleteUserById(req.params.userId);
+  await userService.deleteUserById(userId);
 
-  res.status(httpStatus.OK).send({ message: "User account deleted successfully." });
+  res.status(httpStatus.OK).send({ message: "User account suspended successfully." });
 });
 
 module.exports = {
