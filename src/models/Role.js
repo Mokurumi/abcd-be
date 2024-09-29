@@ -15,11 +15,10 @@ const roleSchema = new mongoose.Schema(
       trim: true,
       unique: true,
     },
-    status: {
-      type: String,
+    active: {
+      type: Boolean,
       required: true,
-      trim: true,
-      default: "active",
+      default: true,
     },
     createdAt: {
       type: Date,
@@ -31,6 +30,10 @@ const roleSchema = new mongoose.Schema(
         ref: "Permission",
       },
     ],
+    // permissions: {
+    //   type: Array,
+    //   default: [],
+    // }
   },
   {
     timestamps: true,
@@ -50,6 +53,7 @@ roleSchema.plugin(paginate);
 roleSchema.statics.isRoleExisting = async (name, excludeRoleId) => {
   const role = await Role.findOne({
     name,
+    value: name.toLowerCase(),
     _id: { $ne: excludeRoleId }
   });
   return !!role;

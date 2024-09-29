@@ -13,8 +13,8 @@ components:
           type: string
         value:
           type: string
-        status:
-          type: string
+        active:
+          type: boolean
         permissions:
           type: array
           items:
@@ -22,11 +22,24 @@ components:
             properties:
               id:
                 type: string
+              name:
+                type: string
+                description: must be unique
+              value:
+                type: string
+                description: must be unique
+              active:
+                type: boolean
       example:
         id: 5ebac534954b54139806c112
         name: Admin
-        value: Active
-        status: Active
+        value: admin
+        active: true
+        permissions:
+          - id: 5ebac534954b54139806c112
+            name: Admin
+            value: admin
+            active: true
 
   responses:
 
@@ -46,7 +59,7 @@ components:
   post:
     summary: Create a role
     description: Only admins can create roles.
-    tags: [Admin]
+    tags: [Auth]
     security:
       - bearerAuth: []
     requestBody:
@@ -58,20 +71,21 @@ components:
             required:
               - name
               - value
-              - status
             properties:
               name:
                 type: string
-                description: must be unique
               value:
                 type: string
-              status:
-                type: string
-                enum: [Active, Inactive]
               permissions:
                 type: array
                 items:
                   type: string
+            # example:
+            #   name: Admin
+            #   value: admin
+            #   permissions:
+            #     - 5ebac534954b54139806c112
+            #     - 5ebac534954b54139806c112
     responses:
       "201":
         description: Created
@@ -89,8 +103,8 @@ components:
   # get all roles
   get:
     summary: Get all roles
-    description: Only admins can get all roles.
-    tags: [Admin]
+    # description: Only admins can get all roles.
+    tags: [Auth]
     security:
       - bearerAuth: []
     responses:
@@ -119,16 +133,10 @@ components:
   # get a role
   get:
     summary: Get a role
-    description: Only admins can get roles.
-    tags: [Admin]
+    # description: Only admins can get roles.
+    tags: [Auth]
     security:
       - bearerAuth: []
-    parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
     responses:
       "200":
         description: OK
@@ -145,7 +153,7 @@ components:
   patch:
     summary: Update a role
     description: Only admins can update roles.
-    tags: [Admin]
+    tags: [Auth]
     security:
       - bearerAuth: []
     requestBody:
@@ -154,19 +162,19 @@ components:
         application/json:
           schema:
             type: object
-            required:
-              - name
-              - value
-              - status
+            # required:
+            #   - name
+            #   - value
+            #   - active
+            #   - permissions
             properties:
               name:
                 type: string
                 description: must be unique
               value:
                 type: string
-              status:
-                type: string
-                enum: [Active, Inactive]
+              active:
+                type: boolean
               permissions:
                 type: array
                 items:
@@ -189,16 +197,12 @@ components:
   delete:
     summary: Delete a role
     description: Only admins can delete roles.
-    tags: [Admin]
+    tags: [Auth]
     security:
       - bearerAuth: []
     responses:
-      "200":
-        description: OK
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Roles'
+      "204":
+        description: No Content
       "401":
         $ref: '#/components/responses/Unauthorized'
       "403":
