@@ -1,6 +1,12 @@
 tags:
-  name: Admin
-  description: Admin Functions
+  - name: Auth
+    description: Authentication Functions
+
+  - name: Admin
+    description: Admin Functions
+
+  - name: User
+    description: User Management
 
 components:
   schemas:

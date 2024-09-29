@@ -11,15 +11,17 @@ components:
           type: string
         name:
           type: string
+          description: must be unique
         value:
           type: string
-        status:
-          type: string
+          description: must be unique
+        active:
+          type: boolean
       example:
         id: 5ebac534954b54139806c112
         name: Admin
-        value: Active
-        status: Active
+        value: admin
+        active: true
 
   responses:
 
@@ -39,7 +41,7 @@ components:
   post:
     summary: Create a permission
     description: Only admins can create permissions.
-    tags: [Admin]
+    tags: [Auth]
     security:
       - bearerAuth: []
     requestBody:
@@ -51,19 +53,11 @@ components:
             required:
               - name
               - value
-              - status
             properties:
               name:
                 type: string
-                description: must be unique
               value:
                 type: string
-              status:
-                type: string
-            example:
-              name: Admin
-              value: Active
-              status: Active
     responses:
       "201":
         description: Created
@@ -81,8 +75,8 @@ components:
   # get all permissions
   get:
     summary: Get all permissions
-    description: Only admins can get all permissions.
-    tags: [Admin]
+    # description: Only admins can get all permissions.
+    tags: [Auth]
     security:
       - bearerAuth: []
     responses:
@@ -112,8 +106,8 @@ components:
   # get a permission
   get:
     summary: Get a permission
-    description: Only admins can get a permission.
-    tags: [Admin]
+    # description: Only admins can get a permission.
+    tags: [Auth]
     security:
       - bearerAuth: []
     responses:
@@ -132,7 +126,7 @@ components:
   patch:
     summary: Update a permission
     description: Only admins can update a permission.
-    tags: [Admin]
+    tags: [Auth]
     security:
       - bearerAuth: []
     requestBody:
@@ -141,22 +135,17 @@ components:
         application/json:
           schema:
             type: object
-            required:
-              - name
-              - value
-              - status
+            # required:
+            #   - name
+            #   - value
+            #   - active
             properties:
               name:
                 type: string
-                description: must be unique
               value:
                 type: string
-              status:
-                type: string
-            example:
-              name: Admin
-              value: Active
-              status: Active
+              active:
+                type: boolean
     responses:
       "200":
         description: OK
@@ -175,7 +164,7 @@ components:
   delete:
     summary: Delete a permission
     description: Only admins can delete a permission.
-    tags: [Admin]
+    tags: [Auth]
     security:
       - bearerAuth: []
     responses:

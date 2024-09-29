@@ -5,7 +5,6 @@ const createPermission = {
   body: Joi.object().keys({
     name: Joi.string().required(),
     value: Joi.string().required(),
-    status: Joi.string(),
   }),
 };
 
@@ -13,7 +12,7 @@ const getPermissions = {
   query: Joi.object().keys({
     name: Joi.string(),
     value: Joi.string(),
-    status: Joi.string(),
+    active: Joi.boolean(),
     sortBy: Joi.string(),
     size: Joi.number().integer(),
     page: Joi.number().integer(),
@@ -34,7 +33,7 @@ const updatePermission = {
     .keys({
       name: Joi.string(),
       value: Joi.string(),
-      status: Joi.string(),
+      active: Joi.boolean(),
     })
     .min(1),
 };

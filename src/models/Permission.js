@@ -11,10 +11,10 @@ const permissionSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    status: {
-      type: String,
+    active: {
+      type: Boolean,
       required: false,
-      default: "Active",
+      default: true,
     },
     createdAt: {
       type: Date,
@@ -39,6 +39,7 @@ permissionSchema.plugin(paginate);
 permissionSchema.statics.isPermissionExisting = async (name, excludePermissionId) => {
   const permission = await Permission.findOne({
     name,
+    value: name.toLowerCase(),
     _id: { $ne: excludePermissionId },
   });
   return !!permission;

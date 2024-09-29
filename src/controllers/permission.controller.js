@@ -11,7 +11,7 @@ const createPermission = catchAsync(async (req, res) => {
   const newPermission = await permissionService.createPermission(req.body);
 
   const { name, value } = newPermission;
-  const isPermissionActive = value === "Active";
+  const isPermissionActive = value === "active";
 
   // Fetch all users that need to be updated
   const usersToUpdate = await User.find();
@@ -41,7 +41,7 @@ const createPermission = catchAsync(async (req, res) => {
 });
 
 const getPermissions = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ["name", "status"]);
+  const filter = pick(req.query, ["name", "active"]);
   const options = pick(req.query, ["sortBy", "size", "page"]);
   const result = await permissionService.queryPermission(filter, options);
   res.send(result);
