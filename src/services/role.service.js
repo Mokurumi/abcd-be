@@ -35,7 +35,10 @@ const createRole = async (roleBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryRoles = async (filter, options) => {
-  const roles = await Role.paginate(filter, options);
+  const roles = await Role.paginate(filter, {
+    ...options,
+    populate: "permissions",
+  });
   return roles;
 };
 
@@ -45,7 +48,7 @@ const queryRoles = async (filter, options) => {
  * @returns {Promise<Role>}
  */
 const getRoleById = async (id) => {
-  return Role.findById(id);
+  return Role.findById(id).populate("permissions");
 };
 
 /**
