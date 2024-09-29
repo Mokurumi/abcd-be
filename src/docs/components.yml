@@ -5,7 +5,7 @@ tags:
   - name: Admin
     description: Admin Functions
 
-  - name: User
+  - name: Users
     description: User Management
 
 components:

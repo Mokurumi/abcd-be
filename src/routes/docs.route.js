@@ -15,7 +15,16 @@ router.get(
   "/",
   swaggerUi.setup(specs, {
     explorer: true,
-    swaggerOptions: { docExpansion: "none", },
+    swaggerOptions: {
+      docExpansion: "none",
+      filter: true,
+      defaultModelsExpandDepth: -1,
+      // tagsSorter: "alpha",
+      // syntaxHighlight: {
+      //   activated: true,
+      //   // theme: "monokai"
+      // }
+    },
   })
 );
 

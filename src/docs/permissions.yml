@@ -39,6 +39,7 @@ components:
 /permissions:
   # create a permission
   post:
+    operationId: createPermission
     summary: Create a permission
     description: Only admins can create permissions.
     tags: [Auth]
@@ -74,6 +75,7 @@ components:
 
   # get all permissions
   get:
+    operationId: getPermissions
     summary: Get all permissions
     # description: Only admins can get all permissions.
     tags: [Auth]
@@ -105,6 +107,7 @@ components:
 
   # get a permission
   get:
+    operationId: getPermission
     summary: Get a permission
     # description: Only admins can get a permission.
     tags: [Auth]
@@ -124,6 +127,7 @@ components:
 
   # update a permission
   patch:
+    operationId: updatePermission
     summary: Update a permission
     description: Only admins can update a permission.
     tags: [Auth]
@@ -162,6 +166,7 @@ components:
 
   # delete a permission
   delete:
+    operationId: deletePermission
     summary: Delete a permission
     description: Only admins can delete a permission.
     tags: [Auth]

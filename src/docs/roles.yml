@@ -57,6 +57,7 @@ components:
 /roles:
   # create a role
   post:
+    operationId: createRole
     summary: Create a role
     description: Only admins can create roles.
     tags: [Auth]
@@ -102,6 +103,7 @@ components:
 
   # get all roles
   get:
+    operationId: getRoles
     summary: Get all roles
     # description: Only admins can get all roles.
     tags: [Auth]
@@ -132,6 +134,7 @@ components:
 
   # get a role
   get:
+    operationId: getRole
     summary: Get a role
     # description: Only admins can get roles.
     tags: [Auth]
@@ -151,6 +154,7 @@ components:
 
   # update a role
   patch:
+    operationId: updateRole
     summary: Update a role
     description: Only admins can update roles.
     tags: [Auth]
@@ -195,6 +199,7 @@ components:
 
   # delete a role
   delete:
+    operationId: deleteRole
     summary: Delete a role
     description: Only admins can delete roles.
     tags: [Auth]

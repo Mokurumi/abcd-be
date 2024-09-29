@@ -17,15 +17,18 @@ const password = (value, helpers) => {
   return value;
 };
 
-const vehicleRegistration = (value, helpers) => {
-  if (!value.match(/[A-Z]{3}\s\d{3}\S$/)) {
-    return helpers.message("provide a valid registration number");
+const phoneNumber = (value, helpers) => {
+  const phoneRegex = "^(?:254|\\+254|0|\\+2540)?((7|1)(?:(?:[0-9][0-9])|(?:0[0-8])|(4[0-1]))[0-9]{6})$";
+
+  if (!value.match(phoneRegex)) {
+    return helpers.message("Invalid phone number");
   }
+
   return value;
 };
 
 module.exports = {
   objectId,
   password,
-  vehicleRegistration,
+  phoneNumber,
 };
