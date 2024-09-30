@@ -42,7 +42,7 @@ components:
     operationId: createPermission
     summary: Create a permission
     description: Only admins can create permissions.
-    tags: [Auth]
+    tags: [Admin]
     security:
       - bearerAuth: []
     requestBody:
@@ -78,7 +78,7 @@ components:
     operationId: getPermissions
     summary: Get all permissions
     # description: Only admins can get all permissions.
-    tags: [Auth]
+    tags: [Admin]
     security:
       - bearerAuth: []
     responses:
@@ -110,7 +110,7 @@ components:
     operationId: getPermission
     summary: Get a permission
     # description: Only admins can get a permission.
-    tags: [Auth]
+    tags: [Admin]
     security:
       - bearerAuth: []
     responses:
@@ -130,7 +130,7 @@ components:
     operationId: updatePermission
     summary: Update a permission
     description: Only admins can update a permission.
-    tags: [Auth]
+    tags: [Admin]
     security:
       - bearerAuth: []
     requestBody:
@@ -169,7 +169,7 @@ components:
     operationId: deletePermission
     summary: Delete a permission
     description: Only admins can delete a permission.
-    tags: [Auth]
+    tags: [Admin]
     security:
       - bearerAuth: []
     responses:

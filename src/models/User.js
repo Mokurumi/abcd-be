@@ -104,6 +104,10 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    firstTimeLogin: {
+      type: Boolean,
+      default: true,
+    },
     lastLogin: {
       type: Date,
       default: null,
@@ -115,6 +119,10 @@ const userSchema = new mongoose.Schema(
     isDeleted: {
       type: Boolean,
       default: false,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
     },
   },
   {

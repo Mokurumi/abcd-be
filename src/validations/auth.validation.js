@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const { password, objectId } = require("./custom.validation");
+const { password, phoneNumber } = require("./custom.validation");
 
 const register = {
   body: Joi.object().keys({
@@ -7,97 +7,85 @@ const register = {
     lastName: Joi.string().required(),
     middleName: Joi.string(),
     emailAddress: Joi.string().email().required(),
-    phoneNumber: Joi.string().required(),
-    role: Joi.string().valid("user", "admin"),
-    // password: Joi.string().custom(password),
+    phoneNumber: Joi.string().required().custom(phoneNumber),
   }),
 };
 
-const requestOTP = {
+const verifyRegistration = {
   body: Joi.object().keys({
-    userId: Joi.string().custom(objectId),
-  }),
-};
-
-const resendRegistrationEmail = {
-  body: Joi.object().keys({
-    userId: Joi.string().custom(objectId),
-  }),
-};
-
-const accountSetup = {
-  body: Joi.object().keys({
-    userId: Joi.string().custom(objectId),
+    emailAddress: Joi.string().email().required(),
     token: Joi.string().required(),
-    otpCode: Joi.string().required(),
-    password: Joi.string().custom(password).required(),
   }),
 };
 
 const login = {
   body: Joi.object().keys({
-    email: Joi.string().email().required(),
+    username: Joi.string().email().required(),
     password: Joi.string().required(),
   }),
 };
 
 const logout = {
   body: Joi.object().keys({
-    refreshToken: Joi.string().required(),
-  }),
-};
-
-const refreshTokens = {
-  body: Joi.object().keys({
-    refreshToken: Joi.string().required(),
-  }),
-};
-
-const forgotPassword = {
-  body: Joi.object().keys({
-    email: Joi.string().email().required(),
-    url: Joi.string().required(),
+    token: Joi.string().required(),
   }),
 };
 
 const resetPassword = {
-  query: Joi.object().keys({
+  body: Joi.object().keys({
+    emailAddress: Joi.string().email(),
+    phoneNumber: Joi.string().custom(phoneNumber),
+  }),
+};
+
+const verifyResetPassword = {
+  body: Joi.object().keys({
+    emailAddress: Joi.string().email().required(),
     token: Joi.string().required(),
   }),
+};
+
+const changePassword = {
   body: Joi.object().keys({
-    password: Joi.string().required().custom(password),
+    emailAddress: Joi.string().email().required(),
+    currentPassword: Joi.string().required(),
+    newPassword: Joi.string().required().custom(password),
   }),
 };
 
-const verifyEmail = {
-  query: Joi.object().keys({
+const refreshToken = {
+  body: Joi.object().keys({
     token: Joi.string().required(),
   }),
 };
 
-const verifyRegisterToken = {
+const updateProfile = {
   body: Joi.object().keys({
-    registrationToken: Joi.string().required(),
+    firstName: Joi.string(),
+    lastName: Joi.string(),
+    middleName: Joi.string(),
+    emailAddress: Joi.string().email(),
+    phoneNumber: Joi.string().custom(phoneNumber),
   }),
 };
 
-const verifyResetPasswordToken = {
+const verifyDeleteProfile = {
   body: Joi.object().keys({
-    resetPasswordToken: Joi.string().required(),
+    emailAddress: Joi.string().email().required(),
+    token: Joi.string().required(),
   }),
 };
 
 module.exports = {
   register,
-  accountSetup,
+  verifyRegistration,
   login,
   logout,
-  refreshTokens,
-  forgotPassword,
   resetPassword,
-  verifyEmail,
-  requestOTP,
   resendRegistrationEmail,
-  verifyRegisterToken,
-  verifyResetPasswordToken
+  verifyResetPassword,
+  changePassword,
+  refreshToken,
+  updateProfile,
+  verifyDeleteProfile
 };

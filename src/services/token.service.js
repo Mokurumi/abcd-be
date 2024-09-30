@@ -148,11 +148,11 @@ const generateVerifyEmailToken = async (user) => {
     "minutes"
   );
   const verifyEmailToken = generateToken(
-    user.id,
+    user._id,
     expires,
-    tokenTypes.VERIFY_EMAIL
+    tokenTypes.VERIFY_REGISTRATION
   );
-  await saveToken(verifyEmailToken, user.id, expires, tokenTypes.VERIFY_EMAIL);
+  await saveToken(verifyEmailToken, user._id, expires, tokenTypes.VERIFY_REGISTRATION);
   return verifyEmailToken;
 };
 

@@ -6,73 +6,84 @@ const auth = require("../middlewares/auth");
 
 const router = express.Router();
 
+// Register a new user
 router.post(
   "/register",
   validate(authValidation.register),
   authController.register
 );
 
-router.post(
-  "/request-otp",
-  validate(authValidation.requestOTP),
-  authController.requestOTP
-);
+// // Verify email registration
+// router.post(
+//   "/verify-registration",
+//   validate(authValidation.verifyRegistration),
+//   authController.verifyRegistration
+// );
 
-router.post(
-  "/resend-registration-email",
-  validate(authValidation.resendRegistrationEmail),
-  authController.resendRegistrationEmail
-);
+// // login user
+// router.post(
+//   "/login",
+//   validate(authValidation.login),
+//   authController.login
+// );
 
-router.post(
-  "/account-setup",
-  validate(authValidation.accountSetup),
-  authController.accountSetup
-);
+// // logout user
+// router.post(
+//   "/logout",
+//   validate(authValidation.logout),
+//   authController.logout
+// );
 
-router.post("/login", validate(authValidation.login), authController.login);
+// // reset password
+// router.post(
+//   "/reset-password",
+//   validate(authValidation.resetPassword),
+//   authController.resetPassword
+// );
 
-router.post("/logout", validate(authValidation.logout), authController.logout);
+// // verify reset password
+// router.post(
+//   "/verify-reset-password",
+//   validate(authValidation.verifyResetPassword),
+//   authController.verifyResetPassword
+// );
 
-router.post(
-  "/refresh-tokens",
-  validate(authValidation.refreshTokens),
-  authController.refreshTokens
-);
+// // change password
+// router.post(
+//   "/change-password",
+//   // auth(),
+//   validate(authValidation.changePassword),
+//   authController.changePassword
+// );
 
-router.post(
-  "/verify-registration-token",
-  validate(authValidation.verifyRegisterToken),
-  authController.verifyRegisterToken
-);
+// // refresh token
+// router.post(
+//   "/refresh-token",
+//   validate(authValidation.refreshToken),
+//   authController.refreshToken
+// );
 
-router.post(
-  "/verify-reset-password-token",
-  validate(authValidation.verifyResetPasswordToken),
-  authController.verifyResetPasswordToken
-);
+// // profile
+// router.
+//   route("/profile")
+//   .get(
+//     // auth(),
+//     authController.getProfile
+//   )
+//   .patch(
+//     // auth(),
+//     validate(authValidation.updateProfile),
+//     authController.updateProfile
+//   )
+//   .delete(
+//     // auth(),
+//     authController.deleteProfile
+//   );
 
-router.post(
-  "/forgot-password",
-  validate(authValidation.forgotPassword),
-  authController.forgotPassword
-);
-
-router.post(
-  "/reset-password",
-  validate(authValidation.resetPassword),
-  authController.resetPassword
-);
-router.post(
-  "/send-verification-email",
-  auth(),
-  authController.sendVerificationEmail
-);
-
-router.post(
-  "/verify-email",
-  validate(authValidation.verifyEmail),
-  authController.verifyEmail
-);
+// router.post(
+//   "/profile/verify-delete",
+//   validate(authValidation.verifyDeleteProfile),
+//   authController.verifyDeleteProfile
+// );
 
 module.exports = router;

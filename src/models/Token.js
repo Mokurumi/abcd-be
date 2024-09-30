@@ -17,10 +17,13 @@ const tokenSchema = mongoose.Schema(
     type: {
       type: String,
       enum: [
-        tokenTypes.REFRESH,
-        tokenTypes.RESET_PASSWORD,
-        tokenTypes.VERIFY_EMAIL,
-        tokenTypes.VERIFY_REGISTRATION,
+        // tokenTypes.REFRESH,
+        // tokenTypes.RESET_PASSWORD,
+        // tokenTypes.VERIFY_EMAIL,
+        // tokenTypes.VERIFY_EMAIL_CHANGE,
+        // tokenTypes.VERIFY_PHONE,
+        // tokenTypes.VERIFY_REGISTRATION,
+        ...Object.values(tokenTypes),
       ],
       required: true,
     },

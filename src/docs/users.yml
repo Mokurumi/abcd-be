@@ -53,14 +53,6 @@ components:
           type: boolean
         isEmailVerified:
           type: boolean
-        # emailVerificationToken:
-        #   type: string
-        # emailVerificationTokenExpires:
-        #   type: string
-        # passwordResetToken:
-        #   type: string
-        # passwordResetTokenExpires:
-        #   type: string
         active:
           type: boolean
         createdAt:
@@ -81,17 +73,17 @@ components:
         emailAddress: johndoe@gmail.com
         phoneNumber: 2547XXXXXXX
         image: https://example.com/image.jpg
-        # password: password
-        role:
-          id: 5ebac534954b54139806c112
-          name: Admin
-          value: active
-          active: true
-          permissions:
-            - id: 5ebac534954b54139806c112
-              name: Admin
-              value: active
-              active: true
+        # role:
+        #   id: 5ebac534954b54139806c112
+        #   name: Admin
+        #   value: active
+        #   active: true
+        #   permissions:
+        #     - id: 5ebac534954b54139806c112
+        #       name: Admin
+        #       value: active
+        #       active: true
+        role: 5ebac534954b54139806c112
         isPhoneVerified: true
         isEmailVerified: true
         active: true

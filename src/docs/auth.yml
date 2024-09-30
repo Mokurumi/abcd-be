@@ -1,0 +1,462 @@
+# tags:
+#   name: Users
+#   description: Users management
+
+components:
+  schemas:
+    Token:
+      type: object
+      properties:
+        id:
+          type: string
+        token:
+          type: string
+        user:
+          type: string
+        type:
+          type: string
+        expires:
+          type: string
+          description: must be unique
+        blacklisted:
+          type: boolean
+      example:
+        id: 5ebac534954b54139806c112
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlYmFjNTM0OTU0YjU0MTM5ODA2YzExMiIsImlhdCI6MTU4OTYwNjYwMiwiZXhwIjoxNTg5NjA2NjYyfQ.1
+        expires: 2020-05-13T16:00:00.000Z
+
+  responses:
+    # Refresh token
+    RefreshToken:
+      description: Token refreshed
+      content:
+        application/json:
+          schema:
+            refreshToken:
+              $ref: "#/components/schemas/Token"
+            authToken:
+              $ref: "#/components/schemas/Token"
+      # example:
+      #   refreshToken:
+      #     id: 5ebac534954b54139806c112
+      #     token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlYmFjNTM0OTU0YjU0MTM5ODA2YzExMiIsImlhdCI6MTU4OTYwNjYwMiwiZXhwIjoxNTg5NjA2NjYyfQ.1
+      #     expires: 2020-05-13T16:00:00.000Z
+      #   authToken:
+      #     id: 5ebac534954b54139806c112
+      #     token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlYmFjNTM0OTU0YjU0MTM5ODA2YzExMiIsImlhdCI6MTU4OTYwNjYwMiwiZXhwIjoxNTg5NjA2NjYyfQ.1
+      #     expires: 2020-05-13T16:00:00.000Z
+
+    # invalid login credentials or reset password
+    InvalidCredentials:
+      description: Invalid credentials
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+      example:
+        code: 400
+        message: Invalid credentials
+
+    # invalid verification email
+    InvalidVerificationEmail:
+      description: Invalid verification code
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+      example:
+        code: 400
+        message: Invalid verification code
+
+    # invalid token
+    InvalidToken:
+      description: Invalid token
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+      example:
+        code: 400
+        message: Invalid token
+
+/auth/register:
+  post:
+    operationId: registerUser
+    summary: Register a new user
+    tags: [Auth]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - firstName
+              - lastName
+              - emailAddress
+              - phoneNumber
+              # - password
+            properties:
+              firstName:
+                type: string
+              middleName:
+                type: string
+              lastName:
+                type: string
+              emailAddress:
+                type: string
+                description: must be unique
+              phoneNumber:
+                type: string
+                description: must be unique
+    responses:
+      "201":
+        description: User created
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+      "400":
+        $ref: "#/components/responses/DuplicateEmail"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+/auth/verify-registration:
+  post:
+    operationId: verifyRegistration
+    summary: Verify user registration
+    tags: [Auth]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - emailAddress
+              - token
+            properties:
+              emailAddress:
+                type: string
+              token:
+                type: string
+    responses:
+      "200":
+        description: User verified
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+      "400":
+        $ref: "#/components/responses/InvalidToken"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+/auth/login:
+  post:
+    operationId: loginUser
+    summary: Login user
+    tags: [Auth]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+    responses:
+      "200":
+        description: User logged in
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshToken"
+      "400":
+        $ref: "#/components/responses/InvalidCredentials"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+/auth/logout:
+  post:
+    operationId: logoutUser
+    summary: Logout user
+    tags: [Auth]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - token
+            properties:
+              token:
+                type: string
+    responses:
+      "200":
+        description: No content
+      "400":
+        $ref: "#/components/responses/InvalidToken"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+/auth/reset-password:
+  post:
+    operationId: resetPassword
+    summary: Reset user password
+    tags: [Auth]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            # required:
+            #   - emailAddress
+            #   - phoneNumber
+            properties:
+              emailAddress:
+                type: string
+              phoneNumber:
+                type: string
+    responses:
+      "200":
+        description: Password reset
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+      "400":
+        $ref: "#/components/responses/InvalidCredentials"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+/auth/verify-reset-password:
+  post:
+    operationId: verifyResetPassword
+    summary: Verify user password reset
+    tags: [Auth]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - emailAddress
+              - token
+            properties:
+              emailAddress:
+                type: string
+              token:
+                type: string
+    responses:
+      "200":
+        description: Password reset verified
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+      "400":
+        $ref: "#/components/responses/InvalidToken"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+/auth/change-password:
+  post:
+    operationId: changePassword
+    summary: Change user password
+    tags: [Auth]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - emailAddress
+              - currentPassword
+              - newPassword
+            properties:
+              emailAddress:
+                type: string
+              currentPassword:
+                type: string
+              newPassword:
+                type: string
+    responses:
+      "200":
+        description: Password changed
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+      "400":
+        $ref: "#/components/responses/InvalidCredentials"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+/auth/refresh-token:
+  post:
+    operationId: refreshToken
+    summary: Refresh user token
+    tags: [Auth]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - token
+            properties:
+              token:
+                type: string
+    responses:
+      "200":
+        description: Token refreshed
+        content:
+          application/json:
+            schema:
+              refreshToken:
+                $ref: "#/components/schemas/Token"
+              authToken:
+                $ref: "#/components/schemas/Token"
+      "400":
+        $ref: "#/components/responses/InvalidToken"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+/auth/profile:
+  get:
+    operationId: getProfile
+    summary: Get user profile
+    tags: [Auth]
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+  patch:
+    operationId: updateProfile
+    summary: Update user profile
+    tags: [Auth]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              firstName:
+                type: string
+              middleName:
+                type: string
+              lastName:
+                type: string
+              emailAddress:
+                type: string
+                description: must be unique
+              phoneNumber:
+                type: string
+                description: must be unique
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+      "400":
+        $ref: "#/components/responses/DuplicateEmail"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+  delete:
+    operationId: deleteProfile
+    summary: Delete user profile
+    tags: [Auth]
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+/auth/profile/verify-delete:
+  post:
+    operationId: verifyDeleteProfile
+    summary: Verify user profile delete
+    tags: [Auth]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - emailAddress
+              - token
+            properties:
+              emailAddress:
+                type: string
+              token:
+                type: string
+    responses:
+      "200":
+        description: User profile delete verified
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Users"
+      "400":
+        $ref: "#/components/responses/InvalidVerificationEmail"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"

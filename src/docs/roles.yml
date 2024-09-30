@@ -60,7 +60,7 @@ components:
     operationId: createRole
     summary: Create a role
     description: Only admins can create roles.
-    tags: [Auth]
+    tags: [Admin]
     security:
       - bearerAuth: []
     requestBody:
@@ -106,7 +106,7 @@ components:
     operationId: getRoles
     summary: Get all roles
     # description: Only admins can get all roles.
-    tags: [Auth]
+    tags: [Admin]
     security:
       - bearerAuth: []
     responses:
@@ -137,7 +137,7 @@ components:
     operationId: getRole
     summary: Get a role
     # description: Only admins can get roles.
-    tags: [Auth]
+    tags: [Admin]
     security:
       - bearerAuth: []
     responses:
@@ -157,7 +157,7 @@ components:
     operationId: updateRole
     summary: Update a role
     description: Only admins can update roles.
-    tags: [Auth]
+    tags: [Admin]
     security:
       - bearerAuth: []
     requestBody:
@@ -202,7 +202,7 @@ components:
     operationId: deleteRole
     summary: Delete a role
     description: Only admins can delete roles.
-    tags: [Auth]
+    tags: [Admin]
     security:
       - bearerAuth: []
     responses:

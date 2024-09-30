@@ -1,8 +1,8 @@
 const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
 const { catchAsync } = require("../utils/catchAsync");
-const { generateOTP } = require("../utils/generateOTP");
-const { Permission } = require("../models");
+const { generateOTP } = require("../utils");
+const { Role } = require("../models");
 // const sendSMS = require("../config/sendSMS");
 const {
   authService,
@@ -17,20 +17,12 @@ const {
  */
 const register = catchAsync(async (req, res) => {
 
-  // Get all available permissions
-  const availablePermissions = await Permission.find({ status: "Active" });
-
-  // Assign permissions to a user
-  const userPermissions = {};
-  for (const permission of availablePermissions) {
-    const { name, value } = permission;
-    userPermissions[name] = value === "Active";
-  }
+  const defaultRole = await Role.findOne({ value: "user" });
 
   // Create user account
   const user = await userService.createUser({
     ...req.body,
-    permission: userPermissions,
+    role: defaultRole._id,
   });
 
   // Generate registration token for email
@@ -41,9 +33,9 @@ const register = catchAsync(async (req, res) => {
 
   // // Create notification
   // await notificationService.createNotification({
-  //   userId: user.id,
+  //   userId: user._id,
   //   title: `Registration complete`,
-  //   message: "Congratulations! Welcome to CvStudio.africa. Be found.",
+  //   message: "Congratulations! Welcome to ABCD Think Tank.",
   // });
 
   // response
