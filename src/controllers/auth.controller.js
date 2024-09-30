@@ -1,7 +1,7 @@
 const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
 const { catchAsync } = require("../utils/catchAsync");
-const { generateOTP } = require("../utils");
+const { generateOTP, generateTempPassword } = require("../utils");
 const { Role } = require("../models");
 // const sendSMS = require("../config/sendSMS");
 const {
@@ -14,6 +14,8 @@ const {
 
 /**
  * Register a new user
+ * @param {*} req
+ * @param {*} res
  */
 const register = catchAsync(async (req, res) => {
 
@@ -26,7 +28,7 @@ const register = catchAsync(async (req, res) => {
   });
 
   // Generate registration token for email
-  const registrationToken = await tokenService.generateRegisterEmailToken(user);
+  const registrationToken = await tokenService.generateRegistrationToken(user);
 
   // Send user one time registration email to set up their account credentials
   await emailService.sendRegistrationEmail(user, registrationToken);
@@ -39,83 +41,63 @@ const register = catchAsync(async (req, res) => {
   // });
 
   // response
-  res.status(httpStatus.CREATED).send(user);
+  // res.status(httpStatus.CREATED).send(user);
+  res.status(httpStatus.CREATED).send({
+    message: "Registration successful. Please check your email for activation link.",
+  });
 });
 
 /**
- * Request OTP code
+ * Verify email registration
+ * @param {*} req
+ * @param {*} res
  */
-const requestOTP = catchAsync(async (req, res) => {
-  // Destructure request body
+const verifyRegistration = catchAsync(async (req, res) => {
+  const { token, userId } = req.body;
+  const user = await authService.verifyRegistrationToken(token, userId);
+
+  if (!user) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid token");
+  }
+  res.status(httpStatus.OK).send({
+    message: "Email verified successfully. Please login to continue.",
+  });
+});
+
+/**
+ * Resend registration email
+ * @param {*} req
+ * @param {*} res
+ */
+const resendRegistrationEmail = catchAsync(async (req, res) => {
   const { userId } = req.body;
-
-  // Retrieve user from userId on url(FE) from db(BE)
-  const user = await userService.getUserById(userId);
-
-  // Generate otp code
-  const otpCode = generateOTP();
-
-  // Save otpCode in user in DB
-  await userService.updateUserById(userId, { otpCode: otpCode });
-
-  // Send otp code via Email
-  await emailService.sendOTPCodeEmail(user, otpCode);
-
-  // // Send otp code via SMS
-  // const phoneNumber = user.mobileNumber;
-  // const message = `Your verification code is ${otpCode}. Do not share`;
-  // await sendSMS({ to: phoneNumber, message });
-
-  // Response
-  res.status(httpStatus.CREATED).send(user);
-});
-
-/**
- * Account setup
- */
-const accountSetup = catchAsync(async (req, res) => {
-  // destructure request body
-  const { userId, token, password, otpCode } = req.body;
-
-  // Retrieve user
   const user = await userService.getUserById(userId);
   if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "The user does not exist.");
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
 
-  // Verify OtpCode
-  if (user && user.otpCode !== otpCode) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Invalid verification code. Please check your phone or email for the correct code.");
+  // if the user is already active and email verified
+  if (user.active && user.isEmailVerified) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Your account is already active. Please login to continue.");
   }
 
-  // Verify registration token before proceeding
-  await authService.verifyRegistration(token);
+  // Generate registration token for email
+  const registrationToken = await tokenService.generateRegistrationToken(user);
 
-  // Update user object
-  await userService.updateUserById(user.id, {
-    otpCode: null,
-    isEmailVerified: true,
-    isMobileNumberVerified: true,
-    status: "Active",
-    password: password,
+  // Send user one time registration email to set up their account credentials
+  await emailService.sendRegistrationEmail(user, registrationToken);
+
+  res.status(httpStatus.OK).send({
+    message: "Email sent successfully. Please check your email for registration link.",
   });
-
-  // Generate user tokens to enable auto login
-  const tokens = await tokenService.generateAuthTokens(user);
-
-  // Fetch updated user object
-  const userData = await userService.getUserById(userId);
-
-  // return user object
-  res.status(httpStatus.CREATED).send({ user: userData, tokens });
 });
 
 /**
  * Login
  */
 const login = catchAsync(async (req, res) => {
-  const { email, password } = req.body;
-  const user = await authService.loginUserWithEmailAndPassword(email, password);
+  const { username, password } = req.body;
+  const user = await authService.loginUser(username, password);
   const tokens = await tokenService.generateAuthTokens(user);
   res.send({ user, tokens });
 });
@@ -124,117 +106,26 @@ const login = catchAsync(async (req, res) => {
  * Logout
  */
 const logout = catchAsync(async (req, res) => {
-  await authService.logout(req.body.refreshToken);
+  await authService.logout(req.body.token);
   res.status(httpStatus.ACCEPTED).send({
     message: "Logout successfully.",
   });
 });
 
-/**
- * Refresh tokens
- */
-const refreshTokens = catchAsync(async (req, res) => {
-  const tokens = await authService.refreshAuth(req.body.refreshToken);
-  res.send({ ...tokens });
-});
-
-/**
- * Forgot password
- */
-const forgotPassword = catchAsync(async (req, res) => {
-  const { email, url } = req.body;
-  const resetPasswordToken = await tokenService.generateResetPasswordToken(email);
-
-  const user = await userService.getUserByEmail(req.body.email);
-  await emailService.sendResetPasswordEmail(user, url, resetPasswordToken);
-  res.status(httpStatus.ACCEPTED).send({ message: "A reset link has been sent to your email." });
-});
-
-/**
- * Reset password
- */
-const resetPassword = catchAsync(async (req, res) => {
-  await authService.resetPassword(req.query.token, req.body.password);
-  res.status(httpStatus.ACCEPTED).send({ message: "Password recovery is successful" });
-});
-
-/**
- * Send verification email
- */
-const sendVerificationEmail = catchAsync(async (req, res) => {
-  const verifyEmailToken = await tokenService.generateVerifyEmailToken(
-    req.user
-  );
-  const user = await userService.getUserByEmail(req.body.email);
-  await emailService.sendVerificationEmail(user, verifyEmailToken);
-  res.status(httpStatus.NO_CONTENT).send();
-});
-
-/**
- * Verify email
- */
-const verifyEmail = catchAsync(async (req, res) => {
-  await authService.verifyEmail(req.query.token);
-  res.status(httpStatus.NO_CONTENT).send();
-});
-
-/**
- * Resend registration email
- */
-const resendRegistrationEmail = catchAsync(async (req, res) => {
-  const { userId } = req.body;
-
-  // Fetch user data
-  const user = await userService.getUserById(userId);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User information not found");
-  }
-
-  // Generate registration token for email
-  const registrationToken = await tokenService.generateRegisterEmailToken(user);
-
-  // Send user one time registration email to set up their account credentials
-  await emailService.sendRegistrationEmail(user, registrationToken);
-
-  // response
-  res.status(httpStatus.OK).send({
-    message: `Email sent to ${user.email}`,
-    user,
-  });
-});
-
-/**
- * Verify register token
- */
-const verifyRegisterToken = catchAsync(async (req, res) => {
-  const verifyToken = await authService.verifyRegisterToken(req.body.registrationToken);
-
-  // Retrieve user information
-  const user = await userService.getUserById(verifyToken.user);
-  res.status(httpStatus.OK).send({ verifyToken, user });
-});
-
-/**
- * Verify reset password token
- */
-const verifyResetPasswordToken = catchAsync(async (req, res) => {
-  const verifyToken = await authService.verifyResetPasswordToken(req.body.resetPasswordToken);
-  res.status(httpStatus.OK).send(verifyToken);
-});
 
 module.exports = {
   register,
-  accountSetup,
+  verifyRegistration,
+  resendRegistrationEmail,
   login,
   logout,
-  refreshTokens,
-  forgotPassword,
-  resetPassword,
-  sendVerificationEmail,
-  verifyEmail,
-  accountSetup,
-  requestOTP,
-  resendRegistrationEmail,
-  verifyRegisterToken,
-  verifyResetPasswordToken
+  // refreshTokens,
+  // forgotPassword,
+  // resetPassword,
+  // sendVerificationEmail,
+  // verifyEmail,
+  // accountSetup,
+  // requestOTP,
+  // verifyRegisterToken,
+  // verifyResetPasswordToken
 };

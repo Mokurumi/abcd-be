@@ -72,26 +72,6 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    emailVerificationToken: {
-      type: String,
-      default: null,
-      private: true,
-    },
-    emailVerificationTokenExpires: {
-      type: Date,
-      default: null,
-      private: true,
-    },
-    passwordResetToken: {
-      type: String,
-      default: null,
-      private: true,
-    },
-    passwordResetTokenExpires: {
-      type: Date,
-      default: null,
-      private: true,
-    },
     active: {
       type: Boolean,
       default: false,

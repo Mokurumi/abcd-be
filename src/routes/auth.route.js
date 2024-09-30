@@ -13,26 +13,33 @@ router.post(
   authController.register
 );
 
-// // Verify email registration
-// router.post(
-//   "/verify-registration",
-//   validate(authValidation.verifyRegistration),
-//   authController.verifyRegistration
-// );
+// Verify email registration
+router.post(
+  "/verify-registration",
+  validate(authValidation.verifyRegistration),
+  authController.verifyRegistration
+);
 
-// // login user
-// router.post(
-//   "/login",
-//   validate(authValidation.login),
-//   authController.login
-// );
+// Resend email registration
+router.post(
+  "/resend-registration-email",
+  validate(authValidation.resendRegistrationEmail),
+  authController.resendRegistrationEmail
+);
 
-// // logout user
-// router.post(
-//   "/logout",
-//   validate(authValidation.logout),
-//   authController.logout
-// );
+// login user
+router.post(
+  "/login",
+  validate(authValidation.login),
+  authController.login
+);
+
+// logout user
+router.post(
+  "/logout",
+  // validate(authValidation.logout),
+  authController.logout
+);
 
 // // reset password
 // router.post(

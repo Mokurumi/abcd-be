@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const httpStatus = require("http-status");
+const mongoose = require("mongoose");
+
 const config = require("../config/config");
 const userService = require("./user.service");
 const { Token } = require("../models");
@@ -51,18 +53,48 @@ const saveToken = async (token, userId, expires, type, blacklisted = false) => {
  * @param {string} type
  * @returns {Promise<Token>}
  */
-const verifyToken = async (token, type) => {
+const verifyToken = async (token, type, user) => {
   const payload = jwt.verify(token, config.jwt.secret);
+
+  if (payload.sub !== new mongoose.Types.ObjectId(user._id).toString()) {
+    throw new Error("Token not found");
+  }
+
   const tokenDoc = await Token.findOne({
     token,
     type,
-    user: payload.sub,
+    user: new mongoose.Types.ObjectId(payload.sub),
     blacklisted: false,
   });
+
   if (!tokenDoc) {
     throw new Error("Token not found");
   }
   return tokenDoc;
+};
+
+/**
+ * Generate register email token
+ * @param {string} user
+ * @returns {Promise<string>}
+ */
+const generateRegistrationToken = async (user) => {
+  const expires = moment().add(
+    config.jwt.verifyRegisterEmailExpirationMinutes,
+    "minutes"
+  );
+  const registerEmailToken = generateToken(
+    user._id,
+    expires,
+    tokenTypes.VERIFY_REGISTRATION
+  );
+  await saveToken(
+    registerEmailToken,
+    user._id,
+    expires,
+    tokenTypes.VERIFY_REGISTRATION
+  );
+  return registerEmailToken;
 };
 
 /**
@@ -98,11 +130,11 @@ const generateAuthTokens = async (user) => {
   );
 
   return {
-    access: {
+    authToken: {
       token: accessToken,
       expires: accessTokenExpires.toDate(),
     },
-    refresh: {
+    refreshToken: {
       token: refreshToken,
       expires: refreshTokenExpires.toDate(),
     },
@@ -157,30 +189,6 @@ const generateVerifyEmailToken = async (user) => {
 };
 
 /**
- * Generate register email token
- * @param {string} user
- * @returns {Promise<string>}
- */
-const generateRegisterEmailToken = async (user) => {
-  const expires = moment().add(
-    config.jwt.verifyRegisterEmailExpirationMinutes,
-    "minutes"
-  );
-  const registerEmailToken = generateToken(
-    user.id,
-    expires,
-    tokenTypes.VERIFY_REGISTRATION
-  );
-  await saveToken(
-    registerEmailToken,
-    user.id,
-    expires,
-    tokenTypes.VERIFY_REGISTRATION
-  );
-  return registerEmailToken;
-};
-
-/**
  * Delete token
  * @param {ObjectId} userId
  * @returns {Promise<User>}
@@ -208,5 +216,5 @@ module.exports = {
   generateAuthTokens,
   generateResetPasswordToken,
   generateVerifyEmailToken,
-  generateRegisterEmailToken,
+  generateRegistrationToken,
 };

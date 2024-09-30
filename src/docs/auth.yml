@@ -25,17 +25,13 @@ components:
         token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlYmFjNTM0OTU0YjU0MTM5ODA2YzExMiIsImlhdCI6MTU4OTYwNjYwMiwiZXhwIjoxNTg5NjA2NjYyfQ.1
         expires: 2020-05-13T16:00:00.000Z
 
-  responses:
-    # Refresh token
     RefreshToken:
-      description: Token refreshed
-      content:
-        application/json:
-          schema:
-            refreshToken:
-              $ref: "#/components/schemas/Token"
-            authToken:
-              $ref: "#/components/schemas/Token"
+      type: object
+      properties:
+        authToken:
+          $ref: "#/components/schemas/Token"
+        refreshToken:
+          $ref: "#/components/schemas/Token"
       # example:
       #   refreshToken:
       #     id: 5ebac534954b54139806c112
@@ -46,6 +42,7 @@ components:
       #     token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlYmFjNTM0OTU0YjU0MTM5ODA2YzExMiIsImlhdCI6MTU4OTYwNjYwMiwiZXhwIjoxNTg5NjA2NjYyfQ.1
       #     expires: 2020-05-13T16:00:00.000Z
 
+  responses:
     # invalid login credentials or reset password
     InvalidCredentials:
       description: Invalid credentials
@@ -53,9 +50,9 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
-      example:
-        code: 400
-        message: Invalid credentials
+          example:
+            code: 400
+            message: Invalid credentials
 
     # invalid verification email
     InvalidVerificationEmail:
@@ -75,9 +72,9 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
-      example:
-        code: 400
-        message: Invalid token
+          example:
+            code: 400
+            message: Invalid token
 
 /auth/register:
   post:
@@ -115,7 +112,13 @@ components:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Users"
+              # $ref: "#/components/schemas/Users"
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: Registration successful. Please check your email for activation link.
       "400":
         $ref: "#/components/responses/DuplicateEmail"
       "401":
@@ -135,10 +138,10 @@ components:
           schema:
             type: object
             required:
-              - emailAddress
+              - userId
               - token
             properties:
-              emailAddress:
+              userId:
                 type: string
               token:
                 type: string
@@ -148,7 +151,48 @@ components:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Users"
+              # $ref: "#/components/schemas/Users"
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: Email verified successfully. Please login to continue.
+      "400":
+        $ref: "#/components/responses/InvalidToken"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+/auth/resend-registration-email:
+  post:
+    operationId: resendRegistrationEmail
+    summary: Resend user registration email
+    tags: [Auth]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - userId
+            properties:
+              userId:
+                type: string
+    responses:
+      "200":
+        description: Email sent
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: Email sent successfully. Please check your inbox.
       "400":
         $ref: "#/components/responses/InvalidToken"
       "401":
@@ -181,7 +225,12 @@ components:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RefreshToken"
+              type: object
+              properties:
+                user:
+                  $ref: "#/components/schemas/Users"
+                tokens:
+                  $ref: "#/components/schemas/RefreshToken"
       "400":
         $ref: "#/components/responses/InvalidCredentials"
       "401":
@@ -194,17 +243,17 @@ components:
     operationId: logoutUser
     summary: Logout user
     tags: [Auth]
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - token
-            properties:
-              token:
-                type: string
+    # requestBody:
+    #   required: true
+    #   content:
+    #     application/json:
+    #       schema:
+    #         type: object
+    #         required:
+    #           - token
+    #         properties:
+    #           token:
+    #             type: string
     responses:
       "200":
         description: No content

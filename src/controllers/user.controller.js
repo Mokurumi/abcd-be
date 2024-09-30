@@ -15,7 +15,7 @@ const createUser = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
 
   // Generate registration token
-  const registrationToken = await tokenService.generateRegisterEmailToken(user);
+  const registrationToken = await tokenService.generateRegistrationToken(user);
 
   // Send user one time registration email to set up their account credentials
   await emailService.sendRegistrationEmail(user, registrationToken);
