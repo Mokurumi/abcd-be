@@ -37,7 +37,8 @@ const verifyRegistrationToken = async (token, userId) => {
  */
 const loginUser = async (username, password) => {
   // User data
-  const user = await userService.getUserByEmail(username) || await userService.getUserByMobileNumber(username);
+  const user = await userService.getUserByPhoneNumberOrEmail(username);
+
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, "Incorrect username or password");
   }
@@ -64,8 +65,8 @@ const loginUser = async (username, password) => {
   }
 
   // Account is disabled
-  if (user.active && !!user.isEmailVerified) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Your account has been disabled. Kindly contact support.");
+  if (!user.active && !!user.isEmailVerified) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Your account is disabled. Kindly contact support.");
   }
 
   return user;

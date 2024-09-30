@@ -141,7 +141,9 @@ userSchema.statics.isPhoneNumberTaken = async (phoneNumber, excludeUserId) => {
  * @param {string} password - The user's password
  * @returns {Promise<boolean>}
  */
-userSchema.methods.isPasswordMatch = async (password) => {
+userSchema.methods.isPasswordMatch = async function (password) {
+  console.log("password", password);
+  console.log("this.password", this.password);
   return bcrypt.compare(password, this.password);
 };
 
@@ -150,7 +152,7 @@ userSchema.methods.isPasswordMatch = async (password) => {
  * @param {string} password - The user's password
  * @returns {Promise<void>}
  */
-userSchema.methods.setPassword = async (password) => {
+userSchema.methods.setPassword = async function (password) {
   this.password = await bcrypt.hash(password, 8);
 };
 

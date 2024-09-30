@@ -1,6 +1,5 @@
 const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
-const { generateTempPassword } = require("../utils");
 const { User, Role } = require("../models");
 
 /**
@@ -21,9 +20,6 @@ const createUser = async (userBody) => {
   if (!role) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Role does not exist");
   }
-
-  const tempPassword = generateTempPassword();
-  userBody.password = tempPassword;
 
   return User.create(userBody);
 };
@@ -80,6 +76,15 @@ const getUserByMobileNumber = async (phoneNumber) => {
 };
 
 /**
+ * Get user by phoneNumber or emailAddress
+ * @param {string} username
+ * @returns {Promise<User>}
+ */
+const getUserByPhoneNumberOrEmail = async (username) => {
+  return User.findOne({ $or: [{ emailAddress: username }, { phoneNumber: username }] });
+};
+
+/**
  * Update user by id
  * @param {ObjectId} userId
  * @param {Object} updateBody
@@ -124,6 +129,7 @@ module.exports = {
   getUserById,
   getUserByMobileNumber,
   getUserByEmail,
+  getUserByPhoneNumberOrEmail,
   updateUserById,
   deleteUserById,
 };

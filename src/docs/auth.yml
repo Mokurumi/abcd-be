@@ -92,7 +92,7 @@ components:
               - lastName
               - emailAddress
               - phoneNumber
-              # - password
+              - password
             properties:
               firstName:
                 type: string
@@ -106,6 +106,8 @@ components:
               phoneNumber:
                 type: string
                 description: must be unique
+              password:
+                type: string
     responses:
       "201":
         description: User created

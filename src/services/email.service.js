@@ -77,6 +77,56 @@ const sendRegistrationEmail = async (user, token) => {
 };
 
 /**
+ * Send create user email => One time during registration
+ * @param {string} user
+ * @param {string} token
+ * @param {string} tempPassword
+ * @returns {Promise}
+ */
+const sendCreateUserEmail = async (user, token, tempPassword) => {
+  const subject = "Welcome to ABCD Think Tank";
+  const url = config.web_url[config.env];
+  const activationlUrl = `${url}/activate?token=${token}&id=${user._id}`;
+  const html = `
+    <table style="width: 100%; max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; color: #495057; text-align: center; border: 2px solid #193E3F; box-sizing: border-box;">
+      <tbody>
+        <!-- Logo -->
+        <tr>
+          <td>
+            <img
+              src=${config.logo}
+              alt="Logo"
+              style="max-width: 200px; margin-top: 45px"
+            >
+          </td>
+        </tr>
+
+        <!-- Email Body -->
+        <tr>
+          <td style="padding: 20px;">
+            <h4 style="font-size: 24px; margin-bottom: 20px;">Hello ${user.firstName},</h4>
+            <p style="font-size: 16px;">Congratulations!!</p>
+            <p style="font-size: 16px;">Welcome to ABCD Think Tank</p>
+            <p style="font-size: 16px; margin-bottom: 20px;">Please activate and set up your account credentials by clicking on the link below.</p>
+            <p style="font-size: 16px; margin-bottom: 30px;">
+              <a href="${activationlUrl}" style="text-decoration: none; color: white; font-weight: bold; text-align: center; display: inline-block; background-color: #193E3F; padding: 8px 16px;" target="_blank">
+                Activate account
+              </a>
+            </p>
+            <p style="font-size: 16px; margin-bottom: 30px;">Your temporary password is <b>${tempPassword}</b></p>
+            <p style="font-size: 16px; margin-bottom: 30px;">Please change your password after logging in.</p>
+            <p style="font-size: 14px;">Sincerely,</p>
+            <p style="font-size: 14px; font-weight: bold;">Support Team</p>
+            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD Think Tank</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  `;
+  await sendEmail(user.emailAddress, subject, null, html);
+};
+
+/**
  * Send OTP CODE email
  * @param {string} user
  * @param {string} otpCode
@@ -338,6 +388,7 @@ module.exports = {
   transport,
   sendEmail,
   sendRegistrationEmail,
+  sendCreateUserEmail,
   sendResetPasswordEmail,
   sendVerificationEmail,
   sendOTPCodeEmail,

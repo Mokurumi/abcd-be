@@ -1,6 +1,7 @@
 const httpStatus = require("http-status");
 const pick = require("../utils/pick");
 const ApiError = require("../utils/ApiError");
+const { generateTempPassword } = require("../utils");
 const { catchAsync } = require("../utils/catchAsync");
 const {
   userService,
@@ -11,14 +12,19 @@ const {
 
 const createUser = catchAsync(async (req, res) => {
 
+  const tempPassword = generateTempPassword();
+
   // Create user account
-  const user = await userService.createUser(req.body);
+  const user = await userService.createUser({
+    ...req.body,
+    password: tempPassword,
+  });
 
   // Generate registration token
   const registrationToken = await tokenService.generateRegistrationToken(user);
 
   // Send user one time registration email to set up their account credentials
-  await emailService.sendRegistrationEmail(user, registrationToken);
+  await emailService.sendCreateUserEmail(user, registrationToken, tempPassword);
 
   // return user object
   res.status(httpStatus.CREATED).send(user);
