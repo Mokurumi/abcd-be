@@ -45,6 +45,35 @@ components:
     tags: [Admin]
     security:
       - bearerAuth: []
+    parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          default: 1
+        description: page number
+      - in: query
+        name: size
+        schema:
+          type: integer
+          default: 10
+        description: number of items per page
+      - in: query
+        name: sortBy
+        schema:
+          type: string
+          default: createdAt
+        description: sort order
+      - in: query
+        name: name
+        schema:
+          type: string
+        description: permission name
+      - in: query
+        name: value
+        schema:
+          type: string
+        description: permission value
     requestBody:
       required: true
       content:
