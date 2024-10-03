@@ -1,6 +1,5 @@
 const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
-const { catchAsync } = require("../utils/catchAsync");
 const { generateOTP, generateTempPassword } = require("../utils");
 const { Role } = require("../models");
 // const sendSMS = require("../config/sendSMS");
@@ -17,7 +16,7 @@ const {
  * @param {*} req
  * @param {*} res
  */
-const register = catchAsync(async (req, res) => {
+const register = async (req, res) => {
 
   const defaultRole = await Role.findOne({ value: "user" });
 
@@ -45,14 +44,14 @@ const register = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send({
     message: "Registration successful. Please check your email for activation link.",
   });
-});
+};
 
 /**
  * Verify email registration
  * @param {*} req
  * @param {*} res
  */
-const verifyRegistration = catchAsync(async (req, res) => {
+const verifyRegistration = async (req, res) => {
   const { token, userId } = req.body;
   const user = await authService.verifyRegistrationToken(token, userId);
 
@@ -62,14 +61,14 @@ const verifyRegistration = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({
     message: "Email verified successfully. Please login to continue.",
   });
-});
+};
 
 /**
  * Resend registration email
  * @param {*} req
  * @param {*} res
  */
-const resendRegistrationEmail = catchAsync(async (req, res) => {
+const resendRegistrationEmail = async (req, res) => {
   const { userId } = req.body;
   const user = await userService.getUserById(userId);
   if (!user) {
@@ -90,27 +89,27 @@ const resendRegistrationEmail = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({
     message: "Email sent successfully. Please check your email for registration link.",
   });
-});
+};
 
 /**
  * Login
  */
-const login = catchAsync(async (req, res) => {
+const login = async (req, res) => {
   const { username, password } = req.body;
   const user = await authService.loginUser(username, password);
   const tokens = await tokenService.generateAuthTokens(user);
   res.send({ user, tokens });
-});
+};
 
 /**
  * Logout
  */
-const logout = catchAsync(async (req, res) => {
+const logout = async (req, res) => {
   await authService.logout(req.body.token);
   res.status(httpStatus.ACCEPTED).send({
     message: "Logout successfully.",
   });
-});
+};
 
 
 module.exports = {
