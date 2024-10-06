@@ -18,28 +18,15 @@ components:
         permissions:
           type: array
           items:
-            type: object
-            properties:
-              id:
-                type: string
-              name:
-                type: string
-                description: must be unique
-              value:
-                type: string
-                description: must be unique
-              active:
-                type: boolean
+            type: string
       example:
         id: 5ebac534954b54139806c112
         name: Admin
         value: admin
         active: true
         permissions:
-          - id: 5ebac534954b54139806c112
-            name: Admin
-            value: admin
-            active: true
+          - 'CREATE_USER'
+          - 'READ_USER'
 
   responses:
 

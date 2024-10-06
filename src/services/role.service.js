@@ -1,6 +1,7 @@
 const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
-const { Role, Permission } = require("../models");
+const { Role } = require("../models");
+const permissions = require("../config/permissions");
 
 /**
  * Add Role
@@ -12,11 +13,11 @@ const createRole = async (roleBody) => {
     throw new ApiError(httpStatus.BAD_REQUEST, "Role already exists");
   }
 
-  // check if permissions are valid such that they exist in the database
-  const permissions = roleBody.permissions;
-  if (permissions) {
-    for (let i = 0; i < permissions.length; i++) {
-      if (!(await Permission.findById(permissions[i]))) {
+  // check if permissions are in the permissions list
+  const rPermissions = roleBody.permissions;
+  if (rPermissions && rPermissions.length > 0) {
+    for (let i = 0; i < rPermissions.length; i++) {
+      if (!permissions.includes(rPermissions[i])) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Permission does not exist");
       }
     }
@@ -35,10 +36,7 @@ const createRole = async (roleBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryRoles = async (filter, options) => {
-  const roles = await Role.paginate(filter, {
-    ...options,
-    populate: "permissions",
-  });
+  const roles = await Role.paginate(filter, options);
   return roles;
 };
 
@@ -48,7 +46,7 @@ const queryRoles = async (filter, options) => {
  * @returns {Promise<Role>}
  */
 const getRoleById = async (id) => {
-  return Role.findById(id).populate("permissions");
+  return Role.findById(id);
 };
 
 /**
@@ -70,10 +68,10 @@ const updateRoleById = async (roleId, updateBody) => {
   }
 
   // check if permissions are valid such that they exist in the database
-  const permissions = updateBody.permissions;
-  if (permissions) {
-    for (let i = 0; i < permissions.length; i++) {
-      if (!(await Permission.findById(permissions[i]))) {
+  const rPermissions = updateBody.permissions;
+  if (rPermissions && rPermissions.length > 0) {
+    for (let i = 0; i < rPermissions.length; i++) {
+      if (!permissions.includes(rPermissions[i])) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Permission does not exist");
       }
     }

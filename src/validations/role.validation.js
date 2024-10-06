@@ -5,7 +5,7 @@ const createRole = {
   body: Joi.object().keys({
     name: Joi.string().required(),
     value: Joi.string().required(),
-    permissions: Joi.array().items(Joi.string().custom(objectId)),
+    permissions: Joi.array().items(Joi.string()),
   }),
 };
 
@@ -14,7 +14,6 @@ const getRoles = {
     name: Joi.string(),
     value: Joi.string(),
     active: Joi.boolean(),
-    permission: Joi.string(),
     sortBy: Joi.string(),
     size: Joi.number().integer(),
     page: Joi.number().integer(),
@@ -36,7 +35,7 @@ const updateRole = {
       name: Joi.string(),
       value: Joi.string(),
       active: Joi.boolean(),
-      permissions: Joi.array().items(Joi.string().custom(objectId)),
+      permissions: Joi.array().items(Joi.string()),
     })
     .min(1),
 };

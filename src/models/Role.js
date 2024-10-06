@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const { toJSON, paginate } = require("./plugins");
+const permissions = require("../config/permissions");
+
 
 const roleSchema = new mongoose.Schema(
   {
@@ -24,16 +26,11 @@ const roleSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-    permissions: [
-      {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: "Permission",
-      },
-    ],
-    // permissions: {
-    //   type: Array,
-    //   default: [],
-    // }
+    permissions: {
+      type: [{ type: String, enum: permissions }],
+      required: true,
+      default: [],
+    }
   },
   {
     timestamps: true,

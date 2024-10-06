@@ -1,7 +1,6 @@
 module.exports.authValidation = require("./auth.validation");
 module.exports.userValidation = require("./user.validation");
 module.exports.roleValidation = require("./role.validation");
-module.exports.permissionValidation = require("./permission.validation");
 // module.exports.uploadsValidation = require("./upload.validation");
 // module.exports.contactValidation = require("./contact.validation");
 // module.exports.notificationValidation = require("./notification.validation");

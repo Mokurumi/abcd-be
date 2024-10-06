@@ -36,7 +36,7 @@ const createUser = async (userBody) => {
 const queryUsers = async (filter, options) => {
   const users = await User.paginate(filter, {
     ...options,
-    // populate: "role,role.permissions",
+    // populate: "role",
   });
   return users;
 };
@@ -47,14 +47,9 @@ const queryUsers = async (filter, options) => {
  * @returns {Promise<User>}
  */
 const getUserById = async (id) => {
-  // populate role and then permissions in the role
+  // populate role
   return User.findById(id)
-    .populate({
-      path: "role",
-      populate: {
-        path: "permissions",
-      },
-    });
+    .populate({ path: "role" });
 };
 
 /**
