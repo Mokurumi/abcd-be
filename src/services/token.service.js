@@ -73,6 +73,29 @@ const verifyToken = async (token, type, user) => {
   return tokenDoc;
 };
 
+const verifyRefreshToken = async (refreshToken, authToken) => {
+  // compare the subs of the two tokens and then check if the token exists
+  const refreshPayload = jwt.verify(refreshToken, config.jwt.secret);
+  const authPayload = jwt.verify(authToken, config.jwt.secret);
+
+  if (refreshPayload.sub !== authPayload.sub) {
+    throw new Error("Invalid token");
+  }
+
+  const token = await Token.findOne({
+    token: refreshToken,
+    type: tokenTypes.REFRESH,
+    user: new mongoose.Types.ObjectId(refreshPayload.sub),
+    blacklisted: false,
+  });
+
+  if (!token) {
+    throw new Error("Token not found");
+  }
+
+  return token;
+};
+
 /**
  * Generate register email token
  * @param {string} user
@@ -204,7 +227,8 @@ const deleteToken = async (token, type) => {
   if (!tokenDoc) {
     throw new ApiError(httpStatus.NOT_FOUND, "Token not found");
   }
-  await tokenDoc.remove();
+  // await tokenDoc.remove();
+  await Token.findOneAndDelete({ token, type });
   return tokenDoc;
 };
 
@@ -217,4 +241,5 @@ module.exports = {
   generateResetPasswordToken,
   generateVerifyEmailToken,
   generateRegistrationToken,
+  verifyRefreshToken,
 };

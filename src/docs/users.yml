@@ -39,16 +39,7 @@ components:
             permissions:
               type: array
               items:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  name:
-                    type: string
-                  value:
-                    type: string
-                  active:
-                    type: boolean
+                type: string
         isPhoneVerified:
           type: boolean
         isEmailVerified:
@@ -73,16 +64,6 @@ components:
         emailAddress: johndoe@gmail.com
         phoneNumber: 2547XXXXXXX
         image: https://example.com/image.jpg
-        # role:
-        #   id: 5ebac534954b54139806c112
-        #   name: Admin
-        #   value: active
-        #   active: true
-        #   permissions:
-        #     - id: 5ebac534954b54139806c112
-        #       name: Admin
-        #       value: active
-        #       active: true
         role: 5ebac534954b54139806c112
         isPhoneVerified: true
         isEmailVerified: true
@@ -112,6 +93,8 @@ components:
     operationId: createUser
     summary: Create a user
     tags: [Users]
+    security:
+      - bearerAuth: []
     requestBody:
       required: true
       content:

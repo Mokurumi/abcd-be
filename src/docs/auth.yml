@@ -245,6 +245,8 @@ components:
     operationId: logoutUser
     summary: Logout user
     tags: [Auth]
+    security:
+      - bearerAuth: []
     # requestBody:
     #   required: true
     #   content:
@@ -373,6 +375,8 @@ components:
     operationId: refreshToken
     summary: Refresh user token
     tags: [Auth]
+    security:
+      - bearerAuth: []
     requestBody:
       required: true
       content:
@@ -390,10 +394,10 @@ components:
         content:
           application/json:
             schema:
-              refreshToken:
-                $ref: "#/components/schemas/Token"
-              authToken:
-                $ref: "#/components/schemas/Token"
+              type: object
+              properties:
+                tokens:
+                  $ref: "#/components/schemas/RefreshToken"
       "400":
         $ref: "#/components/responses/InvalidToken"
       "401":

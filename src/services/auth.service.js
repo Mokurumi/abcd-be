@@ -94,20 +94,20 @@ const logout = async (refreshToken) => {
  * @param {string} refreshToken
  * @returns {Promise<Object>}
  */
-const refreshAuth = async (refreshToken) => {
+const refreshAuth = async (refreshToken, authToken) => {
   try {
-    const refreshTokenDoc = await tokenService.verifyToken(
-      refreshToken,
-      tokenTypes.REFRESH
-    );
+    const refreshTokenDoc = await tokenService.verifyRefreshToken(refreshToken, authToken);
     const user = await userService.getUserById(refreshTokenDoc.user);
     if (!user) {
       throw new Error();
     }
-    await refreshTokenDoc.remove();
+    // await refreshTokenDoc.remove();
+    await tokenService.deleteToken(refreshTokenDoc.token, tokenTypes.REFRESH);
     return tokenService.generateAuthTokens(user);
-  } catch (error) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Please authenticate");
+  }
+  catch (error) {
+    console.log(error);
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid token");
   }
 };
 
@@ -115,7 +115,7 @@ module.exports = {
   verifyRegistrationToken,
   loginUser,
   logout,
-  // refreshAuth,
+  refreshAuth,
   // resetPassword,
   // verifyEmail,
   // verifyResetPasswordToken,

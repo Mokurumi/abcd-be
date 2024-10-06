@@ -8,35 +8,36 @@ const router = express.Router();
 
 router.post(
   "/",
-  // auth("GOD_VIEW"),
+  auth("ROLE_MANAGEMENT"),
   validate(roleValidation.createRole),
   roleController.createRole
 );
 
 router.get(
   "/",
-  // auth("GOD_VIEW"),
+  auth("ROLE_MANAGEMENT"),
   validate(roleValidation.getRoles),
   roleController.getRoles
 );
 
 router.get(
   "/:roleId",
-  // auth("GOD_VIEW"),
+  // auth("ANY_WITH_AUTH"),
+  auth("ROLE_MANAGEMENT"),
   validate(roleValidation.getRole),
   roleController.getRole
 );
 
 router.patch(
   "/:roleId",
-  // auth("GOD_VIEW"),
+  auth("ROLE_MANAGEMENT"),
   validate(roleValidation.updateRole),
   roleController.updateRole
 );
 
 router.delete(
   "/:roleId",
-  // auth("GOD_VIEW"),
+  auth("ROLE_MANAGEMENT"),
   validate(roleValidation.deleteRole),
   roleController.deleteRole
 );

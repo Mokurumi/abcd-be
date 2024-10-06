@@ -38,7 +38,16 @@ router.post(
 router.post(
   "/logout",
   // validate(authValidation.logout),
+  auth('USER_PROFILE'),
   authController.logout
+);
+
+// refresh token
+router.post(
+  "/refresh-token",
+  auth('USER_PROFILE'),
+  validate(authValidation.refreshToken),
+  authController.refreshToken
 );
 
 // // reset password
@@ -61,13 +70,6 @@ router.post(
 //   // auth(),
 //   validate(authValidation.changePassword),
 //   authController.changePassword
-// );
-
-// // refresh token
-// router.post(
-//   "/refresh-token",
-//   validate(authValidation.refreshToken),
-//   authController.refreshToken
 // );
 
 // // profile

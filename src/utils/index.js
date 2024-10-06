@@ -10,7 +10,7 @@ const generateTempPassword = (charNumber = 8) => {
   let lowerChars = "abcdefghjkmnpqrstuvwxyz"; // removed i, l, o to avoid confusion
   let upperChars = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // removed I, O, and l to avoid confusion
   let numbers = "23456789"; // removed 0, 1, and l to avoid confusion
-  let specialChars = "!@#$%^&*()_+~`|}{[]:;?><,./-=";
+  let specialChars = "!@#$%&*_+~`?><,./-=";
 
   // Generate password with at least one character from each character set
   let ans = "";

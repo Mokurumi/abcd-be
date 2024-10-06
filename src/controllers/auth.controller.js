@@ -112,6 +112,17 @@ const logout = catchAsync(async (req, res) => {
   });
 });
 
+/**
+ * Refresh token
+ */
+const refreshToken = catchAsync(async (req, res) => {
+  const { token } = req.body;
+  // get auth token from the request authorization header
+  const authHeader = req.headers.authorization;
+  const authToken = authHeader.split(" ")[1];
+  const tokens = await authService.refreshAuth(token, authToken);
+  res.send({ tokens });
+});
 
 module.exports = {
   register,
@@ -119,7 +130,7 @@ module.exports = {
   resendRegistrationEmail,
   login,
   logout,
-  // refreshTokens,
+  refreshToken,
   // forgotPassword,
   // resetPassword,
   // sendVerificationEmail,
