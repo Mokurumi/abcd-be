@@ -117,10 +117,8 @@ const logout = catchAsync(async (req, res) => {
  */
 const refreshToken = catchAsync(async (req, res) => {
   const { token } = req.body;
-  // get auth token from the request authorization header
-  const authHeader = req.headers.authorization;
-  const authToken = authHeader.split(" ")[1];
-  const tokens = await authService.refreshAuth(token, authToken);
+  const user = req.user;
+  const tokens = await authService.refreshAuth(token, user);
   res.send({ tokens });
 });
 
@@ -197,6 +195,16 @@ const changePassword = catchAsync(async (req, res) => {
   });
 });
 
+/**
+ * Get user profile
+ */
+const getUserProfile = catchAsync(async (req, res) => {
+  // there is no parameter or body passed so we use the authenticated from auth middleware
+  const user = req.user;
+  res.send(user);
+});
+
+
 module.exports = {
   register,
   verifyRegistration,
@@ -207,4 +215,5 @@ module.exports = {
   resetPassword,
   verifyResetPassword,
   changePassword,
+  getUserProfile,
 };

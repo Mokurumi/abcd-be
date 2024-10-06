@@ -72,22 +72,22 @@ router.post(
   authController.changePassword
 );
 
-// // profile
-// router.
-//   route("/profile")
-//   .get(
-//     // auth(),
-//     authController.getProfile
-//   )
-//   .patch(
-//     // auth(),
-//     validate(authValidation.updateProfile),
-//     authController.updateProfile
-//   )
-//   .delete(
-//     // auth(),
-//     authController.deleteProfile
-//   );
+// profile
+router.
+  route("/profile")
+  .get(
+    auth('USER_PROFILE'),
+    authController.getUserProfile
+  );
+// .patch(
+//   // auth('USER_PROFILE),
+//   validate(authValidation.updateProfile),
+//   authController.updateProfile
+// )
+// .delete(
+//   // auth('USER_PROFILE),
+//   authController.deleteProfile
+// );
 
 // router.post(
 //   "/profile/verify-delete",
