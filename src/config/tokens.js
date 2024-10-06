@@ -5,6 +5,7 @@ const tokenTypes = {
   RESET_PASSWORD: "resetPassword",
   VERIFY_EMAIL_CHANGE: "verifyEmailChange",
   VERIFY_PHONE: "verifyPhone",
+  DELETE_PROFILE: "deleteProfile",
 };
 
 module.exports = {

@@ -83,16 +83,16 @@ router.
     auth('USER_PROFILE'),
     validate(authValidation.updateProfile),
     authController.updateUserProfile
+  )
+  .delete(
+    auth('USER_PROFILE'),
+    authController.deleteUserProfile
   );
-// .delete(
-//   // auth('USER_PROFILE'),
-//   authController.deleteProfile
-// );
 
-// router.post(
-//   "/profile/verify-delete",
-//   validate(authValidation.verifyDeleteProfile),
-//   authController.verifyDeleteProfile
-// );
+router.post(
+  "/profile/verify-delete",
+  validate(authValidation.verifyDeleteProfile),
+  authController.verifyDeleteProfile
+);
 
 module.exports = router;

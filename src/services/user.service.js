@@ -115,7 +115,10 @@ const deleteUserById = async (userId) => {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
   // await user.remove();
-  return User.findByIdAndUpdate(userId, { isDeleted: true });
+  return User.findByIdAndUpdate(userId, {
+    isDeleted: true,
+    deletedAt: Date.now(),
+  });
 };
 
 module.exports = {

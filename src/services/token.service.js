@@ -152,7 +152,7 @@ const generateResetPasswordToken = async (email) => {
     throw new ApiError(httpStatus.NOT_FOUND, "No users found with this email");
   }
   const expires = moment().add(
-    config.jwt.resetPasswordExpirationMinutes,
+    config.jwt.verifyEmailExpirationMinutes,
     "minutes"
   );
   const resetPasswordToken = generateToken(
@@ -209,6 +209,30 @@ const deleteToken = async (token, type) => {
   return tokenDoc;
 };
 
+/**
+ * Generate delete profile token
+ * @param {string} user
+ * @returns {Promise<string>}
+ */
+const generateDeleteProfileToken = async (user) => {
+  const expires = moment().add(
+    config.jwt.verifyEmailExpirationMinutes,
+    "minutes"
+  );
+  const deleteProfileToken = generateToken(
+    user._id,
+    expires,
+    tokenTypes.DELETE_PROFILE
+  );
+  await saveToken(
+    deleteProfileToken,
+    user._id,
+    expires,
+    tokenTypes.DELETE_PROFILE
+  );
+  return deleteProfileToken;
+};
+
 module.exports = {
   generateToken,
   saveToken,
@@ -217,5 +241,6 @@ module.exports = {
   generateAuthTokens,
   generateResetPasswordToken,
   generateVerifyEmailToken,
-  generateRegistrationToken
+  generateRegistrationToken,
+  generateDeleteProfileToken
 };

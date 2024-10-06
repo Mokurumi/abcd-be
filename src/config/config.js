@@ -62,9 +62,8 @@ module.exports = {
     refreshExpiration: envVars.JWT_REFRESH_EXPIRE_MINUTES,
     // JWT Email Expiration
     verifyRegisterEmailExpirationMinutes: envVars.JWT_VERIFY_REGISTER_EMAIL_EXPIRATION_MINUTES,
+    // other email expiration
     verifyEmailExpirationMinutes: envVars.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES,
-    // JWT Reset Password Expiration
-    resetPasswordExpirationMinutes: envVars.JWT_RESET_PASSWORD_EXPIRATION_MINUTES
   },
   email: {
     smtp: {

@@ -218,6 +218,41 @@ const updateUserProfile = catchAsync(async (req, res) => {
   });
 });
 
+/**
+ * Delete user profile
+ */
+const deleteUserProfile = catchAsync(async (req, res) => {
+  const user = req.user;
+
+  // generate delete profile token
+  const deleteProfileToken = await tokenService.generateDeleteProfileToken(user);
+
+  // send user delete profile email
+  await emailService.sendDeleteProfileEmail(user, deleteProfileToken);
+
+  res.status(httpStatus.OK).send({
+    message: "Delete Request Received. Check your email for confirmation.",
+  });
+});
+
+/**
+ * Verify delete profile
+ */
+const verifyDeleteProfile = catchAsync(async (req, res) => {
+  const { token, userId } = req.body;
+  const user = await authService.verifyDeleteProfileToken(token, userId);
+
+  if (!user) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid link");
+  }
+
+  await userService.deleteUserById(userId);
+
+  res.status(httpStatus.OK).send({
+    message: "Profile deleted successfully.",
+  });
+});
+
 
 module.exports = {
   register,
@@ -231,4 +266,6 @@ module.exports = {
   changePassword,
   getUserProfile,
   updateUserProfile,
+  deleteUserProfile,
+  verifyDeleteProfile
 };

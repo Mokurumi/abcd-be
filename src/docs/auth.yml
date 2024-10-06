@@ -477,7 +477,13 @@ components:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Users"
+              # $ref: "#/components/schemas/Users"
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: Delete successful. Please verify your email to complete the process.
       "401":
         $ref: "#/components/responses/Unauthorized"
       "403":
@@ -488,8 +494,8 @@ components:
     operationId: verifyDeleteProfile
     summary: Verify user profile delete
     tags: [Auth]
-    security:
-      - bearerAuth: []
+    # security:
+    #   - bearerAuth: []
     requestBody:
       required: true
       content:
@@ -497,10 +503,10 @@ components:
           schema:
             type: object
             required:
-              - emailAddress
+              - userId
               - token
             properties:
-              emailAddress:
+              userId:
                 type: string
               token:
                 type: string
@@ -510,7 +516,13 @@ components:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Users"
+              # $ref: "#/components/schemas/Users"
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: Profile deleted successfully.
       "400":
         $ref: "#/components/responses/InvalidVerificationEmail"
       "401":
