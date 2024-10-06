@@ -2,6 +2,7 @@ const httpStatus = require("http-status");
 const pick = require("../utils/pick");
 const ApiError = require("../utils/ApiError");
 const { generateTempPassword } = require("../utils");
+const { catchAsync } = require("../utils/catchAsync");
 const {
   userService,
   emailService,
@@ -9,7 +10,7 @@ const {
 } = require("../services");
 
 
-const createUser = async (req, res) => {
+const createUser = catchAsync(async (req, res) => {
 
   const tempPassword = generateTempPassword();
 
@@ -27,9 +28,9 @@ const createUser = async (req, res) => {
 
   // return user object
   res.status(httpStatus.CREATED).send(user);
-};
+});
 
-const getUsers = async (req, res) => {
+const getUsers = catchAsync(async (req, res) => {
   const filter = pick(req.query, [
     "firstName",
     "middleName",
@@ -61,25 +62,25 @@ const getUsers = async (req, res) => {
   const options = pick(req.query, ["sortBy", "size", "page"]);
   const result = await userService.queryUsers(filter, options);
   res.send(result);
-};
+});
 
-const getUser = async (req, res) => {
+const getUser = catchAsync(async (req, res) => {
   const user = await userService.getUserById(req.params.userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
   res.send(user);
-};
+});
 
-const updateUser = async (req, res) => {
+const updateUser = catchAsync(async (req, res) => {
   const user = await userService.updateUserById(req.params.userId, {
     ...req.body,
   });
 
   res.send(user);
-};
+});
 
-const deleteUser = async (req, res) => {
+const deleteUser = catchAsync(async (req, res) => {
   const { userId } = req.params;
 
   // const user = await userService.getUserById(userId);
@@ -88,7 +89,7 @@ const deleteUser = async (req, res) => {
   await userService.deleteUserById(userId);
 
   res.status(httpStatus.OK).send({ message: "User account suspended successfully." });
-};
+});
 
 module.exports = {
   createUser,
