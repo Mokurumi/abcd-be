@@ -78,14 +78,14 @@ router.
   .get(
     auth('USER_PROFILE'),
     authController.getUserProfile
+  )
+  .patch(
+    auth('USER_PROFILE'),
+    validate(authValidation.updateProfile),
+    authController.updateUserProfile
   );
-// .patch(
-//   // auth('USER_PROFILE),
-//   validate(authValidation.updateProfile),
-//   authController.updateProfile
-// )
 // .delete(
-//   // auth('USER_PROFILE),
+//   // auth('USER_PROFILE'),
 //   authController.deleteProfile
 // );
 

@@ -199,9 +199,23 @@ const changePassword = catchAsync(async (req, res) => {
  * Get user profile
  */
 const getUserProfile = catchAsync(async (req, res) => {
-  // there is no parameter or body passed so we use the authenticated from auth middleware
   const user = req.user;
   res.send(user);
+});
+
+/**
+ * Update user profile
+ */
+const updateUserProfile = catchAsync(async (req, res) => {
+  const user = req.user;
+  const updatedUser = await userService.updateUserById(user._id, req.body);
+  res.send({
+    message: "Profile updated successfully.",
+    user: {
+      ...updatedUser.toJSON(),
+      role: user.role,
+    }
+  });
 });
 
 
@@ -216,4 +230,5 @@ module.exports = {
   verifyResetPassword,
   changePassword,
   getUserProfile,
+  updateUserProfile,
 };
