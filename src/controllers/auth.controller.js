@@ -124,6 +124,79 @@ const refreshToken = catchAsync(async (req, res) => {
   res.send({ tokens });
 });
 
+/**
+ * Reset password
+ */
+const resetPassword = catchAsync(async (req, res) => {
+  const { emailAddress, phoneNumber } = req.body;
+  const user = await userService.getUserByPhoneNumberOrEmail(emailAddress || phoneNumber);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  // Generate reset password token
+  const resetPasswordToken = await tokenService.generateResetPasswordToken(user.emailAddress);
+
+  // Send user reset password email
+  await emailService.sendResetPasswordEmail(user, resetPasswordToken);
+
+  res.status(httpStatus.OK).send({
+    message: "Reset password link sent successfully. Please check your email.",
+  });
+});
+
+/**
+ * Verify reset password
+ */
+const verifyResetPassword = catchAsync(async (req, res) => {
+  const { token, userId } = req.body;
+  const user = await authService.verifyResetPasswordToken(token, userId);
+
+  if (!user) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid link");
+  }
+
+  // Generate temporary password
+  const tempPassword = generateTempPassword();
+  await userService.updateUserById(userId, {
+    password: tempPassword,
+    firstTimeLogin: true,
+  });
+
+  // Send user temporary password email
+  await emailService.sendTemporaryPasswordEmail(user, tempPassword);
+
+  res.status(httpStatus.OK).send({
+    message: "Verification successful. Check email for temporary password.",
+  });
+});
+
+/**
+ * Change password
+ */
+const changePassword = catchAsync(async (req, res) => {
+  const { userId, currentPassword, newPassword } = req.body;
+  const user = await userService.getUserById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  if (!(await user.isPasswordMatch(currentPassword))) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Incorrect password");
+  }
+
+  await userService.updateUserById(userId, {
+    password: newPassword,
+    firstTimeLogin: false,
+  });
+
+  authService.logoutAllInstances(userId);
+
+  res.status(httpStatus.OK).send({
+    message: "Password changed successfully.",
+  });
+});
+
 module.exports = {
   register,
   verifyRegistration,
@@ -131,12 +204,7 @@ module.exports = {
   login,
   logout,
   refreshToken,
-  // forgotPassword,
-  // resetPassword,
-  // sendVerificationEmail,
-  // verifyEmail,
-  // accountSetup,
-  // requestOTP,
-  // verifyRegisterToken,
-  // verifyResetPasswordToken
+  resetPassword,
+  verifyResetPassword,
+  changePassword,
 };

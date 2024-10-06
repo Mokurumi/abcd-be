@@ -50,27 +50,27 @@ router.post(
   authController.refreshToken
 );
 
-// // reset password
-// router.post(
-//   "/reset-password",
-//   validate(authValidation.resetPassword),
-//   authController.resetPassword
-// );
+// reset password
+router.post(
+  "/reset-password",
+  validate(authValidation.resetPassword),
+  authController.resetPassword
+);
 
-// // verify reset password
-// router.post(
-//   "/verify-reset-password",
-//   validate(authValidation.verifyResetPassword),
-//   authController.verifyResetPassword
-// );
+// verify reset password
+router.post(
+  "/verify-reset-password",
+  validate(authValidation.verifyResetPassword),
+  authController.verifyResetPassword
+);
 
-// // change password
-// router.post(
-//   "/change-password",
-//   // auth(),
-//   validate(authValidation.changePassword),
-//   authController.changePassword
-// );
+// change password
+router.post(
+  "/change-password",
+  auth('USER_PROFILE'),
+  validate(authValidation.changePassword),
+  authController.changePassword
+);
 
 // // profile
 // router.

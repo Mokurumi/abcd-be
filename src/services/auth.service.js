@@ -43,6 +43,8 @@ const loginUser = async (username, password) => {
     throw new ApiError(httpStatus.NOT_FOUND, "Incorrect username or password");
   }
 
+  let failedLogin = false;
+
   // Existing users (imported users) and they have no password
   if (user && isEmpty(user.password)) {
     // Generate registration token for email
@@ -51,23 +53,36 @@ const loginUser = async (username, password) => {
     // Send user one time registration email to set up their account credentials
     await emailService.sendRegistrationEmail(user, registrationToken);
 
+    failedLogin = true;
     throw new ApiError(httpStatus.FOUND, "Check your email for an activation link to set up your account");
   }
 
   // Account not active
   if (!user.active && !user.isEmailVerified) {
+    failedLogin = true;
     throw new ApiError(httpStatus.UNAUTHORIZED, "Your account is not yet active. Please check your email for activation link.");
   }
 
   // Email or password incorrect
   if (!user || !(await user.isPasswordMatch(password))) {
+    failedLogin = true;
     throw new ApiError(httpStatus.UNAUTHORIZED, "Incorrect username or password");
   }
 
   // Account is disabled
   if (!user.active && !!user.isEmailVerified) {
+    failedLogin = true;
     throw new ApiError(httpStatus.UNAUTHORIZED, "Your account is disabled. Kindly contact support.");
   }
+
+  // update lastLogin date
+  if (failedLogin) {
+    user.lastFailedLogin = Date.now();
+  }
+  else {
+    user.lastLogin = Date.now();
+  }
+  await user.save();
 
   return user;
 };
@@ -87,6 +102,18 @@ const logout = async (refreshToken) => {
     throw new ApiError(httpStatus.NOT_FOUND, "Not found");
   }
   await refreshTokenDoc.remove();
+};
+
+/**
+ * Logout all instances
+ * @param {string} userId
+ * @returns {Promise}
+ */
+const logoutAllInstances = async (userId) => {
+  await Token.deleteMany({
+    user: userId,
+    type: tokenTypes.REFRESH,
+  });
 };
 
 /**
@@ -111,12 +138,32 @@ const refreshAuth = async (refreshToken, authToken) => {
   }
 };
 
+/**
+ * Verify reset password token
+ * @param {string} token
+ * @param {string} userId
+ * @returns {Promise}
+ */
+const verifyResetPasswordToken = async (token, userId) => {
+  const user = await userService.getUserById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+  const isValid = await tokenService.verifyToken(token, tokenTypes.RESET_PASSWORD, user);
+  if (!isValid) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid token");
+  }
+  return user;
+};
+
+
 module.exports = {
   verifyRegistrationToken,
   loginUser,
   logout,
+  logoutAllInstances,
   refreshAuth,
+  verifyResetPasswordToken,
   // resetPassword,
   // verifyEmail,
-  // verifyResetPasswordToken,
 };
