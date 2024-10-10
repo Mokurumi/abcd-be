@@ -36,6 +36,10 @@ const envVarsSchema = Joi.object()
     WEB_URL_DEV: Joi.string().required().description("DEV WEB url"),
     WEB_URL_QA: Joi.string().required().description("QA WEB url"),
     WEB_URL_PROD: Joi.string().required().description("PROD WEB url"),
+    // CLOUDINARY
+    CLOUDINARY_NAME: Joi.string().required().description("Cloudinary name"),
+    CLOUDINARY_API_KEY: Joi.string().required().description("Cloudinary api key"),
+    CLOUDINARY_API_SECRET: Joi.string().required().description("Cloudinary api secret"),
   })
   .unknown();
 
@@ -88,5 +92,10 @@ module.exports = {
     dev: envVars.WEB_URL_DEV,
     qa: envVars.WEB_URL_QA,
     prod: envVars.WEB_URL_PROD
+  },
+  cloudinary: {
+    name: envVars.CLOUDINARY_NAME,
+    api_key: envVars.CLOUDINARY_API_KEY,
+    api_secret: envVars.CLOUDINARY_API_SECRET
   }
 };
