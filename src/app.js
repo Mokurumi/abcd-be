@@ -37,25 +37,6 @@ app.use(express.json({ limit: "50mb" }));
 app.use(xss());
 app.use(mongoSanitize());
 
-// Store Session in mongodb
-const store = new MongoDBStore({
-  uri: config.mongoose.url,
-  collection: 'mySessions'
-});
-
-// Catch errors from store session
-store.on('error', (error) => {
-  console.log(error);
-});
-
-app.use(session({
-  secret: config.mongoose.session_secret, // Use the same secret for sessions
-  resave: false,
-  saveUninitialized: false,
-  store,
-  cookie: { secure: false, httpOnly: true, path: '/', sameSite: true } // Adjust settings as needed
-}));
-
 // gzip compression
 app.use(compression());
 

@@ -100,9 +100,10 @@ components:
       - name: category
         in: path
         required: true
-        description: The category of the upload
+        description: enum \[PROFILE_IMG\]
         schema:
           type: string
+        enum: [PROFILE_IMG]
     responses:
       '200':
         description: Upload deleted

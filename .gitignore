@@ -16,7 +16,7 @@ dist
 **bun.lockb
 
 # Local env files
-.env
+.env*
 !.env.example
 
 

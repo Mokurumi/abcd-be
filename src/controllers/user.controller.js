@@ -45,18 +45,6 @@ const getUsers = catchAsync(async (req, res) => {
     "isDeleted",
   ]);
 
-  // Extract start and end dates from the request query
-  const startDate = req.query.startDate;
-  const endDate = req.query.endDate; // e.g., ?startDate=2023-10-01&endDate=2023-10-15
-
-  // If both start and end dates are provided, add dateCreated to the filter
-  if (startDate && endDate) {
-    filter.dateCreated = {
-      $gte: new Date(startDate), // $gte stands for "greater than or equal"
-      $lte: new Date(endDate), // $lte stands for "less than or equal"
-    };
-  }
-
   const options = pick(req.query, ["sortBy", "size", "page"]);
   const result = await userService.queryUsers(filter, options);
   res.send(result);
@@ -80,9 +68,6 @@ const updateUser = catchAsync(async (req, res) => {
 
 const deleteUser = catchAsync(async (req, res) => {
   const { userId } = req.params;
-
-  // const user = await userService.getUserById(userId);
-  // await emailService.sendUserProfileDeleteEmail(user);
 
   await userService.deleteUserById(userId);
 

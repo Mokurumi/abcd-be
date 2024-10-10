@@ -26,11 +26,6 @@ const envVarsSchema = Joi.object()
     SMTP_USERNAME: Joi.string().description("username for email server"),
     SMTP_PASS: Joi.string().description("password for email server"),
     EMAIL_FROM: Joi.string().description("the from field in the emails sent by the app"),
-    // API URLS
-    API_URL_LOCAL: Joi.string().required().description("LOCAL API url"),
-    API_URL_DEV: Joi.string().required().description("DEV API url"),
-    API_URL_QA: Joi.string().required().description("QA API url"),
-    API_URL_PROD: Joi.string().required().description("PROD API url"),
     // WEB URLS
     WEB_URL_LOCAL: Joi.string().required().description("LOCAL WEB url"),
     WEB_URL_DEV: Joi.string().required().description("DEV WEB url"),
@@ -80,12 +75,6 @@ module.exports = {
       },
     },
     from: envVars.EMAIL_FROM,
-  },
-  api_url: {
-    local: envVars.API_URL_LOCAL,
-    dev: envVars.API_URL_DEV,
-    qa: envVars.API_URL_QA,
-    prod: envVars.API_URL_PROD
   },
   web_url: {
     local: envVars.WEB_URL_LOCAL,
