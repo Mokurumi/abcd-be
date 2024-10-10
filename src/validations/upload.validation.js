@@ -9,6 +9,22 @@ const userProfileImage = {
   }),
 };
 
+const deleteUpload = {
+  params: Joi.object().keys({
+    owner: Joi.string().required().custom(objectId),
+    uploadId: Joi.string().custom(objectId),
+  }),
+};
+
+const deleteUploads = {
+  params: Joi.object().keys({
+    owner: Joi.string().required().custom(objectId),
+    category: Joi.string().required(),
+  }),
+};
+
 module.exports = {
   userProfileImage,
+  deleteUpload,
+  deleteUploads,
 };

@@ -24,4 +24,19 @@ router.post(
   uploadController.userProfileImage
 );
 
+router.delete(
+  "/deleteUploads/:owner/:category",
+  auth("USER_PROFILE", "USER_MANAGEMENT"),
+  validate(uploadValidation.deleteUploads),
+  uploadController.deleteUploads
+);
+
+router.delete(
+  "/deleteUpload/:owner/:uploadId",
+  auth("USER_PROFILE", "USER_MANAGEMENT"),
+  validate(uploadValidation.deleteUpload),
+  uploadController.deleteUpload
+);
+
+
 module.exports = router;

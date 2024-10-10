@@ -80,3 +80,83 @@ components:
 
       '400':
         $ref: '#/components/responses/DuplicateUpload'
+
+/uploads/deleteUploads/{owner}/{category}:
+  # Delete an upload
+  delete:
+    operationId: deleteUploadByCategory
+    summary: Delete an upload
+    description: Delete an upload
+    tags: [Uploads]
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: owner
+        in: path
+        required: true
+        description: The owner of the upload
+        schema:
+          type: string
+      - name: category
+        in: path
+        required: true
+        description: The category of the upload
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Upload deleted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Uploads'
+
+      '404':
+        description: Upload not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+            example:
+              code: 404
+              message: Upload not found
+
+/uploads/deleteUpload/{owner}/{uploadId}:
+  # Delete an upload
+  delete:
+    operationId: deleteUploadById
+    summary: Delete an upload
+    description: Delete an upload
+    tags: [Uploads]
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: owner
+        in: path
+        required: true
+        description: The owner of the upload
+        schema:
+          type: string
+      - name: uploadId
+        in: path
+        required: true
+        description: The id of the upload
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Upload deleted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Uploads'
+
+      '404':
+        description: Upload not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+            example:
+              code: 404
+              message: Upload not found

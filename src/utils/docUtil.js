@@ -47,17 +47,17 @@ const uploadFile = async (file, folder, type) => {
  * @param {string} publicId
  * @returns {Promise}
  */
-const deleteFile = async (publicId) => {
+const deleteFiles = async (publicIds) => {
   // delete file from cloudinary
-  await cloudinary.uploader
-    .destroy(publicId)
+  await cloudinary.api
+    .delete_resources(publicIds)
     .catch((err) => {
-      console('deleteFile error', err);
-      throw new Error('Document delete failed. Try again later.');
+      console.log('deleteFile error', err);
+      throw new Error('Document deletion failed. Try again later.');
     });
 };
 
 module.exports = {
   uploadFile,
-  deleteFile,
+  deleteFiles,
 };

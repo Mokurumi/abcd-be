@@ -7,18 +7,18 @@ const {
   uploadService,
 } = require("../services");
 
+
 const userProfileImage = catchAsync(async (req, res) => {
   const file = req.file;
   const owner = req.body.owner;
 
-  // console.log("file", file);
   // verify that the file exists
   if (!file) {
     throw new ApiError(httpStatus.BAD_REQUEST, "File is required");
   }
 
   // Save file to database
-  const upload = await uploadService.saveFile(
+  const upload = await uploadService.saveAndReplace(
     file,
     "PROFILE_IMG",
     owner,
@@ -31,6 +31,26 @@ const userProfileImage = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send({ url: upload.docURL });
 });
 
+const deleteUpload = catchAsync(async (req, res) => {
+  const { owner, uploadId } = req.params;
+
+  // delete file from cloudinary
+  await uploadService.deleteUpload(owner, uploadId);
+
+  res.status(httpStatus.NO_CONTENT).send();
+});
+
+const deleteUploads = catchAsync(async (req, res) => {
+  const { owner, category } = req.params;
+
+  // delete file from cloudinary
+  await uploadService.deleteMultipleFiles(owner, category);
+
+  res.status(httpStatus.NO_CONTENT).send();
+});
+
 module.exports = {
   userProfileImage,
+  deleteUpload,
+  deleteUploads,
 };
