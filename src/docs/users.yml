@@ -21,7 +21,7 @@ components:
         phoneNumber:
           type: string
           description: must be unique
-        image:
+        profile_img:
           type: string
         # password:
         #   type: string
@@ -63,7 +63,7 @@ components:
         middleName: Doe
         emailAddress: johndoe@gmail.com
         phoneNumber: 2547XXXXXXX
-        image: https://example.com/image.jpg
+        profile_img: https://example.com/image.jpg
         role: 5ebac534954b54139806c112
         isPhoneVerified: true
         isEmailVerified: true

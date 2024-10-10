@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const httpStatus = require("http-status");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 
 const config = require("../config/config");
 const userService = require("./user.service");
@@ -56,14 +56,16 @@ const saveToken = async (token, userId, expires, type, blacklisted = false) => {
 const verifyToken = async (token, type, user) => {
   const payload = jwt.verify(token, config.jwt.secret);
 
-  if (payload.sub !== new mongoose.Types.ObjectId(user._id).toString()) {
+  // if (payload.sub !== new mongoose.Types.ObjectId(user._id).toString()) {
+  if (payload.sub !== user._id?.toString()) {
     throw new Error("Token not found");
   }
 
   const tokenDoc = await Token.findOne({
     token,
     type,
-    user: new mongoose.Types.ObjectId(payload.sub),
+    // user: new mongoose.Types.ObjectId(payload.sub),
+    user: payload.sub,
     blacklisted: false,
   });
 
@@ -90,7 +92,7 @@ const generateRegistrationToken = async (user) => {
   );
   await saveToken(
     registerEmailToken,
-    user._id,
+    user._id?.toString(),
     expires,
     tokenTypes.VERIFY_REGISTRATION
   );
@@ -124,7 +126,7 @@ const generateAuthTokens = async (user) => {
   );
   await saveToken(
     refreshToken,
-    user.id,
+    user.id?.toString(),
     refreshTokenExpires,
     tokenTypes.REFRESH
   );
@@ -162,7 +164,7 @@ const generateResetPasswordToken = async (email) => {
   );
   await saveToken(
     resetPasswordToken,
-    user.id,
+    user.id?.toString(),
     expires,
     tokenTypes.RESET_PASSWORD
   );
@@ -184,7 +186,12 @@ const generateVerifyEmailToken = async (user) => {
     expires,
     tokenTypes.VERIFY_REGISTRATION
   );
-  await saveToken(verifyEmailToken, user._id, expires, tokenTypes.VERIFY_REGISTRATION);
+  await saveToken(
+    verifyEmailToken,
+    user._id?.toString(),
+    expires,
+    tokenTypes.VERIFY_REGISTRATION
+  );
   return verifyEmailToken;
 };
 
@@ -226,7 +233,7 @@ const generateDeleteProfileToken = async (user) => {
   );
   await saveToken(
     deleteProfileToken,
-    user._id,
+    user._id?.toString(),
     expires,
     tokenTypes.DELETE_PROFILE
   );
@@ -235,7 +242,7 @@ const generateDeleteProfileToken = async (user) => {
 
 module.exports = {
   generateToken,
-  saveToken,
+  // saveToken,
   verifyToken,
   deleteToken,
   generateAuthTokens,

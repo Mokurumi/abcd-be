@@ -20,7 +20,11 @@ const verifyCallback = (req, resolve, reject, requiredRights) => async (err, use
       userRights.includes(requiredRight)
     );
 
-    if (!hasRequiredRights && req.params.userId !== user.id) {
+    // /**
+    //  * If user does not have any of the required rights and the user is not the owner of the resource, return
+    //  */
+    // if (!hasRequiredRights && req.params.userId !== user._id?.toString()) {
+    if (!hasRequiredRights) {
       return reject(new ApiError(httpStatus.FORBIDDEN, "Forbidden"));
     }
   }
