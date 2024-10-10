@@ -39,11 +39,9 @@ const getUsers = catchAsync(async (req, res) => {
     "phoneNumber",
     "isPhoneVerified",
     "isEmailVerified",
-    "image",
     "role",
     "active",
     "createdAt",
-    "updatedAt",
     "isDeleted",
   ]);
 

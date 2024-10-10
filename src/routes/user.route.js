@@ -1,13 +1,8 @@
 const express = require("express");
-const multer = require("multer");
 const auth = require("../middlewares/auth");
 const validate = require("../middlewares/validate");
-const userValidation = require("../validations/user.validation");
-const userController = require("../controllers/user.controller");
-
-// Set up multer for handling file uploads
-// const storage = multer.memoryStorage();
-// const upload = multer({ storage: storage });
+const { userValidation } = require("../validations");
+const { userController } = require("../controllers");
 
 const router = express.Router();
 

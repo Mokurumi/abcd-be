@@ -138,6 +138,8 @@ components:
         $ref: '#/components/responses/Unauthorized'
       "403":
         $ref: '#/components/responses/Forbidden'
+      "404":
+        $ref: '#/components/responses/NotFound'
 
 /roles/{id}:
   parameters:
@@ -167,6 +169,8 @@ components:
         $ref: '#/components/responses/Unauthorized'
       "403":
         $ref: '#/components/responses/Forbidden'
+      "404":
+        $ref: '#/components/responses/NotFound'
 
   # update a role
   patch:
@@ -212,6 +216,8 @@ components:
         $ref: '#/components/responses/Unauthorized'
       "403":
         $ref: '#/components/responses/Forbidden'
+      "404":
+        $ref: '#/components/responses/NotFound'
 
   # delete a role
   delete:
@@ -228,3 +234,5 @@ components:
         $ref: '#/components/responses/Unauthorized'
       "403":
         $ref: '#/components/responses/Forbidden'
+      "404":
+        $ref: '#/components/responses/NotFound'
