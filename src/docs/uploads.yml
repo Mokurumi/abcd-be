@@ -1,0 +1,82 @@
+# tags:
+#   name: Uploads
+#   description: Uploads management
+
+components:
+  schemas:
+    Uploads:
+      type: object
+      properties:
+        id:
+          type: string
+        docURL:
+          type: string
+        public_id:
+          type: string
+        # category:
+        #   type: string
+        owner:
+          type: string
+        createdBy:
+          type: string
+      example:
+        id: 5ebac534954b54139806c112
+        docURL: https://res.cloudinary.com/dx3wzv7xv/image/upload/v1589426820/5ebac534954b54139806c112-2020-05-14T14:33:40.000Z-user1.jpg
+        public_id: 5ebac534954b54139806c112-2020-05-14T14:33:40.000Z-user1.jpg
+        # category: PROFILE_IMG
+        owner: 5ebac534954b54139806c112
+        createdBy: 5ebac534954b54139806c112
+
+  responses:
+
+    # Upload already defined
+    DuplicateUpload:
+      description: Duplicate Upload
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 400
+            message: Upload already exists
+
+/uploads/userProfileImage:
+  # Upload a user profile image
+  post:
+    operationId: uploadUserProfileImage
+    summary: Upload a user profile image
+    description: Upload a user profile image
+    tags: [Uploads]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              file:
+                type: string
+                format: binary
+              # category:
+              #   type: string
+              #   enum: [PROFILE_IMG]
+              owner:
+                type: string
+    responses:
+      '200':
+        description: Upload successful
+        content:
+          application/json:
+            schema:
+              # $ref: '#/components/schemas/Uploads'
+              type: object
+              properties:
+                url:
+                  type: string
+            example:
+              url: https://res.cloudinary.com/dx3wzv7xv/image/upload/v1589426820/5ebac534954b54139806c112-2020-05-14T14:33:40.000Z-user1.jpg
+
+      '400':
+        $ref: '#/components/responses/DuplicateUpload'

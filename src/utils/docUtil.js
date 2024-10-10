@@ -13,30 +13,32 @@ cloudinary.config({
  * @param {string} folder
  * @returns {Promise}
  */
-const uploadFile = async (file, folder, owner) => {
-  // generate unique id that is composed of the owner, time and the file name
-  const uniqueId = `${owner}-${new Date().toISOString()}-${file.filename}`;
+const uploadFile = async (file, folder, type) => {
+  // generate unique id that is composed of the time and the file name
+  const uniqueId = `${new Date().toISOString()}-${file.filename}`;
   // upload file to cloudinary
   const result = await cloudinary.uploader
     .upload(file.path, {
+      type: type || "upload",
       public_id: uniqueId,
       resource_type: "auto",
       folder: folder,
     })
     .catch((err) => {
-      console('uploadFile error', err);
+      console.log('uploadFile error', err);
       throw new Error('Document upload failed. Try again later.');
     });
 
   // optimize the image
-  const optimizedUrl = cloudinary.url(result.public_id, {
-    quality: "auto:best",
-    fetch_format: "auto",
-  });
+  // const optimizedUrl = cloudinary.url(result.public_id, {
+  //   quality: "auto",
+  //   fetch_format: "auto",
+  // });
 
   return {
     public_id: result.public_id,
-    url: optimizedUrl,
+    // url: optimizedUrl,
+    url: result.secure_url,
   };
 };
 

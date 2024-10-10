@@ -2,11 +2,14 @@ tags:
   - name: Auth
     description: Authentication Functions
 
+  - name: Users
+    description: User Management
+
   - name: Admin
     description: Admin Functions
 
-  - name: Users
-    description: User Management
+  - name: Uploads
+    description: Uploads Management
 
 components:
   schemas:

@@ -1,0 +1,27 @@
+const express = require("express");
+const multer = require("multer");
+const auth = require("../middlewares/auth");
+const validate = require("../middlewares/validate");
+const { uploadValidation } = require("../validations");
+const { uploadController } = require("../controllers");
+
+// Set up multer for handling file uploads
+const storage = multer.diskStorage({
+  destination: "../uploads",
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+const upload = multer({ storage: storage });
+
+const router = express.Router();
+
+router.post(
+  "/userProfileImage",
+  auth("USER_PROFILE", "USER_MANAGEMENT"),
+  upload.single("file"),
+  validate(uploadValidation.userProfileImage),
+  uploadController.userProfileImage
+);
+
+module.exports = router;
