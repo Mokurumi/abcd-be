@@ -12,6 +12,11 @@ const userProfileImage = catchAsync(async (req, res) => {
   const file = req.file;
   const owner = req.body.owner;
 
+  const user = await userService.getUserById(owner);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
   // verify that the file exists
   if (!file) {
     throw new ApiError(httpStatus.BAD_REQUEST, "File is required");
@@ -34,6 +39,11 @@ const userProfileImage = catchAsync(async (req, res) => {
 const deleteUpload = catchAsync(async (req, res) => {
   const { owner, uploadId } = req.params;
 
+  const user = await userService.getUserById(owner);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
   // delete file from cloudinary
   await uploadService.deleteUpload(owner, uploadId);
 
@@ -43,7 +53,11 @@ const deleteUpload = catchAsync(async (req, res) => {
 const deleteUploads = catchAsync(async (req, res) => {
   const { owner, category } = req.params;
 
-  // delete file from cloudinary
+  const user = await userService.getUserById(owner);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
   await uploadService.deleteMultipleFiles(owner, category);
 
   res.status(httpStatus.NO_CONTENT).send();

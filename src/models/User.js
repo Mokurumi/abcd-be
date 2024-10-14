@@ -77,14 +77,6 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now,
-    },
     firstTimeLogin: {
       type: Boolean,
       default: true,

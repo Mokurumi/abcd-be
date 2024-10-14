@@ -85,8 +85,8 @@ components:
   # Delete an upload
   delete:
     operationId: deleteUploadByCategory
-    summary: Delete an upload
-    description: Delete an upload
+    summary: Delete multiple uploads
+    description: Delete multiple uploads by category for one owner
     tags: [Uploads]
     security:
       - bearerAuth: []

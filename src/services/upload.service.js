@@ -15,11 +15,6 @@ const categories = require("../constants/uploadCategories");
  */
 const saveFile = async (file, category, owner, createdBy) => {
 
-  const user = await userService.getUserById(owner);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-  }
-
   if (!categories.includes(category)) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid category");
   }
@@ -45,10 +40,6 @@ const saveFile = async (file, category, owner, createdBy) => {
  * @returns {Promise<Upload>}
  */
 const saveAndReplace = async (file, category, owner, createdBy) => {
-  const user = await userService.getUserById(owner);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-  }
 
   if (!categories.includes(category)) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid category");
@@ -56,8 +47,9 @@ const saveAndReplace = async (file, category, owner, createdBy) => {
 
   const existingUpload = await Upload.findOne({ owner, category });
   if (existingUpload) {
+    // delete from cloudinary
     await deleteFiles([existingUpload.public_id]);
-    // Upload.findByIdAndDelete(existingUpload._id);
+    // delete from db
     await Upload.deleteOne({ _id: existingUpload._id });
   }
 
@@ -79,11 +71,6 @@ const saveAndReplace = async (file, category, owner, createdBy) => {
  * @returns {Promise<Upload>}
  */
 const getFilesByOwner = async (owner) => {
-  const user = await userService.getUserById(owner);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-  }
-
   const uploads = await Upload.find({ owner });
   return uploads;
 };
@@ -94,12 +81,7 @@ const getFilesByOwner = async (owner) => {
  * @param {string} category
  * @returns {Promise<Upload>}
  */
-const getFilesByOwnerAndCategory = async (owner, category) => {
-  const user = await userService.getUserById(owner);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-  }
-
+const getFilesByOwnerAndCategory = async (owner, category) => { //DEPT_FILES
   if (!categories.includes(category)) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid category");
   }
@@ -115,11 +97,6 @@ const getFilesByOwnerAndCategory = async (owner, category) => {
  * @returns {Promise}
  */
 const deleteUpload = async (owner, uploadId) => {
-
-  const user = await userService.getUserById(owner);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-  }
 
   const upload = await Upload.findOne({ owner, _id: uploadId });
   if (!upload) {
@@ -138,11 +115,6 @@ const deleteUpload = async (owner, uploadId) => {
  */
 const deleteMultipleFiles = async (owner, category) => {
 
-  const user = await userService.getUserById(owner);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-  }
-
   if (!categories.includes(category)) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid category");
   }
@@ -151,7 +123,7 @@ const deleteMultipleFiles = async (owner, category) => {
   const publicIds = uploads.map((upload) => upload.public_id);
 
   await deleteFiles(publicIds);
-  await Upload.deleteMany({ owner });
+  await Upload.deleteMany({ owner, category });
 };
 
 module.exports = {

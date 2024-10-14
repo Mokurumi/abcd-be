@@ -22,10 +22,6 @@ const roleSchema = new mongoose.Schema(
       required: true,
       default: true,
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
     permissions: {
       type: [{ type: String, enum: permissions }],
       required: true,
