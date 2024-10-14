@@ -62,7 +62,7 @@ const userSchema = new mongoose.Schema(
       private: true, // used by the toJSON plugin
     },
     role: {
-      type: String,
+      type: mongoose.SchemaTypes.ObjectId,
       ref: "Role",
     },
     isPhoneVerified: {

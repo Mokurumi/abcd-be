@@ -50,6 +50,15 @@ const getRoleById = async (id) => {
 };
 
 /**
+ * Get Role by value
+ * @param {string} value
+ * @returns {Promise<Role>}
+ */
+const getRoleByValue = async (value) => {
+  return Role.findOne({ value });
+};
+
+/**
  * Update Role by id
  * @param {ObjectId} roleId
  * @param {Object} updateBody
@@ -100,6 +109,7 @@ module.exports = {
   createRole,
   queryRoles,
   getRoleById,
+  getRoleByValue,
   updateRoleById,
   deleteRoleById,
 };

@@ -19,6 +19,10 @@ const tokenSchema = mongoose.Schema(
       enum: [...Object.values(tokenTypes),],
       required: true,
     },
+    generatedAuthExp: {
+      type: Date,
+      default: Date.now,
+    },
     expires: {
       type: Date,
       required: true,

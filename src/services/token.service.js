@@ -34,13 +34,22 @@ const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
  * @param {moment} expires
  * @param {string} type
  * @param {boolean} [blacklisted]
+ * @param {moment} [generatedAuthExp]
  * @returns {Promise<Token>}
  */
-const saveToken = async (token, userId, expires, type, blacklisted = false) => {
+const saveToken = async (
+  token,
+  userId,
+  expires,
+  type,
+  blacklisted = false,
+  generatedAuthExp = moment().toDate()
+) => {
   const tokenDoc = await Token.create({
     token,
     user: userId,
     expires: expires.toDate(),
+    generatedAuthExp,
     type,
     blacklisted,
   });
@@ -128,7 +137,9 @@ const generateAuthTokens = async (user) => {
     refreshToken,
     user.id?.toString(),
     refreshTokenExpires,
-    tokenTypes.REFRESH
+    tokenTypes.REFRESH,
+    false,
+    accessTokenExpires.toDate()
   );
 
   return {

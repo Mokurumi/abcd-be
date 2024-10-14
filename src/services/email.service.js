@@ -429,8 +429,6 @@ const sendDeleteProfileEmail = async (user, deleteProfileToken) => {
 };
 
 module.exports = {
-  transport,
-  sendEmail,
   sendRegistrationEmail,
   sendCreateUserEmail,
   sendResetPasswordEmail,

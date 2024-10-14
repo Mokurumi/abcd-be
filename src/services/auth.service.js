@@ -1,5 +1,7 @@
 const httpStatus = require("http-status");
 const { isEmpty } = require("lodash");
+const jwt = require("jsonwebtoken");
+const config = require("../config/config");
 const Token = require("../models/Token");
 const tokenService = require("./token.service");
 const userService = require("./user.service");
@@ -89,19 +91,24 @@ const loginUser = async (username, password) => {
 
 /**
  * Logout
- * @param {string} refreshToken
+ * @param {string} authToken
  * @returns {Promise}
  */
-const logout = async (refreshToken) => {
+const logout = async (authToken) => {
+
+  const payload = jwt.verify(authToken, config.jwt.secret);
+  const authTokenExp = new Date(payload.exp * 1000);
+
   const refreshTokenDoc = await Token.findOne({
-    token: refreshToken,
     type: tokenTypes.REFRESH,
     blacklisted: false,
+    generatedAuthExp: { $gte: authTokenExp },
   });
   if (!refreshTokenDoc) {
     throw new ApiError(httpStatus.NOT_FOUND, "Not found");
   }
-  await refreshTokenDoc.remove();
+
+  await tokenService.deleteToken(refreshTokenDoc.token, tokenTypes.REFRESH);
 };
 
 /**

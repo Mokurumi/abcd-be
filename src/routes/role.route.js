@@ -6,40 +6,35 @@ const { roleController } = require("../controllers");
 
 const router = express.Router();
 
-router.post(
-  "/",
-  auth("ROLE_MANAGEMENT"),
-  validate(roleValidation.createRole),
-  roleController.createRole
-);
+router
+  .route("/")
+  .post(
+    auth('ROLE_MANAGEMENT'),
+    validate(roleValidation.createRole),
+    roleController.createRole
+  )
+  .get(
+    auth('ROLE_MANAGEMENT'),
+    validate(roleValidation.getRoles),
+    roleController.getRoles
+  );
 
-router.get(
-  "/",
-  auth("ROLE_MANAGEMENT"),
-  validate(roleValidation.getRoles),
-  roleController.getRoles
-);
-
-router.get(
-  "/:roleId",
-  // auth("ANY_WITH_AUTH"),
-  auth("ROLE_MANAGEMENT"),
-  validate(roleValidation.getRole),
-  roleController.getRole
-);
-
-router.patch(
-  "/:roleId",
-  auth("ROLE_MANAGEMENT"),
-  validate(roleValidation.updateRole),
-  roleController.updateRole
-);
-
-router.delete(
-  "/:roleId",
-  auth("ROLE_MANAGEMENT"),
-  validate(roleValidation.deleteRole),
-  roleController.deleteRole
-);
+router
+  .route("/:roleId")
+  .get(
+    auth('ROLE_MANAGEMENT'),
+    validate(roleValidation.getRole),
+    roleController.getRole
+  )
+  .patch(
+    auth('ROLE_MANAGEMENT'),
+    validate(roleValidation.updateRole),
+    roleController.updateRole
+  );
+// .delete(
+//   auth('ROLE_MANAGEMENT'),
+//   validate(roleValidation.deleteRole),
+//   roleController.deleteRole
+// );
 
 module.exports = router;

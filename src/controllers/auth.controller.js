@@ -2,11 +2,11 @@ const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
 const { catchAsync } = require("../utils/catchAsync");
 const { generateOTP, generateTempPassword } = require("../utils");
-const { Role } = require("../models");
 // const sendSMS = require("../config/sendSMS");
 const {
   authService,
   userService,
+  roleService,
   tokenService,
   emailService,
   // notificationServicec
@@ -19,7 +19,10 @@ const {
  */
 const register = catchAsync(async (req, res) => {
 
-  const defaultRole = await Role.findOne({ value: "user" });
+  const defaultRole = await roleService.getRoleByValue("user");
+  if (!defaultRole) {
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Default role not found");
+  }
 
   // Create user account
   const user = await userService.createUser({
@@ -106,7 +109,8 @@ const login = catchAsync(async (req, res) => {
  * Logout
  */
 const logout = catchAsync(async (req, res) => {
-  await authService.logout(req.body.token);
+  const token = req.headers.authorization.split(" ")[1];
+  await authService.logout(token);
   res.status(httpStatus.ACCEPTED).send({
     message: "Logout successfully.",
   });
