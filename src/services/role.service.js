@@ -1,7 +1,7 @@
 const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
 const { Role } = require("../models");
-const permissions = require("../config/permissions");
+const permissions = require("../constants/permissions");
 
 /**
  * Add Role

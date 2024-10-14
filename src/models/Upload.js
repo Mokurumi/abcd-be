@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const { toJSON, paginate } = require("./plugins");
-const categories = require("../config/uploadCategories");
+const categories = require("../constants/uploadCategories");
 
 
 const uploadSchema = new mongoose.Schema(

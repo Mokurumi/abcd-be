@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { toJSON, paginate } = require("./plugins");
-const permissions = require("../config/permissions");
+const permissions = require("../constants/permissions");
 
 
 const roleSchema = new mongoose.Schema(

@@ -5,7 +5,7 @@ const tokenService = require("./token.service");
 const userService = require("./user.service");
 const emailService = require("./email.service");
 const ApiError = require("../utils/ApiError");
-const { tokenTypes } = require("../config/tokens");
+const { tokenTypes } = require("../constants/tokens");
 
 
 /**

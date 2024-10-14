@@ -3,7 +3,7 @@ const ApiError = require("../utils/ApiError");
 const { Upload } = require("../models");
 const userService = require("./user.service");
 const { uploadFile, deleteFiles } = require("../utils/docUtil");
-const categories = require("../config/uploadCategories");
+const categories = require("../constants/uploadCategories");
 
 /**
  * Save file
