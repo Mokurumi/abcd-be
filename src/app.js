@@ -1,7 +1,6 @@
 const express = require("express");
 const helmet = require("helmet");
 const xss = require("xss-clean");
-const session = require('express-session');
 // const MongoDBStore = require('connect-mongodb-session')(session);
 const mongoSanitize = require("express-mongo-sanitize");
 const compression = require("compression");

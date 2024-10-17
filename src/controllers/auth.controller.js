@@ -36,13 +36,6 @@ const register = catchAsync(async (req, res) => {
   // Send user one time registration email to set up their account credentials
   await emailService.sendRegistrationEmail(user, registrationToken);
 
-  // // Create notification
-  // await notificationService.createNotification({
-  //   userId: user._id,
-  //   title: `Registration complete`,
-  //   message: "Congratulations! Welcome to ABCD Think Tank.",
-  // });
-
   // response
   // res.status(httpStatus.CREATED).send(user);
   res.status(httpStatus.CREATED).send({

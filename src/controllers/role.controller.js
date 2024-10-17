@@ -10,7 +10,7 @@ const createRole = catchAsync(async (req, res) => {
 });
 
 const getRoles = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ["name"]);
+  const filter = pick(req.query, ["name", "value", "active"]);
   const options = pick(req.query, ["sortBy", "size", "page"]);
   const result = await roleService.queryRoles(filter, options);
   res.send(result);

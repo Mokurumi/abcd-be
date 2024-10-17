@@ -19,7 +19,7 @@ if (config.env !== "prod") {
  */
 const sendEmail = async (to, subject, text, html) => {
   const msg = {
-    from: `${"ABCD Think Tank"} <${config.email.from}>`,
+    from: `${"ABCD"} <${config.email.from}>`,
     to,
     subject,
     text,
@@ -35,7 +35,7 @@ const sendEmail = async (to, subject, text, html) => {
  * @returns {Promise}
  */
 const sendRegistrationEmail = async (user, token) => {
-  const subject = "Welcome to ABCD Think Tank";
+  const subject = "Welcome to ABCD";
   const url = config.web_url[config.env];
   const activationlUrl = `${url}/activate?token=${token}&id=${user._id}`;
   const html = `
@@ -57,7 +57,7 @@ const sendRegistrationEmail = async (user, token) => {
           <td style="padding: 20px;">
             <h4 style="font-size: 24px; margin-bottom: 20px;">Hello ${user.firstName},</h4>
             <p style="font-size: 16px;">Congratulations!!</p>
-            <p style="font-size: 16px;">Welcome to ABCD Think Tank</p>
+            <p style="font-size: 16px;">Welcome to ABCD</p>
             <p style="font-size: 16px; margin-bottom: 20px;">Please activate and set up your account credentials by clicking on the link below.</p>
             <p style="font-size: 16px; margin-bottom: 30px;">
               <a href="${activationlUrl}" style="text-decoration: none; color: white; font-weight: bold; text-align: center; display: inline-block; background-color: #193E3F; padding: 8px 16px;" target="_blank">
@@ -66,7 +66,7 @@ const sendRegistrationEmail = async (user, token) => {
             </p>
             <p style="font-size: 14px;">Sincerely,</p>
             <p style="font-size: 14px; font-weight: bold;">Support Team</p>
-            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD Think Tank</p>
+            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD</p>
           </td>
         </tr>
       </tbody>
@@ -84,7 +84,7 @@ const sendRegistrationEmail = async (user, token) => {
  * @returns {Promise}
  */
 const sendCreateUserEmail = async (user, token, tempPassword) => {
-  const subject = "Welcome to ABCD Think Tank";
+  const subject = "Welcome to ABCD";
   const url = config.web_url[config.env];
   const activationlUrl = `${url}/activate?token=${token}&id=${user._id}`;
   const html = `
@@ -106,7 +106,7 @@ const sendCreateUserEmail = async (user, token, tempPassword) => {
           <td style="padding: 20px;">
             <h4 style="font-size: 24px; margin-bottom: 20px;">Hello ${user.firstName},</h4>
             <p style="font-size: 16px;">Congratulations!!</p>
-            <p style="font-size: 16px;">Welcome to ABCD Think Tank</p>
+            <p style="font-size: 16px;">Welcome to ABCD</p>
             <p style="font-size: 16px; margin-bottom: 20px;">Please activate and set up your account credentials by clicking on the link below.</p>
             <p style="font-size: 16px; margin-bottom: 30px;">
               <a href="${activationlUrl}" style="text-decoration: none; color: white; font-weight: bold; text-align: center; display: inline-block; background-color: #193E3F; padding: 8px 16px;" target="_blank">
@@ -117,7 +117,7 @@ const sendCreateUserEmail = async (user, token, tempPassword) => {
             <p style="font-size: 16px; margin-bottom: 30px;">Please change your password after logging in.</p>
             <p style="font-size: 14px;">Sincerely,</p>
             <p style="font-size: 14px; font-weight: bold;">Support Team</p>
-            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD Think Tank</p>
+            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD</p>
           </td>
         </tr>
       </tbody>
@@ -164,7 +164,7 @@ const sendResetPasswordEmail = async (user, token) => {
             <p style="font-size: 16px; margin-bottom: 30px;">If you did not request any password recovery, then ignore this email.</p>
             <p style="font-size: 14px;">Sincerely,</p>
             <p style="font-size: 14px; font-weight: bold;">Support Team</p>
-            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD Think Tank</p>
+            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD</p>
           </td>
         </tr>
       </tbody>
@@ -205,7 +205,7 @@ const sendTemporaryPasswordEmail = async (user, tempPassword) => {
             <p style="font-size: 16px; margin-bottom: 30px;">If you did not request any password recovery, then ignore this email.</p>
             <p style="font-size: 14px;">Sincerely,</p>
             <p style="font-size: 14px; font-weight: bold;">Support Team</p>
-            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD Think Tank</p>
+            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD</p>
           </td>
         </tr>
       </tbody>
@@ -243,10 +243,10 @@ const sendOTPCodeEmail = async (user, otpCode) => {
             <h4 style="font-size: 24px; margin-bottom: 20px;">Hello ${user.firstName},</h4>
             <p style="font-size: 16px;">Your verification code is <b>${otpCode}</b></p>
             <p style="font-size: 16px;">Please do not share this code with anyone.</p>
-            <p style="font-size: 16px; margin-bottom: 30px;">ABCD Think Tank will never ask you for this code at anytime. Be careful.</p>
+            <p style="font-size: 16px; margin-bottom: 30px;">ABCD will never ask you for this code at anytime. Be careful.</p>
             <p style="font-size: 14px;">Sincerely,</p>
             <p style="font-size: 14px; font-weight: bold;">Support Team</p>
-            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD Think Tank</p>
+            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD</p>
           </td>
         </tr>
       </tbody>
@@ -293,7 +293,7 @@ const sendVerificationEmail = async (user, token) => {
             <p style="font-size: 16px; margin-bottom: 30px;">If you did not create an account, then ignore this email.</p>
             <p style="font-size: 14px;">Sincerely,</p>
             <p style="font-size: 14px; font-weight: bold;">Support Team</p>
-            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD Think Tank</p>
+            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD</p>
           </td>
         </tr>
       </tbody>
@@ -332,7 +332,7 @@ const sendCustomEmail = async (user, subject, message) => {
             <p style="font-size: 16px; margin-bottom: 40px;">${message}</p>
             <p style="font-size: 16px;">Sincerely,</p>
             <p style="font-size: 14px; font-weight: bold;">Support Team</p>
-            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD Think Tank</p>
+            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD</p>
           </td>
         </tr>
       </tbody>
@@ -371,7 +371,7 @@ const sendMassEmail = async (to, subject, message) => {
             <p style="font-size: 16px; margin-bottom: 40px;">${message}</p>
             <p style="font-size: 16px;">Sincerely,</p>
             <p style="font-size: 14px; font-weight: bold;">Support Team</p>
-            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD Think Tank</p>
+            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD</p>
           </td>
         </tr>
       </tbody>
@@ -418,7 +418,7 @@ const sendDeleteProfileEmail = async (user, deleteProfileToken) => {
             <p style="font-size: 16px; margin-bottom: 30px;">If you did not request to delete your profile, then ignore this email.</p>
             <p style="font-size: 14px;">Sincerely,</p>
             <p style="font-size: 14px; font-weight: bold;">Support Team</p>
-            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD Think Tank</p>
+            <p style="font-size: 14px; font-weight: bold;">© ${new Date().getFullYear()} ABCD</p>
           </td>
         </tr>
       </tbody>
