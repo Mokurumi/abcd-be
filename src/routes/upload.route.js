@@ -6,12 +6,7 @@ const { uploadValidation } = require("../validations");
 const { uploadController } = require("../controllers");
 
 // Set up multer for handling file uploads
-const storage = multer.diskStorage({
-  destination: "../uploads",
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  },
-});
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 const router = express.Router();
@@ -37,6 +32,5 @@ router.delete(
   validate(uploadValidation.deleteUpload),
   uploadController.deleteUpload
 );
-
 
 module.exports = router;
