@@ -66,15 +66,22 @@ const saveToken = async (
 const verifyToken = async (token, type, user) => {
   const payload = jwt.verify(token, config.jwt.secret);
 
-  // if (payload.sub !== new mongoose.Types.ObjectId(user._id).toString()) {
-  if (payload.sub !== user._id?.toString()) {
-    throw new Error("Token not found");
+  if (user?._id) {
+    if (payload.sub !== user._id?.toString()) {
+      throw new Error("Token not found");
+    }
+  }
+  else {
+    const user = await userService.getUserById(payload.sub);
+
+    if (!user) {
+      throw new Error("Token not found");
+    }
   }
 
   const tokenDoc = await Token.findOne({
     token,
     type,
-    // user: new mongoose.Types.ObjectId(payload.sub),
     user: payload.sub,
     blacklisted: false,
   });
@@ -120,7 +127,7 @@ const generateAuthTokens = async (user) => {
     "minutes"
   );
   const accessToken = generateToken(
-    user.id,
+    user._id,
     accessTokenExpires,
     tokenTypes.ACCESS
   );
@@ -130,13 +137,13 @@ const generateAuthTokens = async (user) => {
     "minutes"
   );
   const refreshToken = generateToken(
-    user.id,
+    user._id,
     refreshTokenExpires,
     tokenTypes.REFRESH
   );
   await saveToken(
     refreshToken,
-    user.id?.toString(),
+    user._id?.toString(),
     refreshTokenExpires,
     tokenTypes.REFRESH,
     false,
@@ -170,13 +177,13 @@ const generateResetPasswordToken = async (email) => {
     "minutes"
   );
   const resetPasswordToken = generateToken(
-    user.id,
+    user._id,
     expires,
     tokenTypes.RESET_PASSWORD
   );
   await saveToken(
     resetPasswordToken,
-    user.id?.toString(),
+    user._id?.toString(),
     expires,
     tokenTypes.RESET_PASSWORD
   );

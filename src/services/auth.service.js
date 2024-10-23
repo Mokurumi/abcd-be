@@ -126,17 +126,17 @@ const logoutAllInstances = async (userId) => {
 /**
  * Refresh auth tokens
  * @param {string} refreshToken
- * @param {string} user
  * @returns {Promise<Object>}
  */
-const refreshAuth = async (refreshToken, user) => {
+const refreshAuth = async (refreshToken) => {
   try {
-    const refreshTokenDoc = await tokenService.verifyToken(refreshToken, tokenTypes.REFRESH, user);
+    const refreshTokenDoc = await tokenService.verifyToken(refreshToken, tokenTypes.REFRESH);
     // await refreshTokenDoc.remove();
     await tokenService.deleteToken(refreshTokenDoc.token, tokenTypes.REFRESH);
-    return tokenService.generateAuthTokens(user);
+    return tokenService.generateAuthTokens(refreshTokenDoc.user);
   }
   catch (error) {
+    console.log(error);
     throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid token");
   }
 };

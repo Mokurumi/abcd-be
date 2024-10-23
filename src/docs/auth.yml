@@ -389,8 +389,8 @@ components:
     operationId: refreshToken
     summary: Refresh user token
     tags: [Auth]
-    security:
-      - bearerAuth: []
+    # security:
+    #   - bearerAuth: []
     requestBody:
       required: true
       content:
