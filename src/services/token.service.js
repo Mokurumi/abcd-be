@@ -24,6 +24,7 @@ const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
     exp: expires.unix(),
     type,
   };
+  // TODO: use rsa keys for jwt
   return jwt.sign(payload, secret);
 };
 

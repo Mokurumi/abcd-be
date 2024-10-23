@@ -45,7 +45,7 @@ router.post(
 // refresh token
 router.post(
   "/refresh-token",
-  auth('USER_PROFILE'),
+  // auth('USER_PROFILE'),
   validate(authValidation.refreshToken),
   authController.refreshToken
 );
