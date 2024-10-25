@@ -41,16 +41,9 @@ const paginate = (schema) => {
       : 1;
     const skip = (page - 1) * size;
 
-    // remove search from filter
     const filterObject = { ...filter };
-    if (filterObject.search) {
-      delete filterObject.search;
-    }
 
-    const countPromise = this.countDocuments(filterObject).exec();
-    let docsPromise = this.find(filterObject).sort(sort).skip(skip).limit(size);
-
-    // now use the search
+    // Apply search filter directly to filterObject before counting documents
     if (filter.search) {
       const search = filter.search;
       const searchFilter = Object.keys(schema.obj).reduce((acc, key) => {
@@ -59,8 +52,12 @@ const paginate = (schema) => {
         }
         return acc;
       }, []);
-      docsPromise = docsPromise.or(searchFilter);
+      filterObject.$or = searchFilter;
+      delete filterObject.search; // Remove the search key from filter
     }
+
+    const countPromise = this.countDocuments(filterObject).exec();
+    let docsPromise = this.find(filterObject).sort(sort).skip(skip).limit(size);
 
     if (options.populate) {
       options.populate.split(",").forEach((populateOption) => {
