@@ -14,6 +14,7 @@ const getRoles = {
     name: Joi.string(),
     value: Joi.string(),
     active: Joi.boolean(),
+    search: Joi.string(),
     sortBy: Joi.string(),
     size: Joi.number().integer(),
     page: Joi.number().integer(),

@@ -43,6 +43,7 @@ const getUsers = catchAsync(async (req, res) => {
     "active",
     "createdAt",
     "isDeleted",
+    "search",
   ]);
 
   const options = pick(req.query, ["sortBy", "size", "page"]);

@@ -24,6 +24,7 @@ const getUsers = {
     isPhoneVerified: Joi.boolean(),
     isEmailVerified: Joi.boolean(),
     dateCreated: Joi.date(),
+    search: Joi.string(),
     sortBy: Joi.string(),
     size: Joi.number().integer(),
     page: Joi.number().integer(),

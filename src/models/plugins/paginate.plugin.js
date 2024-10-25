@@ -41,8 +41,26 @@ const paginate = (schema) => {
       : 1;
     const skip = (page - 1) * size;
 
-    const countPromise = this.countDocuments(filter).exec();
-    let docsPromise = this.find(filter).sort(sort).skip(skip).limit(size);
+    // remove search from filter
+    const filterObject = { ...filter };
+    if (filterObject.search) {
+      delete filterObject.search;
+    }
+
+    const countPromise = this.countDocuments(filterObject).exec();
+    let docsPromise = this.find(filterObject).sort(sort).skip(skip).limit(size);
+
+    // now use the search
+    if (filter.search) {
+      const search = filter.search;
+      const searchFilter = Object.keys(schema.obj).reduce((acc, key) => {
+        if (schema.obj[key].type === String) {
+          acc.push({ [key]: { $regex: search, $options: "i" } });
+        }
+        return acc;
+      }, []);
+      docsPromise = docsPromise.or(searchFilter);
+    }
 
     if (options.populate) {
       options.populate.split(",").forEach((populateOption) => {
