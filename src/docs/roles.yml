@@ -47,7 +47,7 @@ components:
     operationId: createRole
     summary: Create a role
     description: Only admins can create roles.
-    tags: [Admin]
+    tags: [Roles]
     security:
       - bearerAuth: []
     requestBody:
@@ -93,7 +93,7 @@ components:
     operationId: getRoles
     summary: Get all roles
     # description: Only admins can get all roles.
-    tags: [Admin]
+    tags: [Roles]
     security:
       - bearerAuth: []
     parameters:
@@ -114,7 +114,7 @@ components:
         schema:
           type: string
           default: createdAt
-        description: sort order
+        description: Sort by field such that the format is sortField:(desc|asc). Multiple sorting criteria should be separated by commas (,)
       - in: query
         name: name
         schema:
@@ -126,14 +126,25 @@ components:
           type: string
         description: role value
     responses:
-      "200":
+      '200':
         description: OK
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Roles'
+              type: object
+              properties:
+                results:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Roles'
+                totalPages:
+                  type: number
+                totalResults:
+                  type: number
+                page:
+                  type: number
+                size:
+                  type: number
       "401":
         $ref: '#/components/responses/Unauthorized'
       "403":
@@ -155,7 +166,7 @@ components:
     operationId: getRole
     summary: Get a role
     # description: Only admins can get roles.
-    tags: [Admin]
+    tags: [Roles]
     security:
       - bearerAuth: []
     responses:
@@ -177,7 +188,7 @@ components:
     operationId: updateRole
     summary: Update a role
     description: Only admins can update roles.
-    tags: [Admin]
+    tags: [Roles]
     security:
       - bearerAuth: []
     requestBody:
@@ -224,7 +235,7 @@ components:
     operationId: deleteRole
     summary: Delete a role
     description: Only admins can delete roles.
-    tags: [Admin]
+    tags: [Roles]
     security:
       - bearerAuth: []
     responses:

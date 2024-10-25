@@ -166,16 +166,27 @@ components:
         schema:
           type: string
           default: createdAt
-        description: Sort by field
+        description: Sort by field such that the format is sortField:(desc|asc). Multiple sorting criteria should be separated by commas (,)
     responses:
-      "200":
+      '200':
         description: OK
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: "#/components/schemas/Users"
+              type: object
+              properties:
+                results:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Users'
+                totalPages:
+                  type: number
+                totalResults:
+                  type: number
+                page:
+                  type: number
+                size:
+                  type: number
       "401":
         $ref: "#/components/responses/Unauthorized"
       "403":
