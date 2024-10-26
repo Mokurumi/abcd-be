@@ -38,14 +38,14 @@ router.post(
 router.post(
   "/logout",
   // validate(authValidation.logout),
-  auth('USER_PROFILE'),
+  auth('ANY_WITH_AUTH'),
   authController.logout
 );
 
 // refresh token
 router.post(
   "/refresh-token",
-  // auth('USER_PROFILE'),
+  // auth('ANY_WITH_AUTH'),
   validate(authValidation.refreshToken),
   authController.refreshToken
 );
@@ -67,7 +67,7 @@ router.post(
 // change password
 router.post(
   "/change-password",
-  auth('USER_PROFILE'),
+  auth('ANY_WITH_AUTH'),
   validate(authValidation.changePassword),
   authController.changePassword
 );
@@ -76,16 +76,16 @@ router.post(
 router.
   route("/profile")
   .get(
-    auth('USER_PROFILE'),
+    auth('ANY_WITH_AUTH'),
     authController.getUserProfile
   )
   .patch(
-    auth('USER_PROFILE'),
+    auth('ANY_WITH_AUTH'),
     validate(authValidation.updateProfile),
     authController.updateUserProfile
   )
   .delete(
-    auth('USER_PROFILE'),
+    auth('ANY_WITH_AUTH'),
     authController.deleteUserProfile
   );
 

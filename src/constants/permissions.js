@@ -4,7 +4,6 @@ const permissions = [
   'ROLE_MANAGEMENT',
   // User
   'USER_MANAGEMENT',
-  'USER_PROFILE',
 ];
 
 module.exports = permissions;

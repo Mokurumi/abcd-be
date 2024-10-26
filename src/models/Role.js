@@ -26,6 +26,14 @@ const roleSchema = new mongoose.Schema(
       type: [{ type: String, enum: permissions }],
       required: true,
       default: [],
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    updatedAt: {
+      type: Date,
+      default: null
     }
   },
   {
