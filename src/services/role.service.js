@@ -5,16 +5,16 @@ const permissions = require("../constants/permissions");
 
 /**
  * Add Role
- * @param {Object} roleBody
+ * @param {Object} requestBody
  * @returns {Promise<Role>}
  */
-const createRole = async (roleBody) => {
-  if (await Role.isRoleExisting(roleBody.name)) {
+const createRole = async (requestBody) => {
+  if (await Role.isRoleExisting(requestBody.name)) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Role already exists");
   }
 
   // check if permissions are in the permissions list
-  const rPermissions = roleBody.permissions;
+  const rPermissions = requestBody.permissions || [];
   if (rPermissions && rPermissions.length > 0) {
     for (let i = 0; i < rPermissions.length; i++) {
       if (!permissions.includes(rPermissions[i])) {
@@ -23,7 +23,12 @@ const createRole = async (roleBody) => {
     }
   }
 
-  return Role.create(roleBody);
+  // make sure the role has ANY_WITH_AUTH permission, by adding it if it does not exist
+  if (!rPermissions.includes('ANY_WITH_AUTH')) {
+    rPermissions.push('ANY_WITH_AUTH');
+  }
+
+  return Role.create(requestBody);
 };
 
 /**
@@ -46,7 +51,7 @@ const queryRoles = async (filter, options) => {
  * @returns {Promise<Role>}
  */
 const getRoleById = async (id) => {
-  return Role.findById(id);
+  return await Role.findById(id);
 };
 
 /**
@@ -77,7 +82,7 @@ const updateRoleById = async (roleId, updateBody) => {
   }
 
   // check if permissions are valid such that they exist in the database
-  const rPermissions = updateBody.permissions;
+  const rPermissions = updateBody.permissions || [];
   if (rPermissions && rPermissions.length > 0) {
     for (let i = 0; i < rPermissions.length; i++) {
       if (!permissions.includes(rPermissions[i])) {
@@ -86,22 +91,13 @@ const updateRoleById = async (roleId, updateBody) => {
     }
   }
 
+  // make sure the role has ANY_WITH_AUTH permission, by adding it if it does not exist
+  if (!rPermissions.includes('ANY_WITH_AUTH')) {
+    rPermissions.push('ANY_WITH_AUTH');
+  }
+
   Object.assign(role, updateBody);
   await role.save();
-  return role;
-};
-
-/**
- * Delete Role by id
- * @param {ObjectId} roleId
- * @returns {Promise<Role>}
- */
-const deleteRoleById = async (roleId) => {
-  const role = await getRoleById(roleId);
-  if (!role) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Role not found");
-  }
-  await Role.findByIdAndDelete(roleId);
   return role;
 };
 
@@ -110,6 +106,5 @@ module.exports = {
   queryRoles,
   getRoleById,
   getRoleByValue,
-  updateRoleById,
-  deleteRoleById,
+  updateRoleById
 };
