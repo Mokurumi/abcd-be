@@ -3,6 +3,7 @@ const validate = require("../middlewares/validate");
 const { authValidation } = require("../validations");
 const { authController } = require("../controllers");
 const auth = require("../middlewares/auth");
+const logoutAuth = require("../middlewares/logoutAuth");
 
 const router = express.Router();
 
@@ -37,8 +38,7 @@ router.post(
 // logout user
 router.post(
   "/logout",
-  // validate(authValidation.logout),
-  auth('ANY_WITH_AUTH'),
+  logoutAuth,
   authController.logout
 );
 
