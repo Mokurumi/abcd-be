@@ -59,15 +59,28 @@ const paginate = (schema) => {
     const countPromise = this.countDocuments(filterObject).exec();
     let docsPromise = this.find(filterObject).sort(sort).skip(skip).limit(size);
 
+    // Updated populate handling
     if (options.populate) {
-      options.populate.split(",").forEach((populateOption) => {
-        docsPromise = docsPromise.populate(
-          populateOption
-            .split(".")
-            .reverse()
-            .reduce((a, b) => ({ path: b, populate: a }))
-        );
-      });
+      if (typeof options.populate === "string") {
+        // Populate as string (e.g., "user,comments.user")
+        options.populate.split(",").forEach((populateOption) => {
+          docsPromise = docsPromise.populate(
+            populateOption
+              .split(".")
+              .reverse()
+              .reduce((a, b) => ({ path: b, populate: a }))
+          );
+        });
+      }
+      else if (Array.isArray(options.populate)) {
+        // Populate as array of objects with fields
+        options.populate.forEach((populateObj) => {
+          docsPromise = docsPromise.populate(populateObj);
+        });
+      } else if (typeof options.populate === "object") {
+        // Populate as a single object with fields
+        docsPromise = docsPromise.populate(options.populate);
+      }
     }
 
     docsPromise = docsPromise.exec();
