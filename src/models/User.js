@@ -89,6 +89,11 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    protected: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     isDeleted: {
       type: Boolean,
       default: false,

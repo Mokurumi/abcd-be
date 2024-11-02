@@ -34,10 +34,16 @@ const createUser = async (requestBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryUsers = async (filter, options) => {
-  const users = await User.paginate(filter, {
-    ...options,
-    populate: "role",
-  });
+  const users = await User.paginate(
+    {
+      ...filter,
+      protected: false,
+      isDeleted: false
+    },
+    {
+      ...options,
+      populate: "role",
+    });
   return users;
 };
 

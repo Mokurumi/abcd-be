@@ -64,7 +64,8 @@ const initializeSuperAdmin = async () => {
       role: superAdminRole._id,
       active: true,
       password: tempPassword,
-      firstTimeLogin: true
+      firstTimeLogin: true,
+      protected: true
     });
 
     // Generate registration token

@@ -4,15 +4,27 @@ const ApiError = require("../utils/ApiError");
 const { generateTempPassword } = require("../utils");
 const { catchAsync } = require("../utils/catchAsync");
 const {
-  userService,
   emailService,
+  roleService,
   tokenService,
+  userService,
 } = require("../services");
 
 
 const createUser = catchAsync(async (req, res) => {
 
   const tempPassword = generateTempPassword();
+
+  // check if role exists
+  const role = await roleService.getRoleById(req.body.role);
+  if (!role) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Role does not exist");
+  }
+
+  // if the role.value is super_admin, raise an error
+  if (role.value === "super_admin") {
+    throw new ApiError(httpStatus.BAD_REQUEST, "You cannot create a super admin user");
+  }
 
   // Create user account
   const user = await userService.createUser({
