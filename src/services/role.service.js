@@ -106,7 +106,7 @@ const updateRoleById = async (roleId, updateBody) => {
  * @returns {Promise<Role>}
  */
 const lookupRoles = async () => {
-  return Role.find({ active: true }).select("name _id");
+  return Role.find({ active: true, value: { $ne: "super_admin" } }).select("name _id");
 };
 
 module.exports = {
