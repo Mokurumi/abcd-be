@@ -67,6 +67,11 @@ const updateUser = catchAsync(async (req, res) => {
   res.send(user);
 });
 
+const lookupUsers = catchAsync(async (req, res) => {
+  const users = await userService.lookupUsers();
+  res.send(users);
+});
+
 const deleteUser = catchAsync(async (req, res) => {
   const { userId } = req.params;
 
@@ -80,5 +85,6 @@ module.exports = {
   getUsers,
   getUser,
   updateUser,
+  lookupUsers,
   deleteUser,
 };

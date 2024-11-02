@@ -10,14 +10,20 @@ const authRoute = require("./auth.route");
 const userRoute = require("./user.route");
 const roleRoute = require("./role.route");
 const uploadRoute = require("./upload.route");
+// lookup routes
+const lookupRoute = require("./lookups.route");
+
 
 const router = express.Router();
 
 const defaultRoutes = [
+  // common routes
   { path: "/auth", route: authRoute },
   { path: "/users", route: userRoute },
   { path: "/roles", route: roleRoute },
   { path: "/uploads", route: uploadRoute },
+  // lookup routes
+  { path: "/lookups", route: lookupRoute },
 ];
 
 const devRoutes = [

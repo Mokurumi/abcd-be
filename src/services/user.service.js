@@ -4,24 +4,24 @@ const { User, Role } = require("../models");
 
 /**
  * Create a user:
- * @param {Object} userBody
+ * @param {Object} requestBody
  * @returns {Promise<User>}
  */
-const createUser = async (userBody) => {
-  const checkEmail = await User.isEmailTaken(userBody.emailAddress);
-  const checkPhoneNumber = await User.isPhoneNumberTaken(userBody.phoneNumber);
+const createUser = async (requestBody) => {
+  const checkEmail = await User.isEmailTaken(requestBody.emailAddress);
+  const checkPhoneNumber = await User.isPhoneNumberTaken(requestBody.phoneNumber);
 
   if (checkEmail || checkPhoneNumber) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User already exists.");
   }
 
   // check if role exists
-  const role = await Role.findById(userBody.role);
+  const role = await Role.findById(requestBody.role);
   if (!role) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Role does not exist");
   }
 
-  return User.create(userBody);
+  return User.create(requestBody);
 };
 
 /**
@@ -36,7 +36,7 @@ const createUser = async (userBody) => {
 const queryUsers = async (filter, options) => {
   const users = await User.paginate(filter, {
     ...options,
-    // populate: "role",
+    populate: "role",
   });
   return users;
 };
@@ -58,7 +58,7 @@ const getUserById = async (id) => {
  * @returns {Promise<User>}
  */
 const getUserByEmail = async (emailAddress) => {
-  return User.findOne({ emailAddress });
+  return await User.findOne({ emailAddress });
 };
 
 /**
@@ -105,6 +105,16 @@ const updateUserById = async (userId, updateBody) => {
 };
 
 /**
+ * lookup users
+ * @returns {Promise<User>}
+ */
+const lookupUsers = async () => {
+  return User.find({ isDeleted: false, active: true })
+    .select("firstName lastName _id")
+    .sort({ firstName: 1 });
+};
+
+/**
  * Delete user by id
  * @param {ObjectId} userId
  * @returns {Promise<User>}
@@ -129,5 +139,6 @@ module.exports = {
   getUserByEmail,
   getUserByPhoneNumberOrEmail,
   updateUserById,
+  lookupUsers,
   deleteUserById,
 };

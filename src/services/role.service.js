@@ -101,10 +101,19 @@ const updateRoleById = async (roleId, updateBody) => {
   return role;
 };
 
+/**
+ * Lookup Roles
+ * @returns {Promise<Role>}
+ */
+const lookupRoles = async () => {
+  return Role.find({ active: true }).select("name _id");
+};
+
 module.exports = {
   createRole,
   queryRoles,
   getRoleById,
   getRoleByValue,
-  updateRoleById
+  updateRoleById,
+  lookupRoles
 };

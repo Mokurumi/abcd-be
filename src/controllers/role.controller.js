@@ -29,9 +29,9 @@ const updateRole = catchAsync(async (req, res) => {
   res.send(role);
 });
 
-const deleteRole = catchAsync(async (req, res) => {
-  await roleService.deleteRoleById(req.params.roleId);
-  res.status(httpStatus.NO_CONTENT).send();
+const lookupRoles = catchAsync(async (req, res) => {
+  const result = await roleService.lookupRoles();
+  res.send(result);
 });
 
 module.exports = {
@@ -39,5 +39,5 @@ module.exports = {
   getRoles,
   getRole,
   updateRole,
-  deleteRole,
+  lookupRoles
 };

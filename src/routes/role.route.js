@@ -14,7 +14,7 @@ router
     roleController.createRole
   )
   .get(
-    auth('ROLE_MANAGEMENT'),
+    auth('ANY_WITH_AUTH'),
     validate(roleValidation.getRoles),
     roleController.getRoles
   );
@@ -31,10 +31,5 @@ router
     validate(roleValidation.updateRole),
     roleController.updateRole
   );
-// .delete(
-//   auth('ROLE_MANAGEMENT'),
-//   validate(roleValidation.deleteRole),
-//   roleController.deleteRole
-// );
 
 module.exports = router;
