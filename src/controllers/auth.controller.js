@@ -128,28 +128,6 @@ const resetPassword = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
 
-  // Generate reset password token
-  const resetPasswordToken = await tokenService.generateResetPasswordToken(user.emailAddress);
-
-  // Send user reset password email
-  await emailService.sendResetPasswordEmail(user, resetPasswordToken);
-
-  res.status(httpStatus.OK).send({
-    message: "Reset password link sent successfully. Please check your email.",
-  });
-});
-
-/**
- * Verify reset password
- */
-const verifyResetPassword = catchAsync(async (req, res) => {
-  const { token, userId } = req.body;
-  const user = await authService.verifyResetPasswordToken(token, userId);
-
-  if (!user) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid link");
-  }
-
   // Generate temporary password
   const tempPassword = generateTempPassword();
   await userService.updateUserById(userId, {
@@ -157,11 +135,11 @@ const verifyResetPassword = catchAsync(async (req, res) => {
     firstTimeLogin: true,
   });
 
-  // Send user temporary password email
+  // Send user reset password email
   await emailService.sendTemporaryPasswordEmail(user, tempPassword);
 
   res.status(httpStatus.OK).send({
-    message: "Verification successful. Check email for temporary password.",
+    message: "Temporary password sent successfully. Please check your email.",
   });
 });
 
@@ -258,7 +236,6 @@ module.exports = {
   logout,
   refreshToken,
   resetPassword,
-  verifyResetPassword,
   changePassword,
   getUserProfile,
   updateUserProfile,

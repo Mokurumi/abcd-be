@@ -142,24 +142,6 @@ const refreshAuth = async (refreshToken) => {
 };
 
 /**
- * Verify reset password token
- * @param {string} token
- * @param {string} userId
- * @returns {Promise}
- */
-const verifyResetPasswordToken = async (token, userId) => {
-  const user = await userService.getUserById(userId);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-  }
-  const isValid = await tokenService.verifyToken(token, tokenTypes.RESET_PASSWORD, user);
-  if (!isValid) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid token");
-  }
-  return user;
-};
-
-/**
  * Verify delete profile token
  * @param {string} token
  * @param {string} userId
@@ -184,6 +166,5 @@ module.exports = {
   logout,
   logoutAllInstances,
   refreshAuth,
-  verifyResetPasswordToken,
   verifyDeleteProfileToken,
 };

@@ -57,13 +57,6 @@ router.post(
   authController.resetPassword
 );
 
-// verify reset password
-router.post(
-  "/verify-reset-password",
-  validate(authValidation.verifyResetPassword),
-  authController.verifyResetPassword
-);
-
 // change password
 router.post(
   "/change-password",

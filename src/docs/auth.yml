@@ -7,8 +7,8 @@ components:
     Token:
       type: object
       properties:
-        id:
-          type: string
+        # _id:
+        #   type: string
         token:
           type: string
         user:
@@ -21,7 +21,7 @@ components:
         blacklisted:
           type: boolean
       example:
-        id: 5ebac534954b54139806c112
+        # _id: 5ebac534954b54139806c112
         token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlYmFjNTM0OTU0YjU0MTM5ODA2YzExMiIsImlhdCI6MTU4OTYwNjYwMiwiZXhwIjoxNTg5NjA2NjYyfQ.1
         expires: 2020-05-13T16:00:00.000Z
 
@@ -34,11 +34,11 @@ components:
           $ref: "#/components/schemas/Token"
       # example:
       #   refreshToken:
-      #     id: 5ebac534954b54139806c112
+      #     _id: 5ebac534954b54139806c112
       #     token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlYmFjNTM0OTU0YjU0MTM5ODA2YzExMiIsImlhdCI6MTU4OTYwNjYwMiwiZXhwIjoxNTg5NjA2NjYyfQ.1
       #     expires: 2020-05-13T16:00:00.000Z
       #   authToken:
-      #     id: 5ebac534954b54139806c112
+      #     _id: 5ebac534954b54139806c112
       #     token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlYmFjNTM0OTU0YjU0MTM5ODA2YzExMiIsImlhdCI6MTU4OTYwNjYwMiwiZXhwIjoxNTg5NjA2NjYyfQ.1
       #     expires: 2020-05-13T16:00:00.000Z
 
@@ -299,44 +299,14 @@ components:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Users"
+              type: object
+              properties:
+                message:
+                  type: string
+            example:
+              message: Temporary password sent successfully. Please check your email.
       "400":
         $ref: "#/components/responses/InvalidCredentials"
-      "401":
-        $ref: "#/components/responses/Unauthorized"
-      "403":
-        $ref: "#/components/responses/Forbidden"
-      "404":
-        $ref: "#/components/responses/NotFound"
-
-/auth/verify-reset-password:
-  post:
-    operationId: verifyResetPassword
-    summary: Verify user password reset
-    tags: [Auth]
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - userId
-              - token
-            properties:
-              userId:
-                type: string
-              token:
-                type: string
-    responses:
-      "200":
-        description: Password reset verified
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Users"
-      "400":
-        $ref: "#/components/responses/InvalidToken"
       "401":
         $ref: "#/components/responses/Unauthorized"
       "403":

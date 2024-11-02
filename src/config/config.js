@@ -19,7 +19,6 @@ const envVarsSchema = Joi.object()
     JWT_REFRESH_EXPIRE_MINUTES: Joi.string().required().description("JWT refresh expire time"),
     JWT_VERIFY_REGISTER_EMAIL_EXPIRATION_MINUTES: Joi.number().required().description("JWT expire time for verify register email"),
     JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: Joi.number().required().description("JWT expire time for verify email"),
-    JWT_RESET_PASSWORD_EXPIRATION_MINUTES: Joi.number().required().description("JWT expire time for reset password"),
     // EMAIL
     SMTP_HOST: Joi.string().description("server that will send the emails"),
     SMTP_PORT: Joi.number().description("port to connect to the email server"),

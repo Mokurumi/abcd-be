@@ -118,30 +118,6 @@ const sendCreateUserEmail = async (user, token, tempPassword) => {
 };
 
 /**
- * Send reset password email
- * @param {string} to
- * @param {string} token
- * @returns {Promise}
- */
-const sendResetPasswordEmail = async (user, token) => {
-  const subject = "Reset password";
-  const url = config.web_url[config.env];
-  const resetPasswordUrl = `${url}/auth/reset-password?token=${token}&id=${user._id}`;
-  const message = `
-    <p style="font-size: 16px;">Please reset your account password by clicking on the link below.</p>
-    <p style="font-size: 16px; margin-bottom: 30px;">
-      <a href="${resetPasswordUrl}" style="text-decoration: none; color: white; font-weight: bold; text-align: center; display: inline-block; background-color: #193E3F; padding: 8px 16px;" target="_blank">
-        Reset password
-      </a>
-    </p>
-    <p style="font-size: 16px; margin-bottom: 30px;">If you did not request any password recovery, then ignore this email.</p>
-  `;
-
-  const html = emailTemplate(user, message);
-  await sendEmail(user.emailAddress, subject, null, html);
-};
-
-/**
  * Send temporary password email
  * @param {string} user
  * @param {string} tempPassword
@@ -250,7 +226,6 @@ const sendDeleteProfileEmail = async (user, deleteProfileToken) => {
 module.exports = {
   sendRegistrationEmail,
   sendCreateUserEmail,
-  sendResetPasswordEmail,
   sendTemporaryPasswordEmail,
   sendVerificationEmail,
   sendOTPCodeEmail,
