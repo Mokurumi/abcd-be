@@ -27,14 +27,18 @@ const roleSchema = new mongoose.Schema(
       required: true,
       default: [],
     },
+    protected: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     createdAt: {
       type: Date,
       default: Date.now,
     },
     updatedAt: {
       type: Date,
-      default: null
-    }
+    },
   },
   {
     timestamps: true,

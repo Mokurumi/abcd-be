@@ -93,17 +93,16 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
     createdAt: {
       type: Date,
       default: Date.now,
     },
     updatedAt: {
       type: Date,
-      default: null
-    },
-    deletedAt: {
-      type: Date,
-      default: null,
     },
   },
   {
@@ -152,6 +151,7 @@ userSchema.methods.isPasswordMatch = async function (password) {
  * @returns {Promise<void>}
  */
 userSchema.methods.setPassword = async function (password) {
+  // TODO: encrypt using RSA
   this.password = await bcrypt.hash(password, 8);
 };
 

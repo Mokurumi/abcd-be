@@ -35,6 +35,9 @@ const envVarsSchema = Joi.object()
     CLOUDINARY_NAME: Joi.string().required().description("Cloudinary name"),
     CLOUDINARY_API_KEY: Joi.string().required().description("Cloudinary api key"),
     CLOUDINARY_API_SECRET: Joi.string().required().description("Cloudinary api secret"),
+    // SUPER ADMIN
+    SUPER_ADMIN_EMAIL: Joi.string().required().description("Super admin email"),
+    SUPER_ADMIN_PHONE: Joi.string().required().description("Super admin phone"),
   })
   .unknown();
 
@@ -49,6 +52,10 @@ module.exports = {
   version: envVars.VERSION,
   port: envVars.PORT,
   logo: envVars.LOGO,
+  superAdmin: {
+    email: envVars.SUPER_ADMIN_EMAIL,
+    phone: envVars.SUPER_ADMIN_PHONE,
+  },
   mongoose: {
     url: envVars.DB_CONNECTION + (envVars.NODE_ENV === "qa" ? "-qa" : ""),
     options: {},

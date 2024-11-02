@@ -4,7 +4,7 @@ const { objectId, phoneNumber } = require("./custom.validation");
 const createUser = {
   body: Joi.object().keys({
     firstName: Joi.string().required(),
-    middleName: Joi.string(),
+    middleName: Joi.string().allow("").allow(null),
     lastName: Joi.string().required(),
     emailAddress: Joi.string().email().required(),
     phoneNumber: Joi.string().required().custom(phoneNumber),
@@ -15,7 +15,6 @@ const createUser = {
 const getUsers = {
   query: Joi.object().keys({
     firstName: Joi.string(),
-    middleName: Joi.string(),
     lastName: Joi.string(),
     emailAddress: Joi.string().email(),
     phoneNumber: Joi.string().custom(phoneNumber),
