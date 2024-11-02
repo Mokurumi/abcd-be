@@ -130,7 +130,7 @@ const resetPassword = catchAsync(async (req, res) => {
 
   // Generate temporary password
   const tempPassword = generateTempPassword();
-  await userService.updateUserById(userId, {
+  await userService.updateUserById(user._id, {
     password: tempPassword,
     firstTimeLogin: true,
   });
