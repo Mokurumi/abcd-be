@@ -1,7 +1,6 @@
-const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
 const { catchAsync } = require("../utils/catchAsync");
-const { generateOTP, generateTempPassword } = require("../utils");
+const { formatPhoneNumber, generateOTP, generateTempPassword } = require("../utils");
 // const sendSMS = require("../config/sendSMS");
 const {
   authService,
@@ -11,6 +10,7 @@ const {
   emailService,
   // notificationServicec
 } = require("../services");
+const { tokenTypes } = require("../constants/tokens");
 
 /**
  * Register a new user
@@ -21,7 +21,7 @@ const register = catchAsync(async (req, res) => {
 
   const defaultRole = await roleService.getRoleByValue("user");
   if (!defaultRole) {
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Default role not found");
+    throw new ApiError(500, "Default role not found");
   }
 
   // Create user account
@@ -37,8 +37,7 @@ const register = catchAsync(async (req, res) => {
   await emailService.sendRegistrationEmail(user, registrationToken);
 
   // response
-  // res.status(httpStatus.CREATED).send(user);
-  res.status(httpStatus.CREATED).send({
+  res.status(201).send({
     message: "Registration successful. Please check your email for activation link.",
   });
 });
@@ -53,9 +52,9 @@ const verifyRegistration = catchAsync(async (req, res) => {
   const user = await authService.verifyRegistrationToken(token, userId);
 
   if (!user) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid token");
+    throw new ApiError(401, "Invalid token");
   }
-  res.status(httpStatus.OK).send({
+  res.status(200).send({
     message: "Email verified successfully. Please login to continue.",
   });
 });
@@ -69,12 +68,12 @@ const resendRegistrationEmail = catchAsync(async (req, res) => {
   const { userId } = req.body;
   const user = await userService.getUserById(userId);
   if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+    throw new ApiError(404, "User not found");
   }
 
   // if the user is already active and email verified
   if (user.active && user.isEmailVerified) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Your account is already active. Please login to continue.");
+    throw new ApiError(400, "Your account is already active. Please login to continue.");
   }
 
   // Generate registration token for email
@@ -83,8 +82,8 @@ const resendRegistrationEmail = catchAsync(async (req, res) => {
   // Send user one time registration email to set up their account credentials
   await emailService.sendRegistrationEmail(user, registrationToken);
 
-  res.status(httpStatus.OK).send({
-    message: "Email sent successfully. Please check your email for registration link.",
+  res.status(200).send({
+    message: "Email sent successfully.",
   });
 });
 
@@ -102,10 +101,14 @@ const login = catchAsync(async (req, res) => {
  * Logout
  */
 const logout = catchAsync(async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  await authService.logout(token);
-  res.status(httpStatus.ACCEPTED).send({
-    message: "Logout successfully.",
+  const { token } = req.body;
+
+  const refreshTokenDoc = await tokenService.verifyToken(token, tokenTypes.REFRESH);
+
+  await tokenService.deleteToken(refreshTokenDoc.token, tokenTypes.REFRESH);
+
+  res.status(202).send({
+    message: "Logout successful.",
   });
 });
 
@@ -123,9 +126,10 @@ const refreshToken = catchAsync(async (req, res) => {
  */
 const resetPassword = catchAsync(async (req, res) => {
   const { emailAddress, phoneNumber } = req.body;
-  const user = await userService.getUserByPhoneNumberOrEmail(emailAddress || phoneNumber);
+  const user = await userService.getUserByPhoneNumberOrEmail(emailAddress || formatPhoneNumber(phoneNumber));
   if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+    throw new ApiError(404, "User not found");
+    // throw new ApiError(404, "User not found");
   }
 
   // Generate temporary password
@@ -138,7 +142,7 @@ const resetPassword = catchAsync(async (req, res) => {
   // Send user reset password email
   await emailService.sendTemporaryPasswordEmail(user, tempPassword);
 
-  res.status(httpStatus.OK).send({
+  res.status(200).send({
     message: "Temporary password sent successfully. Please check your email.",
   });
 });
@@ -150,11 +154,11 @@ const changePassword = catchAsync(async (req, res) => {
   const { userId, currentPassword, newPassword } = req.body;
   const user = await userService.getUserById(userId);
   if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+    throw new ApiError(404, "User not found");
   }
 
   if (!(await user.isPasswordMatch(currentPassword))) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Incorrect password");
+    throw new ApiError(401, "Incorrect password");
   }
 
   await userService.updateUserById(userId, {
@@ -164,7 +168,7 @@ const changePassword = catchAsync(async (req, res) => {
 
   authService.logoutAllInstances(userId);
 
-  res.status(httpStatus.OK).send({
+  res.status(200).send({
     message: "Password changed successfully.",
   });
 });
@@ -204,7 +208,7 @@ const deleteUserProfile = catchAsync(async (req, res) => {
   // send user delete profile email
   await emailService.sendDeleteProfileEmail(user, deleteProfileToken);
 
-  res.status(httpStatus.OK).send({
+  res.status(200).send({
     message: "Delete Request Received. Check your email for confirmation.",
   });
 });
@@ -217,12 +221,12 @@ const verifyDeleteProfile = catchAsync(async (req, res) => {
   const user = await authService.verifyDeleteProfileToken(token, userId);
 
   if (!user) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid link");
+    throw new ApiError(401, "Invalid link");
   }
 
   await userService.deleteUserById(userId);
 
-  res.status(httpStatus.OK).send({
+  res.status(200).send({
     message: "Profile deleted successfully.",
   });
 });

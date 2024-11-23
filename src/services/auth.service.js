@@ -1,7 +1,5 @@
-const httpStatus = require("http-status");
 const { isEmpty } = require("lodash");
 const jwt = require("jsonwebtoken");
-const config = require("../config/config");
 const Token = require("../models/Token");
 const tokenService = require("./token.service");
 const userService = require("./user.service");
@@ -19,11 +17,11 @@ const { tokenTypes } = require("../constants/tokens");
 const verifyRegistrationToken = async (token, userId) => {
   const user = await userService.getUserById(userId);
   if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+    throw new ApiError(404, "User not found");
   }
   const isValid = await tokenService.verifyToken(token, tokenTypes.VERIFY_REGISTRATION, user);
   if (!isValid) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid token");
+    throw new ApiError(401, "Invalid token");
   }
   user.isEmailVerified = true;
   user.active = true;
@@ -42,7 +40,7 @@ const loginUser = async (username, password) => {
   const user = await userService.getUserByPhoneNumberOrEmail(username);
 
   if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Incorrect username or password");
+    throw new ApiError(404, "Incorrect username or password");
   }
 
   let failedLogin = false;
@@ -56,25 +54,25 @@ const loginUser = async (username, password) => {
     await emailService.sendRegistrationEmail(user, registrationToken);
 
     failedLogin = true;
-    throw new ApiError(httpStatus.FOUND, "Check your email for an activation link to set up your account");
+    throw new ApiError(403, "Check your email for an activation link to set up your account");
   }
 
   // Account not active
   if (!user.active && !user.isEmailVerified) {
     failedLogin = true;
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Your account is not yet active. Please check your email for activation link.");
+    throw new ApiError(401, "Your account is not yet active. Please check your email for activation link.");
   }
 
   // Email or password incorrect
   if (!user || !(await user.isPasswordMatch(password))) {
     failedLogin = true;
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Incorrect username or password");
+    throw new ApiError(401, "Incorrect username or password");
   }
 
   // Account is disabled
   if (!user.active && !!user.isEmailVerified) {
     failedLogin = true;
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Your account is disabled. Kindly contact support.");
+    throw new ApiError(401, "Your account is disabled. Kindly contact support.");
   }
 
   // update lastLogin date
@@ -87,28 +85,6 @@ const loginUser = async (username, password) => {
   await user.save();
 
   return user;
-};
-
-/**
- * Logout
- * @param {string} authToken
- * @returns {Promise}
- */
-const logout = async (authToken) => {
-
-  const payload = jwt.verify(authToken, config.jwt.secret);
-  const authTokenExp = new Date(payload.exp * 1000);
-
-  const refreshTokenDoc = await Token.findOne({
-    type: tokenTypes.REFRESH,
-    blacklisted: false,
-    generatedAuthExp: { $gte: authTokenExp },
-  });
-  if (!refreshTokenDoc) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Not found");
-  }
-
-  await tokenService.deleteToken(refreshTokenDoc.token, tokenTypes.REFRESH);
 };
 
 /**
@@ -137,7 +113,7 @@ const refreshAuth = async (refreshToken) => {
   }
   catch (error) {
     console.log(error);
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid token");
+    throw new ApiError(401, "Invalid token");
   }
 };
 
@@ -150,11 +126,11 @@ const refreshAuth = async (refreshToken) => {
 const verifyDeleteProfileToken = async (token, userId) => {
   const user = await userService.getUserById(userId);
   if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+    throw new ApiError(404, "User not found");
   }
   const isValid = await tokenService.verifyToken(token, tokenTypes.DELETE_PROFILE, user);
   if (!isValid) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid token");
+    throw new ApiError(401, "Invalid token");
   }
   return user;
 };
@@ -163,7 +139,6 @@ const verifyDeleteProfileToken = async (token, userId) => {
 module.exports = {
   verifyRegistrationToken,
   loginUser,
-  logout,
   logoutAllInstances,
   refreshAuth,
   verifyDeleteProfileToken,
