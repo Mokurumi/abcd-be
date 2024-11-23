@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const ApiError = require("../utils/ApiError");
 const config = require("../config/config");
 
-const logoutAuth = (req, res, next) => {
+const logoutAuth = () => async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
     return next(new ApiError(401, "No token provided"));
