@@ -12,13 +12,8 @@ const swaggerDef = {
     // },
   },
   servers: [
-    // local
-    {
-      url: `http://localhost:${config.port}`,
-    },
-    // dev
-    // qa
-    // prod
+    // local, dev, qa, prod
+    { url: config.api_url[config.env || 'local'], },
   ],
 };
 

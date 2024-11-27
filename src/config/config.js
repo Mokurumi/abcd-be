@@ -6,7 +6,7 @@ dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const envVarsSchema = Joi.object()
   .keys({
-    NODE_ENV: Joi.string().valid("prod", "dev", "qa").required(),
+    NODE_ENV: Joi.string().valid("prod", "dev", "qa", "local").required(),
     VERSION: Joi.string().required().description("Version of the app"),
     PORT: Joi.number().default(3000),
     LOGO: Joi.string().required().description("Logo path"),
@@ -30,6 +30,11 @@ const envVarsSchema = Joi.object()
     WEB_URL_DEV: Joi.string().required().description("DEV WEB url"),
     WEB_URL_QA: Joi.string().required().description("QA WEB url"),
     WEB_URL_PROD: Joi.string().required().description("PROD WEB url"),
+    // API URLS
+    API_URL_LOCAL: Joi.string().required().description("LOCAL API url"),
+    API_URL_DEV: Joi.string().required().description("DEV API url"),
+    API_URL_QA: Joi.string().required().description("QA API url"),
+    API_URL_PROD: Joi.string().required().description("PROD API url"),
     // CLOUDINARY
     CLOUDINARY_NAME: Joi.string().required().description("Cloudinary name"),
     CLOUDINARY_API_KEY: Joi.string().required().description("Cloudinary api key"),
@@ -87,6 +92,12 @@ module.exports = {
     dev: envVars.WEB_URL_DEV,
     qa: envVars.WEB_URL_QA,
     prod: envVars.WEB_URL_PROD
+  },
+  api_url: {
+    local: envVars.API_URL_LOCAL,
+    dev: envVars.API_URL_DEV,
+    qa: envVars.API_URL_QA,
+    prod: envVars.API_URL_PROD
   },
   cloudinary: {
     name: envVars.CLOUDINARY_NAME,

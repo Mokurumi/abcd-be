@@ -39,7 +39,7 @@ defaultRoutes.forEach((route) => {
   router.use(route.path, route.route);
 });
 
-if (config.env === "dev") {
+if (config.env === "dev" || config.env === "qa" || config.env === "local") {
   devRoutes.forEach((route) => {
     router.use(route.path, route.route);
   });
