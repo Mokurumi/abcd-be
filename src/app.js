@@ -6,7 +6,6 @@ const mongoSanitize = require("express-mongo-sanitize");
 const compression = require("compression");
 const cors = require("cors");
 const passport = require("passport");
-const httpStatus = require("http-status");
 // configs
 const config = require("./config/config");
 const morgan = require("./config/morgan");
@@ -20,7 +19,7 @@ const ApiError = require("./utils/ApiError");
 
 const app = express();
 
-if (config.env !== "qa") {
+if (config.env !== "prod") {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);
 }
@@ -42,17 +41,25 @@ app.use(mongoSanitize());
 // gzip compression
 app.use(compression());
 
-// enable cors
-app.use(
-  cors({
-    origin: [
+// allow cors based on environment
+app.use(cors({
+  origin: config.env === "prod"
+    ? [
+      config.api_url.prod,
+      config.web_url.prod,
+    ]
+    : [
+      config.api_url[config.env],
+      config.web_url[config.env],
       "http://localhost:3100",
       "http://localhost:3101",
       "http://localhost:3102",
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "http://localhost:3002",
     ],
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-  })
-);
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+}));
 
 // jwt authentication
 app.use(passport.initialize());
@@ -68,7 +75,7 @@ app.use("/", routes);
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
-  next(new ApiError(httpStatus.NOT_FOUND, "Not found"));
+  next(new ApiError(404, "Not found"));
 });
 
 // convert error to ApiError, if needed
