@@ -1,7 +1,7 @@
 const { Role, User } = require("../models");
 const permissions = require("../constants/permissions");
 const config = require("../config/config");
-const { emailService, userService, tokenService } = require("../services");
+const { emailService, tokenService, userService } = require("../services");
 const { generateTempPassword } = require("../utils");
 
 
@@ -17,6 +17,9 @@ const initializeRoles = async () => {
       protected: true
     });
   }
+  else {
+    await Role.updateOne({ value: "super_admin" }, { permissions: permissions });
+  }
 
   const userRole = await Role.findOne({ value: "user" });
   if (!userRole) {
@@ -24,9 +27,12 @@ const initializeRoles = async () => {
       name: "User",
       value: "user",
       active: true,
-      permissions: ['ANY_WITH_AUTH'],
+      permissions: ['ANY_WITH_AUTH', 'OWNER'],
       protected: true
     });
+  }
+  else {
+    await Role.updateOne({ value: "user" }, { permissions: ['ANY_WITH_AUTH', 'OWNER'] });
   }
 
   await initializeSuperAdmin();

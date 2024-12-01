@@ -1,7 +1,6 @@
 const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
 const { Upload } = require("../models");
-const userService = require("./user.service");
 const { uploadFile, deleteFiles } = require("../utils/docUtil");
 const categories = require("../constants/uploadCategories");
 

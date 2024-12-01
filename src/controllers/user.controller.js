@@ -39,7 +39,10 @@ const createUser = catchAsync(async (req, res) => {
   await emailService.sendCreateUserEmail(user, registrationToken, tempPassword);
 
   // return user object
-  res.status(httpStatus.CREATED).send(user);
+  res.status(201).send({
+    user,
+    message: "User created successfully",
+  });
 });
 
 const getUsers = catchAsync(async (req, res) => {
@@ -64,23 +67,44 @@ const getUsers = catchAsync(async (req, res) => {
 });
 
 const getUser = catchAsync(async (req, res) => {
-  const user = await userService.getUserById(req.params.userId);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  // if req.user is equal to the user being fetched, return the user object
+  if (req.user.id === req.params.userId) {
+    return res.send(req.user);
   }
-  res.send(user);
+  else {
+    // ensure that the user had USER_MANAGEMENT permission
+    if (!req.user.role.permissions.includes("USER_MANAGEMENT")) {
+      throw new ApiError(httpStatus.FORBIDDEN, "Forbidden");
+    }
+    else {
+      const user = await userService.getUserById(req.params.userId);
+      if (!user) {
+        throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+      }
+      res.send(user);
+    }
+  }
 });
 
 const updateUser = catchAsync(async (req, res) => {
+  // ensure req.user is the same as the user being updated or the user has USER_MANAGEMENT permission
+  if (req.user._id?.toString() !== req.params.userId || !req.user.role.permissions.includes("USER_MANAGEMENT")) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Forbidden");
+  }
+
   const user = await userService.updateUserById(req.params.userId, {
     ...req.body,
   });
-
-  res.send(user);
+  res.send({
+    user,
+    message: "User updated successfully",
+  });
 });
 
 const lookupUsers = catchAsync(async (req, res) => {
-  const users = await userService.lookupUsers();
+  const users = await userService.lookupUsers(
+    req.query.active ? { active: req.query.active } : {}
+  );
   res.send(users);
 });
 
@@ -89,7 +113,7 @@ const deleteUser = catchAsync(async (req, res) => {
 
   await userService.deleteUserById(userId);
 
-  res.status(httpStatus.OK).send({ message: "User account suspended successfully." });
+  res.status(httpStatus.OK).send({ message: "User account deleted successfully." });
 });
 
 module.exports = {

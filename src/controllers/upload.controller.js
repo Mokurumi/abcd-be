@@ -1,5 +1,4 @@
 const httpStatus = require("http-status");
-const pick = require("../utils/pick");
 const ApiError = require("../utils/ApiError");
 const { catchAsync } = require("../utils/catchAsync");
 const {
@@ -8,14 +7,26 @@ const {
 } = require("../services");
 
 
+const getUser = async (owner, currentUser) => {
+  if (currentUser._id.toString() === owner) {
+    return;
+  }
+  else if (!currentUser.role.permissions.includes("USER_MANAGEMENT")) {
+    throw new ApiError(403, "Forbidden");
+  }
+  else {
+    const user = await userService.getUserById(owner);
+    if (!user) {
+      throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+    }
+  }
+};
+
 const userProfileImage = catchAsync(async (req, res) => {
   const file = req.file;
   const owner = req.body.owner;
 
-  const user = await userService.getUserById(owner);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-  }
+  await getUser(owner, req.user);
 
   // verify that the file exists
   if (!file) {
@@ -39,10 +50,7 @@ const userProfileImage = catchAsync(async (req, res) => {
 const deleteUpload = catchAsync(async (req, res) => {
   const { owner, uploadId } = req.params;
 
-  const user = await userService.getUserById(owner);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-  }
+  await getUser(owner, req.user);
 
   // delete file from cloudinary
   await uploadService.deleteUpload(owner, uploadId);
@@ -53,10 +61,7 @@ const deleteUpload = catchAsync(async (req, res) => {
 const deleteUploads = catchAsync(async (req, res) => {
   const { owner, category } = req.params;
 
-  const user = await userService.getUserById(owner);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-  }
+  await getUser(owner, req.user);
 
   await uploadService.deleteMultipleFiles(owner, category);
 

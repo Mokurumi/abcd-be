@@ -14,7 +14,7 @@ router
     userController.createUser
   )
   .get(
-    // auth('USER_MANAGEMENT'), // Open for testing
+    auth('USER_MANAGEMENT'),
     validate(userValidation.getUsers),
     userController.getUsers
   );
@@ -22,17 +22,17 @@ router
 router
   .route("/:userId")
   .get(
-    auth('USER_MANAGEMENT'),
+    auth('OWNER', 'USER_MANAGEMENT'),
     validate(userValidation.getUser),
     userController.getUser
   )
   .patch(
-    auth('USER_MANAGEMENT'),
+    auth('OWNER', 'USER_MANAGEMENT'),
     validate(userValidation.updateUser),
     userController.updateUser
   )
   .delete(
-    auth('USER_MANAGEMENT'),
+    auth('OWNER', 'USER_MANAGEMENT'),
     validate(userValidation.deleteUser),
     userController.deleteUser
   );

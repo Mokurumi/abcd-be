@@ -14,7 +14,7 @@ router
     roleController.createRole
   )
   .get(
-    auth('ANY_WITH_AUTH'),
+    auth('ROLE_MANAGEMENT'),
     validate(roleValidation.getRoles),
     roleController.getRoles
   );
@@ -22,7 +22,7 @@ router
 router
   .route("/:roleId")
   .get(
-    auth('ROLE_MANAGEMENT'),
+    auth('ANY_WITH_AUTH'),
     validate(roleValidation.getRole),
     roleController.getRole
   )
