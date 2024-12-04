@@ -48,16 +48,18 @@ app.use(cors({
       config.api_url.prod,
       config.web_url.prod,
     ]
-    : [
-      config.api_url[config.env],
-      config.web_url[config.env],
-      "http://localhost:3100",
-      "http://localhost:3101",
-      "http://localhost:3102",
-      "http://localhost:3000",
-      "http://localhost:3001",
-      "http://localhost:3002",
-    ],
+    // : [
+    //   config.api_url[config.env],
+    //   config.web_url[config.env],
+    //   "http://localhost:3100",
+    //   "http://localhost:3101",
+    //   "http://localhost:3102",
+    //   "http://localhost:3000",
+    //   "http://localhost:3001",
+    //   "http://localhost:3002",
+    // ],
+    // allow any origin
+    : "*",
   methods: ["GET", "POST", "PATCH", "DELETE"],
 }));
 
