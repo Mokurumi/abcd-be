@@ -2,6 +2,9 @@ tags:
   - name: Auth
     description: Authentication Functions
 
+  - name: Lookups
+    # description: Contribution Management
+
   - name: Users
     description: User Management
 
