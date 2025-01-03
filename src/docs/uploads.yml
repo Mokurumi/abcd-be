@@ -7,35 +7,36 @@ components:
     Uploads:
       type: object
       properties:
-        id:
+        _id:
           type: string
         docURL:
           type: string
         public_id:
           type: string
-        # category:
-        #   type: string
+        category:
+          type: string
+          enum:
+            - PROFILE_IMG
         owner:
           type: string
         createdBy:
           type: string
       example:
-        id: 5ebac534954b54139806c112
+        _id: 5ebac534954b54139806c112
         docURL: https://res.cloudinary.com/dx3wzv7xv/image/upload/v1589426820/5ebac534954b54139806c112-2020-05-14T14:33:40.000Z-user1.jpg
         public_id: 5ebac534954b54139806c112-2020-05-14T14:33:40.000Z-user1.jpg
-        # category: PROFILE_IMG
+        category: PROFILE_IMG
         owner: 5ebac534954b54139806c112
         createdBy: 5ebac534954b54139806c112
 
   responses:
-
     # Upload already defined
     DuplicateUpload:
       description: Duplicate Upload
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
             code: 400
             message: Upload already exists
@@ -65,7 +66,7 @@ components:
               owner:
                 type: string
     responses:
-      '200':
+      "200":
         description: Upload successful
         content:
           application/json:
@@ -78,8 +79,8 @@ components:
             example:
               url: https://res.cloudinary.com/dx3wzv7xv/image/upload/v1589426820/5ebac534954b54139806c112-2020-05-14T14:33:40.000Z-user1.jpg
 
-      '400':
-        $ref: '#/components/responses/DuplicateUpload'
+      "400":
+        $ref: "#/components/responses/DuplicateUpload"
 
 /uploads/deleteUploads/{owner}/{category}:
   # Delete an upload
@@ -105,19 +106,19 @@ components:
           type: string
         enum: [PROFILE_IMG]
     responses:
-      '200':
+      "200":
         description: Upload deleted
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Uploads'
+              $ref: "#/components/schemas/Uploads"
 
-      '404':
+      "404":
         description: Upload not found
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Error'
+              $ref: "#/components/schemas/Error"
             example:
               code: 404
               message: Upload not found
@@ -145,19 +146,19 @@ components:
         schema:
           type: string
     responses:
-      '200':
+      "200":
         description: Upload deleted
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Uploads'
+              $ref: "#/components/schemas/Uploads"
 
-      '404':
+      "404":
         description: Upload not found
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Error'
+              $ref: "#/components/schemas/Error"
             example:
               code: 404
               message: Upload not found

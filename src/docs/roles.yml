@@ -7,7 +7,7 @@ components:
     Roles:
       type: object
       properties:
-        id:
+        _id:
           type: string
         name:
           type: string
@@ -19,8 +19,11 @@ components:
           type: array
           items:
             type: string
+            enum:
+              - ROLE_MANAGEMENT
+              - USER_MANAGEMENT
       example:
-        id: 5ebac534954b54139806c112
+        _id: 5ebac534954b54139806c112
         name: Admin
         value: admin
         active: true

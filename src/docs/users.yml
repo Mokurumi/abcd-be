@@ -7,7 +7,7 @@ components:
     Users:
       type: object
       properties:
-        id:
+        _id:
           type: string
         firstName:
           type: string
@@ -28,7 +28,7 @@ components:
         role:
           type: object
           properties:
-            id:
+            _id:
               type: string
             name:
               type: string
@@ -46,6 +46,8 @@ components:
           type: boolean
         active:
           type: boolean
+        firstTimeLogin:
+          type: boolean
         createdAt:
           type: string
         updatedAt:
@@ -56,8 +58,11 @@ components:
           type: string
         isDeleted:
           type: boolean
+        deletedAt:
+          type: string
+          format: date-time
       example:
-        id: 5ebac534954b54139806c112
+        _id: 5ebac534954b54139806c112
         firstName: John
         lastName: Doe
         middleName: Doe
@@ -65,6 +70,7 @@ components:
         phoneNumber: 2547XXXXXXX
         profile_img: https://example.com/image.jpg
         role: 5ebac534954b54139806c112
+        firstTimeLogin: true
         isPhoneVerified: true
         isEmailVerified: true
         active: true
@@ -73,6 +79,7 @@ components:
         lastLogin: 2020-05-12T09:00:00.000Z
         lastFailedLogin: 2020-05-12T09:00:00.000Z
         isDeleted: false
+        deletedAt: 2020-05-12T09:00:00.000Z
 
   responses:
 
