@@ -60,9 +60,9 @@ components:
               file:
                 type: string
                 format: binary
-              # category:
-              #   type: string
-              #   enum: [PROFILE_IMG]
+              category:
+                type: string
+                enum: ["PROFILE_IMG"]
               owner:
                 type: string
     responses:

@@ -71,12 +71,9 @@ components:
                 type: array
                 items:
                   type: string
-            # example:
-            #   name: Admin
-            #   value: admin
-            #   permissions:
-            #     - 5ebac534954b54139806c112
-            #     - 5ebac534954b54139806c112
+                  enum:
+                    - ROLE_MANAGEMENT
+                    - USER_MANAGEMENT
     responses:
       "201":
         description: Created
@@ -217,6 +214,9 @@ components:
                 type: array
                 items:
                   type: string
+                  enum:
+                    - ROLE_MANAGEMENT
+                    - USER_MANAGEMENT
     responses:
       "200":
         description: OK
