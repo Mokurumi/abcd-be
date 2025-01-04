@@ -1,4 +1,3 @@
-const httpStatus = require("http-status");
 const pick = require("../utils/pick");
 const ApiError = require("../utils/ApiError");
 const { generateTempPassword } = require("../utils");
@@ -18,12 +17,12 @@ const createUser = catchAsync(async (req, res) => {
   // check if role exists
   const role = await roleService.getRoleById(req.body.role);
   if (!role) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Role does not exist");
+    throw new ApiError(400, "Role does not exist");
   }
 
   // if the role.value is super_admin, raise an error
   if (role.value === "super_admin") {
-    throw new ApiError(httpStatus.BAD_REQUEST, "You cannot create a super admin user");
+    throw new ApiError(400, "You cannot create a super admin user");
   }
 
   // Create user account
@@ -72,14 +71,14 @@ const getUser = catchAsync(async (req, res) => {
     return res.send(req.user);
   }
   else {
-    // ensure that the user had USER_MANAGEMENT permission
-    if (!req.user.role.permissions.includes("USER_MANAGEMENT")) {
-      throw new ApiError(httpStatus.FORBIDDEN, "Forbidden");
+    const permissions = ["OWNER", "USER_MANAGEMENT", "TRANSACTION_MANAGEMENT", "LOAN_MANAGEMENT"];
+    if (!permissions.some(permission => req.user.role.permissions.includes(permission))) {
+      throw new ApiError(403, "Forbidden");
     }
     else {
       const user = await userService.getUserById(req.params.userId);
       if (!user) {
-        throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+        throw new ApiError(404, "User not found");
       }
       res.send(user);
     }
@@ -88,13 +87,14 @@ const getUser = catchAsync(async (req, res) => {
 
 const updateUser = catchAsync(async (req, res) => {
   // ensure req.user is the same as the user being updated or the user has USER_MANAGEMENT permission
-  if (req.user._id?.toString() !== req.params.userId || !req.user.role.permissions.includes("USER_MANAGEMENT")) {
-    throw new ApiError(httpStatus.FORBIDDEN, "Forbidden");
+  if (!req.user.role.permissions.includes("USER_MANAGEMENT") && req.user.id !== req.params.userId) {
+    throw new ApiError(403, "Forbidden");
   }
 
   const user = await userService.updateUserById(req.params.userId, {
     ...req.body,
   });
+
   res.send({
     user,
     message: "User updated successfully",
@@ -102,10 +102,25 @@ const updateUser = catchAsync(async (req, res) => {
 });
 
 const lookupUsers = catchAsync(async (req, res) => {
-  const users = await userService.lookupUsers(
-    req.query.active ? { active: req.query.active } : {}
-  );
-  res.send(users);
+  // if the current user does not have USER_MANAGEMENT permission, add their id to the query
+  if (!req.user.role.permissions.includes("USER_MANAGEMENT")) {
+    const users = await userService.lookupUsers(
+      req.query.active
+        ? {
+          active: req.query.active,
+          _id: req.user._id
+        } : {
+          _id: req.user._id
+        }
+    );
+    res.send(users);
+  }
+  else {
+    const users = await userService.lookupUsers(
+      req.query.active ? { active: req.query.active } : {}
+    );
+    res.send(users);
+  }
 });
 
 const deleteUser = catchAsync(async (req, res) => {
@@ -113,7 +128,7 @@ const deleteUser = catchAsync(async (req, res) => {
 
   await userService.deleteUserById(userId);
 
-  res.status(httpStatus.OK).send({ message: "User account deleted successfully." });
+  res.status(200).send({ message: "User account deleted successfully." });
 });
 
 module.exports = {

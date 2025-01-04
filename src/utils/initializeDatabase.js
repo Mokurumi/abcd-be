@@ -1,7 +1,11 @@
 const { Role, User } = require("../models");
 const permissions = require("../constants/permissions");
 const config = require("../config/config");
-const { emailService, tokenService, userService } = require("../services");
+const {
+  emailService,
+  tokenService,
+  userService,
+} = require("../services");
 const { generateTempPassword } = require("../utils");
 
 
