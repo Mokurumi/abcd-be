@@ -1,9 +1,12 @@
 const express = require("express");
 const auth = require("../middlewares/auth");
+const validate = require("../middlewares/validate");
+const { lookupsValidation } = require("../validations");
 const {
   roleController,
   userController
 } = require("../controllers");
+
 
 const router = express.Router();
 
@@ -15,7 +18,8 @@ router.get(
 
 router.get(
   "/users",
-  auth("USER_MANAGEMENT"),
+  auth("OWNER", "USER_MANAGEMENT"),
+  validate(lookupsValidation.lookupUsers),
   userController.lookupUsers
 );
 

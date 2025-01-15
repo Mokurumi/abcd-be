@@ -1,5 +1,4 @@
 const passport = require("passport");
-const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
 const { roleService } = require("../services");
 
@@ -7,13 +6,14 @@ const { roleService } = require("../services");
 const verifyCallback = (req, resolve, reject, requiredRights) => async (err, user, info) => {
   if (err || info || !user) {
     return reject(
-      new ApiError(httpStatus.UNAUTHORIZED, "Unauthorized")
+      new ApiError(401, "Unauthorized")
     );
   }
   req.user = user;
 
   if (requiredRights.length) {
-    const role = await roleService.getRoleById(user.role);
+    let role = await roleService.getRoleById(user.role);
+    role.permissions = [...role.permissions, "ANY_WITH_AUTH", "OWNER"];
     const userRights = role ? role.permissions : [];
     // check if user has any of the required rights
     const hasRequiredRights = requiredRights.some((requiredRight) =>
@@ -25,7 +25,7 @@ const verifyCallback = (req, resolve, reject, requiredRights) => async (err, use
     //  */
     // if (!hasRequiredRights && req.params.userId !== user._id?.toString()) {
     if (!hasRequiredRights) {
-      return reject(new ApiError(httpStatus.FORBIDDEN, "Forbidden"));
+      return reject(new ApiError(403, "Forbidden"));
     }
   }
 

@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const { objectId, phoneNumber } = require("./custom.validation");
+const { customDate, objectId, phoneNumber } = require("./custom.validation");
 
 const createUser = {
   body: Joi.object().keys({
@@ -22,7 +22,7 @@ const getUsers = {
     role: Joi.string().custom(objectId),
     isPhoneVerified: Joi.boolean(),
     isEmailVerified: Joi.boolean(),
-    dateCreated: Joi.date(),
+    dateCreated: Joi.custom(customDate),
     search: Joi.string(),
     sortBy: Joi.string(),
     size: Joi.number().integer(),

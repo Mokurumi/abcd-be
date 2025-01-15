@@ -184,7 +184,7 @@ const sendVerificationEmail = async (user, token) => {
  * @param {object} message
  */
 const sendCustomEmail = async (user, subject, message) => {
-  const html = emailTemplate(user, `<p style="font-size: 16px; margin-bottom: 40px;">${message}</p>`);
+  const html = emailTemplate(user, message);
   await sendEmail(user.emailAddress, subject, null, html);
 };
 

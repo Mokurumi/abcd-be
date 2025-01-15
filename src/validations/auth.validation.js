@@ -35,11 +35,11 @@ const login = {
   }),
 };
 
-// const logout = {
-//   body: Joi.object().keys({
-//     token: Joi.string().required(),
-//   }),
-// };
+const logout = {
+  body: Joi.object().keys({
+    token: Joi.string().required(),
+  }),
+};
 
 const resetPassword = {
   // at least one of the two fields is required
@@ -47,13 +47,6 @@ const resetPassword = {
     emailAddress: Joi.string().email(),
     phoneNumber: Joi.string().custom(phoneNumber),
   }).or("emailAddress", "phoneNumber"),
-};
-
-const verifyResetPassword = {
-  body: Joi.object().keys({
-    userId: Joi.string().required().custom(objectId),
-    token: Joi.string().required(),
-  }),
 };
 
 const changePassword = {
@@ -92,9 +85,8 @@ module.exports = {
   verifyRegistration,
   resendRegistrationEmail,
   login,
-  // logout,
+  logout,
   resetPassword,
-  verifyResetPassword,
   changePassword,
   refreshToken,
   updateProfile,

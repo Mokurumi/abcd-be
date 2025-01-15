@@ -17,7 +17,7 @@ const getUser = async (owner, currentUser) => {
   else {
     const user = await userService.getUserById(owner);
     if (!user) {
-      throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+      throw new ApiError(404, "User not found");
     }
   }
 };
@@ -30,7 +30,7 @@ const userProfileImage = catchAsync(async (req, res) => {
 
   // verify that the file exists
   if (!file) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "File is required");
+    throw new ApiError(400, "File is required");
   }
 
   // Save file to database
@@ -44,7 +44,7 @@ const userProfileImage = catchAsync(async (req, res) => {
   // update user profile image
   await userService.updateUserById(owner, { profile_img: upload.docURL });
 
-  res.status(httpStatus.CREATED).send({ url: upload.docURL });
+  res.status(201).send({ url: upload.docURL });
 });
 
 const deleteUpload = catchAsync(async (req, res) => {
@@ -55,7 +55,7 @@ const deleteUpload = catchAsync(async (req, res) => {
   // delete file from cloudinary
   await uploadService.deleteUpload(owner, uploadId);
 
-  res.status(httpStatus.NO_CONTENT).send();
+  res.status(204).send({ message: "File deleted successfully" });
 });
 
 const deleteUploads = catchAsync(async (req, res) => {
@@ -65,7 +65,7 @@ const deleteUploads = catchAsync(async (req, res) => {
 
   await uploadService.deleteMultipleFiles(owner, category);
 
-  res.status(httpStatus.NO_CONTENT).send();
+  res.status(204).send({ message: "Files deleted successfully" });
 });
 
 module.exports = {

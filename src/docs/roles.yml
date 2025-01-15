@@ -28,8 +28,8 @@ components:
         value: admin
         active: true
         permissions:
-          - 'CREATE_USER'
-          - 'READ_USER'
+          - ROLE_MANAGEMENT
+          - USER_MANAGEMENT
 
   responses:
 
@@ -237,7 +237,7 @@ components:
   delete:
     operationId: deleteRole
     summary: Delete a role
-    description: Only admins can delete roles.
+    description: Only if the role is not in use.
     tags: [Roles]
     security:
       - bearerAuth: []

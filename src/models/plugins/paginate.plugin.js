@@ -30,7 +30,7 @@ const paginate = (schema) => {
       sort = sortingCriteria.join(" ");
     }
     else {
-      sort = "createdAt";
+      sort = "-createdAt";
     }
 
     const size = options.size && parseInt(options.size, 10) > 0

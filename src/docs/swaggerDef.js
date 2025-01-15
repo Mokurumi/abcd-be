@@ -3,7 +3,7 @@ const config = require("../config/config");
 const swaggerDef = {
   openapi: "3.0.0",
   info: {
-    title: "ABCD",
+    title: "ABCD API documentation",
     version: config.version,
     description: "API documentation for ABCD",
     // license: {

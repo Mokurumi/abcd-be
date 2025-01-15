@@ -1,4 +1,3 @@
-const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
 const { Upload } = require("../models");
 const { uploadFile, deleteFiles } = require("../utils/docUtil");
@@ -15,7 +14,7 @@ const categories = require("../constants/uploadCategories");
 const saveFile = async (file, category, owner, createdBy) => {
 
   if (!categories.includes(category)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid category");
+    throw new ApiError(400, "Invalid category");
   }
 
   const upload = await uploadFile(file, category);
@@ -41,7 +40,7 @@ const saveFile = async (file, category, owner, createdBy) => {
 const saveAndReplace = async (file, category, owner, createdBy) => {
 
   if (!categories.includes(category)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid category");
+    throw new ApiError(400, "Invalid category");
   }
 
   const existingUpload = await Upload.findOne({ owner, category });
@@ -82,7 +81,7 @@ const getFilesByOwner = async (owner) => {
  */
 const getFilesByOwnerAndCategory = async (owner, category) => { //DEPT_FILES
   if (!categories.includes(category)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid category");
+    throw new ApiError(400, "Invalid category");
   }
 
   const uploads = await Upload.find({ owner, category });
@@ -99,7 +98,7 @@ const deleteUpload = async (owner, uploadId) => {
 
   const upload = await Upload.findOne({ owner, _id: uploadId });
   if (!upload) {
-    throw new ApiError(httpStatus.NOT_FOUND, "File not found");
+    throw new ApiError(404, "File not found");
   }
 
   await deleteFiles([upload.public_id]);
@@ -115,7 +114,7 @@ const deleteUpload = async (owner, uploadId) => {
 const deleteMultipleFiles = async (owner, category) => {
 
   if (!categories.includes(category)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid category");
+    throw new ApiError(400, "Invalid category");
   }
 
   const uploads = await Upload.find({ owner, category });

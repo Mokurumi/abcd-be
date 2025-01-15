@@ -1,5 +1,4 @@
 const { isEmpty } = require("lodash");
-const jwt = require("jsonwebtoken");
 const Token = require("../models/Token");
 const tokenService = require("./token.service");
 const userService = require("./user.service");

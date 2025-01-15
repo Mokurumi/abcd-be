@@ -9,12 +9,12 @@ const router = express.Router();
 router
   .route("/")
   .post(
-    auth('USER_MANAGEMENT'),
+    auth("USER_MANAGEMENT"),
     validate(userValidation.createUser),
     userController.createUser
   )
   .get(
-    // auth('USER_MANAGEMENT'), // Open for testing
+    auth("USER_MANAGEMENT"),
     validate(userValidation.getUsers),
     userController.getUsers
   );
@@ -22,17 +22,17 @@ router
 router
   .route("/:userId")
   .get(
-    auth('OWNER', 'USER_MANAGEMENT'),
+    auth("OWNER", "USER_MANAGEMENT"),
     validate(userValidation.getUser),
     userController.getUser
   )
   .patch(
-    auth('OWNER', 'USER_MANAGEMENT'),
+    auth("USER_MANAGEMENT"),
     validate(userValidation.updateUser),
     userController.updateUser
   )
   .delete(
-    auth('OWNER', 'USER_MANAGEMENT'),
+    auth("OWNER", "USER_MANAGEMENT"),
     validate(userValidation.deleteUser),
     userController.deleteUser
   );

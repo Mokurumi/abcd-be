@@ -1,4 +1,3 @@
-const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
 const { User, Role } = require("../models");
 
@@ -12,7 +11,7 @@ const createUser = async (requestBody) => {
   const checkPhoneNumber = await User.isPhoneNumberTaken(requestBody.phoneNumber);
 
   if (checkEmail || checkPhoneNumber) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "User already exists.");
+    throw new ApiError(400, "User already exists.");
   }
 
   // check if role exists
@@ -82,7 +81,7 @@ const getUserByMobileNumber = async (phoneNumber) => {
  * @returns {Promise<User>}
  */
 const getUserByPhoneNumberOrEmail = async (username) => {
-  return User.findOne({ $or: [{ emailAddress: username }, { phoneNumber: username }] });
+  return await User.findOne({ $or: [{ emailAddress: username }, { phoneNumber: username }] });
 };
 
 /**
@@ -94,15 +93,33 @@ const getUserByPhoneNumberOrEmail = async (username) => {
 const updateUserById = async (userId, updateBody) => {
   const user = await getUserById(userId);
   if (!user) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+    throw new ApiError(400, "User not found");
   }
 
   if (updateBody.emailAddress && (await User.isEmailTaken(updateBody.emailAddress, userId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
+    throw new ApiError(400, "Email already taken");
   }
 
   if (updateBody.phoneNumber && (await User.isPhoneNumberTaken(updateBody.phoneNumber, userId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Mobile number already taken");
+    throw new ApiError(400, "Mobile number already taken");
+  }
+
+  // check if role exists
+  if (updateBody.role) {
+    const role = await Role.findById(updateBody.role);
+    if (!role) {
+      throw new ApiError(400, "Role does not exist");
+    }
+
+    // if the role.value is super_admin, raise an error
+    if (role.value === "super_admin") {
+      throw new ApiError(400, "You cannot assign a super admin role");
+    }
+
+    // if the user is super_admin, raise an error
+    if (user.role.value === "super_admin") {
+      throw new ApiError(400, "You cannot update a super admin user");
+    }
   }
 
   Object.assign(user, updateBody);
@@ -112,11 +129,20 @@ const updateUserById = async (userId, updateBody) => {
 
 /**
  * lookup users
+ * @param {Object} query
  * @returns {Promise<User>}
  */
-const lookupUsers = async () => {
-  return User.find({ isDeleted: false, active: true })
-    .select("firstName lastName _id")
+const lookupUsers = async (query = {}) => {
+
+  const newQuery = {
+    ...query,
+    // active: true,
+    protected: false,
+    isDeleted: false,
+  };
+
+  return User.find(newQuery)
+    .select("firstName lastName emailAddress _id")
     .sort({ firstName: 1 });
 };
 
@@ -128,7 +154,7 @@ const lookupUsers = async () => {
 const deleteUserById = async (userId) => {
   const user = await getUserById(userId);
   if (!user) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+    throw new ApiError(400, "User not found");
   }
   // await user.remove();
   return User.findByIdAndUpdate(userId, {

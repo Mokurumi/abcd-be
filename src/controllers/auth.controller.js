@@ -101,15 +101,20 @@ const login = catchAsync(async (req, res) => {
  * Logout
  */
 const logout = catchAsync(async (req, res) => {
-  const { token } = req.body;
-
-  const refreshTokenDoc = await tokenService.verifyToken(token, tokenTypes.REFRESH);
-
-  await tokenService.deleteToken(refreshTokenDoc.token, tokenTypes.REFRESH);
-
   res.status(202).send({
     message: "Logout successful.",
   });
+
+  try {
+    const { token } = req.body;
+
+    const refreshTokenDoc = await tokenService.verifyToken(token, tokenTypes.REFRESH);
+
+    await tokenService.deleteToken(refreshTokenDoc.token, tokenTypes.REFRESH);
+  }
+  catch (err) {
+    console.log(err);
+  }
 });
 
 /**

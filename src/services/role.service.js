@@ -1,5 +1,5 @@
 const ApiError = require("../utils/ApiError");
-const { Role } = require("../models");
+const { Role, User } = require("../models");
 const permissions = require("../constants/permissions");
 
 /**
@@ -22,13 +22,13 @@ const createRole = async (requestBody) => {
     }
   }
 
-  // make sure the role has ANY_WITH_AUTH and OWNER permissions, by adding them if they do not exist
-  const defaultPermissions = ['ANY_WITH_AUTH', 'OWNER'];
-  for (let i = 0; i < defaultPermissions.length; i++) {
-    if (!rPermissions.includes(defaultPermissions[i])) {
-      rPermissions.push(defaultPermissions[i]);
-    }
-  }
+  // // make sure the role has ANY_WITH_AUTH and OWNER permissions, by adding them if they do not exist
+  // const defaultPermissions = ['ANY_WITH_AUTH', 'OWNER'];
+  // for (let i = 0; i < defaultPermissions.length; i++) {
+  //   if (!rPermissions.includes(defaultPermissions[i])) {
+  //     rPermissions.push(defaultPermissions[i]);
+  //   }
+  // }
 
   return Role.create(requestBody);
 };
@@ -76,9 +76,11 @@ const getRoleByValue = async (value) => {
 const updateRoleById = async (roleId, updateBody) => {
   const role = await getRoleById(roleId);
 
-  // if it is protected, do not update
   if (role.protected) {
-    throw new ApiError(400, "Cannot update protected role");
+    // // if it is protected, do not update
+    // throw new ApiError(400, "Cannot update protected role");
+    // if it is protected, update only the permissions and name
+    delete updateBody.value;
   }
 
   if (!role) {
@@ -101,13 +103,13 @@ const updateRoleById = async (roleId, updateBody) => {
     }
   }
 
-  // make sure the role has ANY_WITH_AUTH and OWNER permissions, by adding them if they do not exist
-  const defaultPermissions = ['ANY_WITH_AUTH', 'OWNER'];
-  for (let i = 0; i < defaultPermissions.length; i++) {
-    if (!rPermissions.includes(defaultPermissions[i])) {
-      rPermissions.push(defaultPermissions[i]);
-    }
-  }
+  // // make sure the role has ANY_WITH_AUTH and OWNER permissions, by adding them if they do not exist
+  // const defaultPermissions = ['ANY_WITH_AUTH', 'OWNER'];
+  // for (let i = 0; i < defaultPermissions.length; i++) {
+  //   if (!rPermissions.includes(defaultPermissions[i])) {
+  //     rPermissions.push(defaultPermissions[i]);
+  //   }
+  // }
 
   Object.assign(role, updateBody);
   await role.save();
@@ -122,11 +124,36 @@ const lookupRoles = async () => {
   return Role.find({ active: true, value: { $ne: "super_admin" } }).select("name _id");
 };
 
+/**
+ * delete Role by id
+ * @param {ObjectId} roleId
+ * @returns {Promise<Role>}
+ */
+const deleteRoleById = async (roleId) => {
+  const role = await getRoleById(roleId);
+  if (!role) {
+    throw new ApiError(404, "Role not found");
+  }
+
+  if (role.protected) {
+    throw new ApiError(400, "Cannot delete protected role");
+  }
+
+  // check if there are users with the role
+  const users = await User.find({ role: roleId });
+  if (users.length > 0) {
+    throw new ApiError(400, "Cannot delete role with users");
+  }
+
+  return Role.findByIdAndDelete(roleId);
+};
+
 module.exports = {
   createRole,
   queryRoles,
   getRoleById,
   getRoleByValue,
   updateRoleById,
-  lookupRoles
+  lookupRoles,
+  deleteRoleById,
 };

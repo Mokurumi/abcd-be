@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const { toJSON, paginate } = require("./plugins");
+const { formatPhoneNumber } = require("../utils");
 
 
 const userSchema = new mongoose.Schema(
@@ -176,6 +177,8 @@ userSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 8);
   }
+  // format phone number
+  this.phoneNumber = formatPhoneNumber(this.phoneNumber);
   next();
 });
 

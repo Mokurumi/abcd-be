@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
-const httpStatus = require("http-status");
 // const mongoose = require("mongoose");
 
 const config = require("../config/config");
@@ -68,14 +67,14 @@ const verifyToken = async (token, type, user) => {
 
   if (user?._id) {
     if (payload.sub !== user._id?.toString()) {
-      throw new Error("Token not found");
+      throw new ApiError(401, "Unauthorized user");
     }
   }
   else {
     const user = await userService.getUserById(payload.sub);
 
     if (!user) {
-      throw new Error("Token not found");
+      throw new ApiError(404, "User not found");
     }
   }
 
@@ -87,7 +86,7 @@ const verifyToken = async (token, type, user) => {
   });
 
   if (!tokenDoc) {
-    throw new Error("Token not found");
+    throw new ApiError(404, "Token not found");
   }
   return tokenDoc;
 };
@@ -163,34 +162,6 @@ const generateAuthTokens = async (user) => {
 };
 
 /**
- * Generate reset password token
- * @param {string} email
- * @returns {Promise<string>}
- */
-const generateResetPasswordToken = async (email) => {
-  const user = await userService.getUserByEmail(email);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "No users found with this email");
-  }
-  const expires = moment().add(
-    config.jwt.verifyEmailExpirationMinutes,
-    "minutes"
-  );
-  const resetPasswordToken = generateToken(
-    user._id,
-    expires,
-    tokenTypes.RESET_PASSWORD
-  );
-  await saveToken(
-    resetPasswordToken,
-    user._id?.toString(),
-    expires,
-    tokenTypes.RESET_PASSWORD
-  );
-  return resetPasswordToken;
-};
-
-/**
  * Generate verify email token
  * @param {User} user
  * @returns {Promise<string>}
@@ -228,7 +199,7 @@ const deleteToken = async (token, type) => {
     blacklisted: false,
   });
   if (!tokenDoc) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Token not found");
+    throw new ApiError(404, "Token not found");
   }
   // await tokenDoc.remove();
   await Token.findOneAndDelete({ token, type });
@@ -265,7 +236,6 @@ module.exports = {
   verifyToken,
   deleteToken,
   generateAuthTokens,
-  generateResetPasswordToken,
   generateVerifyEmailToken,
   generateRegistrationToken,
   generateDeleteProfileToken

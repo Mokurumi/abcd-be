@@ -31,13 +31,13 @@ const initializeRoles = async () => {
       name: "User",
       value: "user",
       active: true,
-      permissions: ['ANY_WITH_AUTH', 'OWNER'],
+      permissions: [],
       protected: true
     });
   }
-  else {
-    await Role.updateOne({ value: "user" }, { permissions: ['ANY_WITH_AUTH', 'OWNER'] });
-  }
+  // else {
+  //   await Role.updateOne({ value: "user" }, { permissions: [] });
+  // }
 
   await initializeSuperAdmin();
 };

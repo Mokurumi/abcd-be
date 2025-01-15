@@ -30,6 +30,11 @@ router
     auth('ROLE_MANAGEMENT'),
     validate(roleValidation.updateRole),
     roleController.updateRole
+  )
+  .delete(
+    auth('ROLE_MANAGEMENT'),
+    validate(roleValidation.deleteRole),
+    roleController.deleteRole
   );
 
 module.exports = router;

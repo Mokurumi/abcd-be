@@ -44,8 +44,7 @@ const uploadSchema = new mongoose.Schema(
     },
     updatedAt: {
       type: Date,
-      default: null
-    }
+    },
   },
   {
     timestamps: true,

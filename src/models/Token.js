@@ -37,8 +37,7 @@ const tokenSchema = mongoose.Schema(
     },
     updatedAt: {
       type: Date,
-      default: null
-    }
+    },
   },
   {
     timestamps: true,

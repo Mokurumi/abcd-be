@@ -10,7 +10,7 @@ const generateTempPassword = (charNumber = 8) => {
   let lowerChars = "abcdefghjkmnpqrstuvwxyz"; // removed i, l, o to avoid confusion
   let upperChars = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // removed I, O, and l to avoid confusion
   let numbers = "23456789"; // removed 0, 1, and l to avoid confusion
-  let specialChars = "!@#$%&*_+~`?><,.-=";
+  let specialChars = "!@#$&*_+?><,.-=";
 
   // Generate password with at least one character from each character set
   let ans = "";
@@ -31,7 +31,28 @@ const generateTempPassword = (charNumber = 8) => {
   return ans;
 };
 
+const geneateUniqueId = (prefix) => {
+  const timestamp = Date.now().toString(36);
+  const suffix = Math.random().toString(36).substring(2, 6);
+  return `${prefix}-${timestamp}-${suffix}`.toUpperCase();
+};
+
+// function to trnaslate phone numbers starting with 0 to +254
+const formatPhoneNumber = (phoneNumber) => {
+  if (phoneNumber?.startsWith("0")) {
+    return phoneNumber.replace(/^0/, "+254");
+  }
+  return phoneNumber;
+};
+
+const extractDate = (date) => {
+  return new Date(date).toISOString().split("T")[0];
+};
+
 module.exports = {
   generateTempPassword,
   generateOTP,
+  geneateUniqueId,
+  formatPhoneNumber,
+  extractDate,
 };

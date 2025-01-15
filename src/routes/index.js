@@ -1,17 +1,17 @@
 // routes index file
 const express = require("express");
 const config = require("../config/config");
-const docsRoute = require("./docs.route");
-// const cron = require("node-cron");
+const docsRoute = require("./docs.routes");
+const cron = require("node-cron");
 
 
 // Route
-const authRoute = require("./auth.route");
-const userRoute = require("./user.route");
-const roleRoute = require("./role.route");
-const uploadRoute = require("./upload.route");
+const authRoute = require("./auth.routes");
+const userRoute = require("./user.routes");
+const roleRoute = require("./role.routes");
+const uploadRoute = require("./upload.routes");
 // lookup routes
-const lookupRoute = require("./lookups.route");
+const lookupRoute = require("./lookups.routes");
 
 
 const router = express.Router();
@@ -46,7 +46,14 @@ if (config.env === "dev" || config.env === "qa" || config.env === "local") {
 }
 
 router.get("/", (req, res) => {
-  res.json({ message: "Hello World!" });
+  res.json({ message: "Error at the root of the API" });
+});
+
+// change to midday
+cron.schedule("0 12 * * *", async () => {
+  console.log("Midday Check");
+}, {
+  timezone: "Africa/Nairobi",
 });
 
 module.exports = router;

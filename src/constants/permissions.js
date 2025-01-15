@@ -1,9 +1,9 @@
 const permissions = [
   'ANY_WITH_AUTH',
   'OWNER', // filters by owner unless parent permission is present
-  // Role
+  // Roles
   'ROLE_MANAGEMENT',
-  // User
+  // Users
   'USER_MANAGEMENT',
 ];
 

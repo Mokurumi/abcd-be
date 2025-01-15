@@ -3,7 +3,7 @@ tags:
     description: Authentication Functions
 
   - name: Lookups
-    # description: Contribution Management
+    description: Filtered selection lists
 
   - name: Users
     description: User Management
@@ -11,8 +11,13 @@ tags:
   - name: Admin
     description: Admin Functions
 
+
   - name: Uploads
-    description: Uploads Management
+    description: Uploads various files
+
+  - name: Roles
+    description: Role Management
+
 
 components:
   schemas:

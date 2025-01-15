@@ -4,6 +4,7 @@ const { authValidation } = require("../validations");
 const { authController } = require("../controllers");
 const auth = require("../middlewares/auth");
 
+
 const router = express.Router();
 
 // Register a new user
@@ -23,6 +24,7 @@ router.post(
 // Resend email registration
 router.post(
   "/resend-registration-email",
+  auth('USER_MANAGEMENT'),
   validate(authValidation.resendRegistrationEmail),
   authController.resendRegistrationEmail
 );
