@@ -56,6 +56,20 @@ const paginate = (schema) => {
       delete filterObject.search; // Remove the search key from filter
     }
 
+    /**
+     * find any value which is a string separated by commas
+     * and convert it to an array of values
+     * and then convert it to an array of values
+     */
+    Object.keys(filterObject).forEach((key) => {
+      if (typeof filterObject[key] === "string" && filterObject[key].includes(",")) {
+        filterObject[key] = { $in: filterObject[key].split(",") };
+      }
+      if (Array.isArray(filterObject[key])) {
+        filterObject[key] = { $in: filterObject[key] };
+      }
+    });
+
     const countPromise = this.countDocuments(filterObject).exec();
     let docsPromise = this.find(filterObject).sort(sort).skip(skip).limit(size);
 

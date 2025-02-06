@@ -134,7 +134,6 @@ const resetPassword = catchAsync(async (req, res) => {
   const user = await userService.getUserByPhoneNumberOrEmail(emailAddress || formatPhoneNumber(phoneNumber));
   if (!user) {
     throw new ApiError(404, "User not found");
-    // throw new ApiError(404, "User not found");
   }
 
   // Generate temporary password

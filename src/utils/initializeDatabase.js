@@ -60,11 +60,39 @@ const initializeSuperAdmin = async () => {
 
   if (superAdminUser) {
     // If there’s a Super Admin with the correct email, delete all other Super Admin users
-    await User.deleteMany({ role: superAdminRole._id, _id: { $ne: superAdminUser._id } });
+    // await User.deleteMany({ role: superAdminRole._id, _id: { $ne: superAdminUser._id } });
+    // update isDeleted to true
+    await User.updateMany({
+      role: superAdminRole._id,
+      _id: { $ne: superAdminUser._id }
+    }, {
+      role: null,
+      password: generateTempPassword(),
+      active: false,
+      protected: false,
+      isDeleted: true,
+      deletedAt: Date.now(),
+    });
+
+    // ensure the current super admin is active
+    if (!superAdminUser.active) {
+      superAdminUser.active = true;
+      await superAdminUser.save();
+    }
   }
   else {
     // If no Super Admin has the specified email, delete all Super Admins and create a new one
-    await User.deleteMany({ role: superAdminRole._id });
+    // await User.deleteMany({ role: superAdminRole._id });
+    // update isDeleted to true
+    await User.updateMany({ role: superAdminRole._id }, {
+      role: null,
+      password: generateTempPassword(),
+      active: false,
+      protected: false,
+      isDeleted: true,
+      deletedAt: Date.now(),
+    });
+
     const newUser = await userService.createUser({
       firstName: "Super",
       lastName: "Admin",

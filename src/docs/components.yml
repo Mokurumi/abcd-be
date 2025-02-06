@@ -6,11 +6,10 @@ tags:
     description: Filtered selection lists
 
   - name: Users
-    description: User Management
+    # description: User Management
 
-  - name: Admin
-    description: Admin Functions
-
+  # - name: Admin
+  #   description: Admin Functions
 
   - name: Uploads
     description: Uploads various files

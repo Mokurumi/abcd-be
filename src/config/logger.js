@@ -19,6 +19,7 @@ const logger = winston.createLogger({
     winston.format.printf(({ level, message }) => `${level}: ${message}`)
   ),
   transports: [
+    // new winston.transports.File({ filename: 'logs.txt' }), // Log to a file
     new winston.transports.Console({
       stderrLevels: ["error"],
     }),

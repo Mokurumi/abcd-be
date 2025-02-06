@@ -14,12 +14,6 @@ const createUser = async (requestBody) => {
     throw new ApiError(400, "User already exists.");
   }
 
-  // check if role exists
-  const role = await Role.findById(requestBody.role);
-  if (!role) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Role does not exist");
-  }
-
   return User.create(requestBody);
 };
 
@@ -53,26 +47,11 @@ const queryUsers = async (filter, options) => {
  */
 const getUserById = async (id) => {
   // populate role
-  return User.findById(id)
+  return User.findById({
+    _id: id,
+    isDeleted: false,
+  })
     .populate({ path: "role" });
-};
-
-/**
- * Get user by emailAddress
- * @param {string} emailAddress
- * @returns {Promise<User>}
- */
-const getUserByEmail = async (emailAddress) => {
-  return await User.findOne({ emailAddress });
-};
-
-/**
- * Get user by phoneNumber
- * @param {string} phoneNumber
- * @returns {Promise<User>}
- */
-const getUserByMobileNumber = async (phoneNumber) => {
-  return User.findOne({ phoneNumber });
 };
 
 /**
@@ -81,7 +60,13 @@ const getUserByMobileNumber = async (phoneNumber) => {
  * @returns {Promise<User>}
  */
 const getUserByPhoneNumberOrEmail = async (username) => {
-  return await User.findOne({ $or: [{ emailAddress: username }, { phoneNumber: username }] });
+  return await User.findOne({
+    $or: [
+      { emailAddress: username },
+      { phoneNumber: username }
+    ],
+    isDeleted: false,
+  });
 };
 
 /**
@@ -167,8 +152,6 @@ module.exports = {
   createUser,
   queryUsers,
   getUserById,
-  getUserByMobileNumber,
-  getUserByEmail,
   getUserByPhoneNumberOrEmail,
   updateUserById,
   lookupUsers,

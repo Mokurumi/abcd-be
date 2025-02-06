@@ -127,7 +127,11 @@ userSchema.plugin(paginate);
  * @returns {Promise<boolean>}
  */
 userSchema.statics.isEmailTaken = async (emailAddress, excludeUserId) => {
-  const user = await User.findOne({ emailAddress, _id: { $ne: excludeUserId } }); // $ne stands for "not equal"
+  const user = await User.findOne({
+    emailAddress,
+    _id: { $ne: excludeUserId },
+    // isDeleted: false,
+  });
   return !!user;
 };
 
@@ -138,7 +142,11 @@ userSchema.statics.isEmailTaken = async (emailAddress, excludeUserId) => {
  * @returns {Promise<boolean>}
  */
 userSchema.statics.isPhoneNumberTaken = async (phoneNumber, excludeUserId) => {
-  const user = await User.findOne({ phoneNumber, _id: { $ne: excludeUserId } });
+  const user = await User.findOne({
+    phoneNumber,
+    _id: { $ne: excludeUserId },
+    // isDeleted: false,
+  });
   return !!user;
 };
 

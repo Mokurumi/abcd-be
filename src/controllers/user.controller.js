@@ -56,7 +56,6 @@ const getUsers = catchAsync(async (req, res) => {
     "role",
     "active",
     "createdAt",
-    "isDeleted",
     "search",
   ]);
 

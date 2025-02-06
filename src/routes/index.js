@@ -49,11 +49,11 @@ router.get("/", (req, res) => {
   res.json({ message: "Error at the root of the API" });
 });
 
-// change to midday
-cron.schedule("0 12 * * *", async () => {
-  console.log("Midday Check");
-}, {
-  timezone: "Africa/Nairobi",
-});
+// // change to midday
+// cron.schedule("0 12 * * *", async () => {
+//   console.log("Midday Check");
+// }, {
+//   timezone: "Africa/Nairobi",
+// });
 
 module.exports = router;
