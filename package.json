@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "author": "Alpha Mokurumi",
   "type": "commonjs",
+  "license": "MIT",
   "scripts": {
     "dev": "nodemon src/index.ts",
     "start": "node --trace-warnings src/index.ts",
@@ -16,7 +17,6 @@
     "@types/compression": "^1.7.5",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
-    "@types/mongoose": "^5.11.97",
     "@types/morgan": "^1.9.9",
     "@types/multer": "^1.4.12",
     "@types/node-cron": "^3.0.11",
@@ -26,7 +26,6 @@
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.7",
     "@types/validator": "^13.12.2",
-    "@types/winston": "^2.4.4",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.1",
     "compression": "^1.7.4",
