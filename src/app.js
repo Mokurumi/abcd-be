@@ -7,7 +7,7 @@ const compression = require("compression");
 const cors = require("cors");
 const passport = require("passport");
 // configs
-const config = require("./config/config");
+const config = require("./config");
 const morgan = require("./config/morgan");
 const { jwtStrategy } = require("./config/passport");
 // utils
@@ -15,7 +15,6 @@ const { authLimiter } = require("./middlewares/rateLimiter");
 const routes = require("./routes");
 const { errorConverter, errorHandler } = require("./middlewares/error");
 const ApiError = require("./utils/ApiError");
-
 
 const app = express();
 
@@ -35,19 +34,17 @@ app.use(express.urlencoded({ extended: false, limit: "50mb" }));
 app.use(express.json({ limit: "50mb" }));
 
 // sanitize request data
-app.use(xss());
+// app.use(xss());
 app.use(mongoSanitize());
 
 // gzip compression
 app.use(compression());
 
 // allow cors based on environment
-app.use(cors({
-  origin: config.env === "prod"
-    ? [
-      config.api_url.prod,
-      config.web_url.prod,
-    ]
+app.use(
+  cors({
+    origin:
+      config.env === "prod" ? [config.api_url.prod, config.web_url.prod] : "*",
     // : [
     //   config.api_url[config.env],
     //   config.web_url[config.env],
@@ -59,9 +56,9 @@ app.use(cors({
     //   "http://localhost:3002",
     // ],
     // allow any origin
-    : "*",
-  methods: ["GET", "POST", "PATCH", "DELETE"],
-}));
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+  })
+);
 
 // jwt authentication
 app.use(passport.initialize());

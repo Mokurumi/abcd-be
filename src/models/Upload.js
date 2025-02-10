@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const { toJSON, paginate } = require("./plugins");
-const categories = require("../constants/uploadCategories");
-
+const { uploadCategories } = require("../constants");
 
 const uploadSchema = new mongoose.Schema(
   {
@@ -25,8 +24,7 @@ const uploadSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      enum: categories,
-      // private: true, // TODO: review this
+      enum: uploadCategories,
     },
     owner: {
       type: mongoose.SchemaTypes.ObjectId,
@@ -51,7 +49,7 @@ const uploadSchema = new mongoose.Schema(
   }
 );
 
-// add plugin that converts mongoose to json
+// Add plugins for JSON conversion and pagination
 uploadSchema.plugin(toJSON);
 uploadSchema.plugin(paginate);
 
@@ -60,11 +58,8 @@ uploadSchema.plugin(paginate);
  * @param {string} category
  * @param {string} owner
  */
-uploadSchema.statics.isUploadExisting = async (category, owner) => {
-  const upload = await Upload.findOne({
-    category,
-    owner,
-  });
+uploadSchema.statics.isUploadExisting = async function (category, owner) {
+  const upload = await this.findOne({ category, owner });
   return !!upload;
 };
 

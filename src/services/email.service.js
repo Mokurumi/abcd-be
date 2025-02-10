@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const config = require("../config/config");
+const config = require("../config");
 const logger = require("../config/logger");
 
 const transport = nodemailer.createTransport(config.email.smtp);
@@ -12,7 +12,7 @@ if (config.env !== "prod") {
 
 /**
  * email template
- * @param {string} user
+ * @param {Object} user
  * @param {string} message
  * @returns {string}
  */
@@ -34,7 +34,9 @@ const emailTemplate = (user, message) => {
         <!-- Email Body -->
         <tr>
           <td style="padding: 20px;">
-            <h4 style="font-size: 24px; margin-bottom: 20px;">Hello ${user.firstName},</h4>
+            <h4 style="font-size: 24px; margin-bottom: 20px;">Hello ${
+              user.firstName
+            },</h4>
             ${message}
             <p style="font-size: 16px;">Sincerely,</p>
             <p style="font-size: 14px; font-weight: bold;">Support Team</p>
@@ -54,14 +56,13 @@ const emailTemplate = (user, message) => {
  * @returns {Promise}
  */
 const sendEmail = async (to, subject, text, html) => {
-  const msg = {
+  await transport.sendMail({
     from: `${"ABCD"} <${config.email.from}>`,
     to,
     subject,
-    text,
+    text: text || "",
     html,
-  };
-  await transport.sendMail(msg);
+  });
 };
 
 /**
@@ -121,8 +122,8 @@ const sendCreateUserEmail = async (user, token, tempPassword) => {
  * Send temporary password email
  * @param {string} user
  * @param {string} tempPassword
-  * @returns {Promise}
-  */
+ * @returns {Promise}
+ */
 const sendTemporaryPasswordEmail = async (user, tempPassword) => {
   const subject = "Temporary password";
   const message = `
@@ -195,13 +196,17 @@ const sendCustomEmail = async (user, subject, message) => {
  * @param {object} message
  */
 const sendMassEmail = async (to, subject, message) => {
-  const html = emailTemplate(to, `<p style="font-size: 16px; margin-bottom: 40px;">${message}</p>`);
+  const html = emailTemplate(
+    { firstName: to },
+    `<p style="font-size: 16px; margin-bottom: 40px;">${message}</p>`
+  );
   await sendEmail(to, subject, null, html);
 };
 
 /**
  * Send OTP CODE email
  * @param {string} user
+ * @param {string} deleteProfileToken
  * @returns {Promise}
  */
 const sendDeleteProfileEmail = async (user, deleteProfileToken) => {

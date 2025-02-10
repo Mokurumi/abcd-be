@@ -1,7 +1,7 @@
 const ApiError = require("../utils/ApiError");
 const { Upload } = require("../models");
 const { uploadFile, deleteFiles } = require("../utils/docUtil");
-const categories = require("../constants/uploadCategories");
+const uploadCategories = require("../constants");
 
 /**
  * Save file
@@ -12,8 +12,7 @@ const categories = require("../constants/uploadCategories");
  * @returns {Promise<Upload>}
  */
 const saveFile = async (file, category, owner, createdBy) => {
-
-  if (!categories.includes(category)) {
+  if (!uploadCategories.includes(category)) {
     throw new ApiError(400, "Invalid category");
   }
 
@@ -38,8 +37,7 @@ const saveFile = async (file, category, owner, createdBy) => {
  * @returns {Promise<Upload>}
  */
 const saveAndReplace = async (file, category, owner, createdBy) => {
-
-  if (!categories.includes(category)) {
+  if (!uploadCategories.includes(category)) {
     throw new ApiError(400, "Invalid category");
   }
 
@@ -79,8 +77,9 @@ const getFilesByOwner = async (owner) => {
  * @param {string} category
  * @returns {Promise<Upload>}
  */
-const getFilesByOwnerAndCategory = async (owner, category) => { //DEPT_FILES
-  if (!categories.includes(category)) {
+const getFilesByOwnerAndCategory = async (owner, category) => {
+  //DEPT_FILES
+  if (!uploadCategories.includes(category)) {
     throw new ApiError(400, "Invalid category");
   }
 
@@ -95,7 +94,6 @@ const getFilesByOwnerAndCategory = async (owner, category) => { //DEPT_FILES
  * @returns {Promise}
  */
 const deleteUpload = async (owner, uploadId) => {
-
   const upload = await Upload.findOne({ owner, _id: uploadId });
   if (!upload) {
     throw new ApiError(404, "File not found");
@@ -112,8 +110,7 @@ const deleteUpload = async (owner, uploadId) => {
  * @returns {Promise}
  */
 const deleteMultipleFiles = async (owner, category) => {
-
-  if (!categories.includes(category)) {
+  if (!uploadCategories.includes(category)) {
     throw new ApiError(400, "Invalid category");
   }
 

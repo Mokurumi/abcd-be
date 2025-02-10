@@ -4,6 +4,7 @@
   "description": "ABCD BE",
   "main": "src/index.ts",
   "author": "Alpha Mokurumi",
+  "license": "MIT",
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node --trace-warnings src/index.js",
@@ -22,7 +23,6 @@
     "http-status": "^1.7.4",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
-    "lodash": "^4.17.21",
     "moment": "^2.30.1",
     "mongoose": "^8.6.2",
     "morgan": "^1.10.0",

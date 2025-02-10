@@ -1,6 +1,10 @@
 const ApiError = require("../utils/ApiError");
-const { catchAsync } = require("../utils/catchAsync");
-const { formatPhoneNumber, generateOTP, generateTempPassword } = require("../utils");
+const catchAsync = require("../utils/catchAsync");
+const {
+  formatPhoneNumber,
+  generateOTP,
+  generateTempPassword,
+} = require("../utils");
 // const sendSMS = require("../config/sendSMS");
 const {
   authService,
@@ -10,7 +14,7 @@ const {
   emailService,
   // notificationServicec
 } = require("../services");
-const { tokenTypes } = require("../constants/tokens");
+const { tokenTypes } = require("../constants");
 
 /**
  * Register a new user
@@ -18,7 +22,6 @@ const { tokenTypes } = require("../constants/tokens");
  * @param {*} res
  */
 const register = catchAsync(async (req, res) => {
-
   const defaultRole = await roleService.getRoleByValue("user");
   if (!defaultRole) {
     throw new ApiError(500, "Default role not found");
@@ -34,11 +37,12 @@ const register = catchAsync(async (req, res) => {
   const registrationToken = await tokenService.generateRegistrationToken(user);
 
   // Send user one time registration email to set up their account credentials
-  await emailService.sendRegistrationEmail(user, registrationToken);
+  await emailService.sendRegistrationEmail(user, registrationToken || "");
 
   // response
   res.status(201).send({
-    message: "Registration successful. Please check your email for activation link.",
+    message:
+      "Registration successful. Please check your email for activation link.",
   });
 });
 
@@ -73,14 +77,17 @@ const resendRegistrationEmail = catchAsync(async (req, res) => {
 
   // if the user is already active and email verified
   if (user.active && user.isEmailVerified) {
-    throw new ApiError(400, "Your account is already active. Please login to continue.");
+    throw new ApiError(
+      400,
+      "Your account is already active. Please login to continue."
+    );
   }
 
   // Generate registration token for email
   const registrationToken = await tokenService.generateRegistrationToken(user);
 
   // Send user one time registration email to set up their account credentials
-  await emailService.sendRegistrationEmail(user, registrationToken);
+  await emailService.sendRegistrationEmail(user, registrationToken || "");
 
   res.status(200).send({
     message: "Email sent successfully.",
@@ -93,7 +100,7 @@ const resendRegistrationEmail = catchAsync(async (req, res) => {
 const login = catchAsync(async (req, res) => {
   const { username, password } = req.body;
   const user = await authService.loginUser(username, password);
-  const tokens = await tokenService.generateAuthTokens(user);
+  const tokens = await tokenService.generateAuthTokens(user?._id?.toString());
   res.send({ user, tokens });
 });
 
@@ -108,11 +115,17 @@ const logout = catchAsync(async (req, res) => {
   try {
     const { token } = req.body;
 
-    const refreshTokenDoc = await tokenService.verifyToken(token, tokenTypes.REFRESH);
+    const refreshTokenDoc = await tokenService.verifyToken(
+      token,
+      tokenTypes.REFRESH,
+      req.user?._id
+    );
+    if (!refreshTokenDoc) {
+      throw new ApiError(401, "Invalid token");
+    }
 
     await tokenService.deleteToken(refreshTokenDoc.token, tokenTypes.REFRESH);
-  }
-  catch (err) {
+  } catch (err) {
     console.log(err);
   }
 });
@@ -122,7 +135,7 @@ const logout = catchAsync(async (req, res) => {
  */
 const refreshToken = catchAsync(async (req, res) => {
   const { token } = req.body;
-  const tokens = await authService.refreshAuth(token);
+  const tokens = await authService.refreshAuth(token, req.user);
   res.send({ tokens });
 });
 
@@ -131,7 +144,9 @@ const refreshToken = catchAsync(async (req, res) => {
  */
 const resetPassword = catchAsync(async (req, res) => {
   const { emailAddress, phoneNumber } = req.body;
-  const user = await userService.getUserByPhoneNumberOrEmail(emailAddress || formatPhoneNumber(phoneNumber));
+  const user = await userService.getUserByPhoneNumberOrEmail(
+    emailAddress || formatPhoneNumber(phoneNumber)
+  );
   if (!user) {
     throw new ApiError(404, "User not found");
   }
@@ -189,14 +204,13 @@ const getUserProfile = catchAsync(async (req, res) => {
  * Update user profile
  */
 const updateUserProfile = catchAsync(async (req, res) => {
-  const user = req.user;
-  const updatedUser = await userService.updateUserById(user._id, req.body);
+  const updatedUser = await userService.updateUserById(req.user?._id, req.body);
   res.send({
     message: "Profile updated successfully.",
     user: {
       ...updatedUser.toJSON(),
-      role: user.role,
-    }
+      role: req.user?.role,
+    },
   });
 });
 
@@ -204,13 +218,13 @@ const updateUserProfile = catchAsync(async (req, res) => {
  * Delete user profile
  */
 const deleteUserProfile = catchAsync(async (req, res) => {
-  const user = req.user;
-
   // generate delete profile token
-  const deleteProfileToken = await tokenService.generateDeleteProfileToken(user);
+  const deleteProfileToken = await tokenService.generateDeleteProfileToken(
+    req.user
+  );
 
   // send user delete profile email
-  await emailService.sendDeleteProfileEmail(user, deleteProfileToken);
+  await emailService.sendDeleteProfileEmail(req.user, deleteProfileToken || "");
 
   res.status(200).send({
     message: "Delete Request Received. Check your email for confirmation.",
@@ -235,7 +249,6 @@ const verifyDeleteProfile = catchAsync(async (req, res) => {
   });
 });
 
-
 module.exports = {
   register,
   verifyRegistration,
@@ -248,5 +261,5 @@ module.exports = {
   getUserProfile,
   updateUserProfile,
   deleteUserProfile,
-  verifyDeleteProfile
+  verifyDeleteProfile,
 };

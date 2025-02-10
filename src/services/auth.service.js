@@ -1,11 +1,9 @@
-const { isEmpty } = require("lodash");
 const Token = require("../models/Token");
 const tokenService = require("./token.service");
 const userService = require("./user.service");
 const emailService = require("./email.service");
 const ApiError = require("../utils/ApiError");
-const { tokenTypes } = require("../constants/tokens");
-
+const { tokenTypes } = require("../constants");
 
 /**
  * Verify registration token
@@ -18,7 +16,11 @@ const verifyRegistrationToken = async (token, userId) => {
   if (!user) {
     throw new ApiError(404, "User not found");
   }
-  const isValid = await tokenService.verifyToken(token, tokenTypes.VERIFY_REGISTRATION, user);
+  const isValid = await tokenService.verifyToken(
+    token,
+    tokenTypes.VERIFY_REGISTRATION,
+    user._id?.toString()
+  );
   if (!isValid) {
     throw new ApiError(401, "Invalid token");
   }
@@ -45,21 +47,29 @@ const loginUser = async (username, password) => {
   let failedLogin = false;
 
   // Existing users (imported users) and they have no password
-  if (user && isEmpty(user.password)) {
+  if (user && user.password?.trim() === "") {
     // Generate registration token for email
-    const registrationToken = await tokenService.generateRegistrationToken(user);
+    const registrationToken = await tokenService.generateRegistrationToken(
+      user
+    );
 
     // Send user one time registration email to set up their account credentials
-    await emailService.sendRegistrationEmail(user, registrationToken);
+    await emailService.sendRegistrationEmail(user, registrationToken || "");
 
     failedLogin = true;
-    throw new ApiError(403, "Check your email for an activation link to set up your account");
+    throw new ApiError(
+      403,
+      "Check your email for an activation link to set up your account"
+    );
   }
 
   // Account not active
   if (!user.active && !user.isEmailVerified) {
     failedLogin = true;
-    throw new ApiError(401, "Your account is not yet active. Please check your email for activation link.");
+    throw new ApiError(
+      401,
+      "Your account is not yet active. Please check your email for activation link."
+    );
   }
 
   // Email or password incorrect
@@ -71,14 +81,16 @@ const loginUser = async (username, password) => {
   // Account is disabled
   if (!user.active && !!user.isEmailVerified) {
     failedLogin = true;
-    throw new ApiError(401, "Your account is disabled. Kindly contact support.");
+    throw new ApiError(
+      401,
+      "Your account is disabled. Kindly contact support."
+    );
   }
 
   // update lastLogin date
   if (failedLogin) {
     user.lastFailedLogin = Date.now();
-  }
-  else {
+  } else {
     user.lastLogin = Date.now();
   }
   await user.save();
@@ -101,16 +113,25 @@ const logoutAllInstances = async (userId) => {
 /**
  * Refresh auth tokens
  * @param {string} refreshToken
+ * @param {User} user
  * @returns {Promise<Object>}
  */
-const refreshAuth = async (refreshToken) => {
+const refreshAuth = async (refreshToken, user) => {
   try {
-    const refreshTokenDoc = await tokenService.verifyToken(refreshToken, tokenTypes.REFRESH);
-    // await refreshTokenDoc.remove();
+    const refreshTokenDoc = await tokenService.verifyToken(
+      refreshToken,
+      tokenTypes.REFRESH,
+      user._id?.toString()
+    );
+    if (!refreshTokenDoc) {
+      throw new ApiError(401, "Invalid token");
+    }
+
     await tokenService.deleteToken(refreshTokenDoc.token, tokenTypes.REFRESH);
-    return tokenService.generateAuthTokens(refreshTokenDoc.user);
-  }
-  catch (error) {
+    return await tokenService.generateAuthTokens(
+      refreshTokenDoc.user.toString()
+    );
+  } catch (error) {
     console.log(error);
     throw new ApiError(401, "Invalid token");
   }
@@ -127,13 +148,16 @@ const verifyDeleteProfileToken = async (token, userId) => {
   if (!user) {
     throw new ApiError(404, "User not found");
   }
-  const isValid = await tokenService.verifyToken(token, tokenTypes.DELETE_PROFILE, user);
+  const isValid = await tokenService.verifyToken(
+    token,
+    tokenTypes.DELETE_PROFILE,
+    user._id?.toString()
+  );
   if (!isValid) {
     throw new ApiError(401, "Invalid token");
   }
   return user;
 };
-
 
 module.exports = {
   verifyRegistrationToken,

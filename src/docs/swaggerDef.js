@@ -1,9 +1,9 @@
-const config = require("../config/config");
+const config = require("../config");
 
 const swaggerDef = {
   openapi: "3.0.0",
   info: {
-    title: "ABCD API documentation",
+    title: "ABCD API Documentation",
     version: config.version,
     description: "API documentation for ABCD",
     // license: {
@@ -12,8 +12,9 @@ const swaggerDef = {
     // },
   },
   servers: [
-    // local, dev, qa, prod
-    { url: config.api_url[config.env || 'local'], },
+    {
+      url: config.api_url[config.env],
+    },
   ],
 };
 

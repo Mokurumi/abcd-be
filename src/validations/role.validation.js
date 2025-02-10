@@ -52,5 +52,5 @@ module.exports = {
   getRoles,
   getRole,
   updateRole,
-  deleteRole
+  deleteRole,
 };

@@ -1,13 +1,13 @@
 const pick = require("../utils/pick");
 const ApiError = require("../utils/ApiError");
-const { catchAsync } = require("../utils/catchAsync");
+const catchAsync = require("../utils/catchAsync");
 const { roleService } = require("../services");
 
 const createRole = catchAsync(async (req, res) => {
   const role = await roleService.createRole(req.body);
   res.status(201).send({
     role,
-    message: "Role created successfully"
+    message: "Role created successfully",
   });
 });
 
@@ -30,7 +30,7 @@ const updateRole = catchAsync(async (req, res) => {
   const role = await roleService.updateRoleById(req.params.roleId, req.body);
   res.send({
     role,
-    message: "Role updated successfully"
+    message: "Role updated successfully",
   });
 });
 
@@ -42,7 +42,7 @@ const lookupRoles = catchAsync(async (req, res) => {
 const deleteRole = catchAsync(async (req, res) => {
   await roleService.deleteRoleById(req.params.roleId);
   res.send({
-    message: "Role deleted successfully"
+    message: "Role deleted successfully",
   });
 });
 
@@ -52,5 +52,5 @@ module.exports = {
   getRole,
   updateRole,
   lookupRoles,
-  deleteRole
+  deleteRole,
 };

@@ -1,7 +1,7 @@
 const pick = require("../utils/pick");
 const ApiError = require("../utils/ApiError");
 const { generateTempPassword } = require("../utils");
-const { catchAsync } = require("../utils/catchAsync");
+const catchAsync = require("../utils/catchAsync");
 const {
   emailService,
   roleService,
@@ -9,9 +9,7 @@ const {
   userService,
 } = require("../services");
 
-
 const createUser = catchAsync(async (req, res) => {
-
   const tempPassword = generateTempPassword();
 
   // check if role exists
@@ -35,7 +33,11 @@ const createUser = catchAsync(async (req, res) => {
   const registrationToken = await tokenService.generateRegistrationToken(user);
 
   // Send user one time registration email to set up their account credentials
-  await emailService.sendCreateUserEmail(user, registrationToken, tempPassword);
+  await emailService.sendCreateUserEmail(
+    user,
+    registrationToken || "",
+    tempPassword
+  );
 
   // return user object
   res.status(201).send({
@@ -66,15 +68,22 @@ const getUsers = catchAsync(async (req, res) => {
 
 const getUser = catchAsync(async (req, res) => {
   // if req.user is equal to the user being fetched, return the user object
-  if (req.user.id === req.params.userId) {
+  if (req.user?.id === req.params.userId) {
     return res.send(req.user);
-  }
-  else {
-    const permissions = ["OWNER", "USER_MANAGEMENT", "TRANSACTION_MANAGEMENT", "LOAN_MANAGEMENT"];
-    if (!permissions.some(permission => req.user.role.permissions.includes(permission))) {
+  } else {
+    const permissions = [
+      "OWNER",
+      "USER_MANAGEMENT",
+      "TRANSACTION_MANAGEMENT",
+      "LOAN_MANAGEMENT",
+    ];
+    if (
+      !permissions.some((permission) =>
+        req.user?.role.permissions.includes(permission)
+      )
+    ) {
       throw new ApiError(403, "Forbidden");
-    }
-    else {
+    } else {
       const user = await userService.getUserById(req.params.userId);
       if (!user) {
         throw new ApiError(404, "User not found");
@@ -86,7 +95,10 @@ const getUser = catchAsync(async (req, res) => {
 
 const updateUser = catchAsync(async (req, res) => {
   // ensure req.user is the same as the user being updated or the user has USER_MANAGEMENT permission
-  if (!req.user.role.permissions.includes("USER_MANAGEMENT") && req.user.id !== req.params.userId) {
+  if (
+    !req.user?.role.permissions.includes("USER_MANAGEMENT") &&
+    req.user?.id !== req.params.userId
+  ) {
     throw new ApiError(403, "Forbidden");
   }
 
@@ -106,15 +118,15 @@ const lookupUsers = catchAsync(async (req, res) => {
     const users = await userService.lookupUsers(
       req.query.active
         ? {
-          active: req.query.active,
-          _id: req.user._id
-        } : {
-          _id: req.user._id
-        }
+            active: req.query.active,
+            _id: req.user?._id,
+          }
+        : {
+            _id: req.user?._id,
+          }
     );
     res.send(users);
-  }
-  else {
+  } else {
     const users = await userService.lookupUsers(
       req.query.active ? { active: req.query.active } : {}
     );

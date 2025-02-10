@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 const { toJSON } = require("./plugins");
-const { tokenTypes } = require("../constants/tokens");
+const { tokenTypes } = require("../constants");
 
-const tokenSchema = mongoose.Schema(
+const tokenSchema = new mongoose.Schema(
   {
     token: {
       type: String,
@@ -16,7 +16,7 @@ const tokenSchema = mongoose.Schema(
     },
     type: {
       type: String,
-      enum: [...Object.values(tokenTypes),],
+      enum: Object.values(tokenTypes), // Ensures only valid token types
       required: true,
     },
     generatedAuthExp: {
@@ -44,7 +44,7 @@ const tokenSchema = mongoose.Schema(
   }
 );
 
-// add plugin that converts mongoose to json
+// Add plugin that converts mongoose to JSON
 tokenSchema.plugin(toJSON);
 
 /**

@@ -4,7 +4,6 @@ const bcrypt = require("bcryptjs");
 const { toJSON, paginate } = require("./plugins");
 const { formatPhoneNumber } = require("../utils");
 
-
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -119,36 +118,6 @@ const userSchema = new mongoose.Schema(
 // add plugin that converts mongoose to json
 userSchema.plugin(toJSON);
 userSchema.plugin(paginate);
-
-/**
- * Check if emailAddress is taken
- * @param {string} emailAddress - The user's emailAddress
- * @param {ObjectId} [excludeUserId] - The id of the user to be excluded
- * @returns {Promise<boolean>}
- */
-userSchema.statics.isEmailTaken = async (emailAddress, excludeUserId) => {
-  const user = await User.findOne({
-    emailAddress,
-    _id: { $ne: excludeUserId },
-    // isDeleted: false,
-  });
-  return !!user;
-};
-
-/**
- * Check if phoneNumber is taken
- * @param {string} phoneNumber - The user's phoneNumber
- * @param {ObjectId} [excludeUserId] - The id of the user to be excluded
- * @returns {Promise<boolean>}
- */
-userSchema.statics.isPhoneNumberTaken = async (phoneNumber, excludeUserId) => {
-  const user = await User.findOne({
-    phoneNumber,
-    _id: { $ne: excludeUserId },
-    // isDeleted: false,
-  });
-  return !!user;
-};
 
 /**
  * Check if password matches the user's password

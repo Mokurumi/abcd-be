@@ -43,10 +43,12 @@ const logout = {
 
 const resetPassword = {
   // at least one of the two fields is required
-  body: Joi.object().keys({
-    emailAddress: Joi.string().email(),
-    phoneNumber: Joi.string().custom(phoneNumber),
-  }).or("emailAddress", "phoneNumber"),
+  body: Joi.object()
+    .keys({
+      emailAddress: Joi.string().email(),
+      phoneNumber: Joi.string().custom(phoneNumber),
+    })
+    .or("emailAddress", "phoneNumber"),
 };
 
 const changePassword = {
@@ -90,5 +92,5 @@ module.exports = {
   changePassword,
   refreshToken,
   updateProfile,
-  verifyDeleteProfile
+  verifyDeleteProfile,
 };

@@ -1,11 +1,13 @@
 const mongoose = require("mongoose");
 const app = require("./app");
-const config = require("./config/config");
+const config = require("./config");
 const logger = require("./config/logger");
 const initializeDatabase = require("./utils/initializeDatabase");
 
 let server;
-mongoose.connect(config.mongoose.url, config.mongoose.options)
+
+mongoose
+  .connect(config.mongoose.url, config.mongoose.options)
   .then(async () => {
     logger.info("Connected to the database");
 
@@ -16,7 +18,7 @@ mongoose.connect(config.mongoose.url, config.mongoose.options)
     });
   })
   .catch((err) => {
-    logger.error(`Error connecting to the database: ${err}`);
+    logger.error(`Error connecting to the database: ${err.message}`);
   });
 
 const exitHandler = () => {

@@ -4,7 +4,6 @@ const { authValidation } = require("../validations");
 const { authController } = require("../controllers");
 const auth = require("../middlewares/auth");
 
-
 const router = express.Router();
 
 // Register a new user
@@ -24,23 +23,16 @@ router.post(
 // Resend email registration
 router.post(
   "/resend-registration-email",
-  auth('USER_MANAGEMENT'),
+  auth("USER_MANAGEMENT"),
   validate(authValidation.resendRegistrationEmail),
   authController.resendRegistrationEmail
 );
 
 // login user
-router.post(
-  "/login",
-  validate(authValidation.login),
-  authController.login
-);
+router.post("/login", validate(authValidation.login), authController.login);
 
 // logout user
-router.post(
-  "/logout",
-  authController.logout
-);
+router.post("/logout", authController.logout);
 
 // refresh token
 router.post(
@@ -60,27 +52,21 @@ router.post(
 // change password
 router.post(
   "/change-password",
-  auth('ANY_WITH_AUTH'),
+  auth("ANY_WITH_AUTH"),
   validate(authValidation.changePassword),
   authController.changePassword
 );
 
 // profile
-router.
-  route("/profile")
-  .get(
-    auth('ANY_WITH_AUTH'),
-    authController.getUserProfile
-  )
+router
+  .route("/profile")
+  .get(auth("ANY_WITH_AUTH"), authController.getUserProfile)
   .patch(
-    auth('ANY_WITH_AUTH'),
+    auth("ANY_WITH_AUTH"),
     validate(authValidation.updateProfile),
     authController.updateUserProfile
   )
-  .delete(
-    auth('ANY_WITH_AUTH'),
-    authController.deleteUserProfile
-  );
+  .delete(auth("ANY_WITH_AUTH"), authController.deleteUserProfile);
 
 router.post(
   "/profile/verify-delete",

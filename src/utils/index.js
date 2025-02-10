@@ -1,3 +1,8 @@
+/**
+ * Generate a random OTP (One Time Password) of given length
+ * @param {number} charNumber - Number of characters in the OTP
+ * @returns {string} OTP
+ */
 const generateOTP = (charNumber = 4) => {
   let otp = "";
   for (let i = 0; i < charNumber; i++) {
@@ -6,11 +11,16 @@ const generateOTP = (charNumber = 4) => {
   return otp;
 };
 
+/**
+ * Generate a temporary password with at least one character from each character set
+ * @param {number} charNumber - Number of characters in the password
+ * @returns {string} Generated temporary password
+ */
 const generateTempPassword = (charNumber = 8) => {
-  let lowerChars = "abcdefghjkmnpqrstuvwxyz"; // removed i, l, o to avoid confusion
-  let upperChars = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // removed I, O, and l to avoid confusion
-  let numbers = "23456789"; // removed 0, 1, and l to avoid confusion
-  let specialChars = "!@#$&*_+?><,.-=";
+  const lowerChars = "abcdefghjkmnpqrstuvwxyz"; // removed i, l, o to avoid confusion
+  const upperChars = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // removed I, O, and l to avoid confusion
+  const numbers = "23456789"; // removed 0 and 1 to avoid confusion
+  const specialChars = "!@#$&*_+?><,.-=";
 
   // Generate password with at least one character from each character set
   let ans = "";
@@ -26,18 +36,30 @@ const generateTempPassword = (charNumber = 8) => {
   }
 
   // Shuffle the password
-  ans = ans.split("").sort(() => Math.random() - 0.5).join("");
+  ans = ans
+    .split("")
+    .sort(() => Math.random() - 0.5)
+    .join("");
 
   return ans;
 };
 
-const geneateUniqueId = (prefix) => {
+/**
+ * Generate a unique ID with a given prefix
+ * @param {string} prefix - The prefix for the unique ID
+ * @returns {string} Unique ID
+ */
+const generateUniqueId = (prefix) => {
   const timestamp = Date.now().toString(36);
   const suffix = Math.random().toString(36).substring(2, 6);
   return `${prefix}-${timestamp}-${suffix}`.toUpperCase();
 };
 
-// function to trnaslate phone numbers starting with 0 to +254
+/**
+ * Format a phone number to start with +254 if it starts with 0
+ * @param {string} phoneNumber - The phone number to format
+ * @returns {string} Formatted phone number
+ */
 const formatPhoneNumber = (phoneNumber) => {
   if (phoneNumber?.startsWith("0")) {
     return phoneNumber.replace(/^0/, "+254");
@@ -45,6 +67,11 @@ const formatPhoneNumber = (phoneNumber) => {
   return phoneNumber;
 };
 
+/**
+ * Extract the date part from a Date object or string
+ * @param {Date | string} date - The date to extract
+ * @returns {string} Extracted date in ISO format (yyyy-mm-dd)
+ */
 const extractDate = (date) => {
   return new Date(date).toISOString().split("T")[0];
 };
@@ -52,7 +79,7 @@ const extractDate = (date) => {
 module.exports = {
   generateTempPassword,
   generateOTP,
-  geneateUniqueId,
+  generateUniqueId,
   formatPhoneNumber,
   extractDate,
 };

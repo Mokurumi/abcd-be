@@ -1,13 +1,8 @@
 const { Role, User } = require("../models");
-const permissions = require("../constants/permissions");
-const config = require("../config/config");
-const {
-  emailService,
-  tokenService,
-  userService,
-} = require("../services");
+const { permissions } = require("../constants");
+const config = require("../config");
+const { emailService, tokenService, userService } = require("../services");
 const { generateTempPassword } = require("../utils");
-
 
 const initializeRoles = async () => {
   // add if not exist
@@ -18,11 +13,13 @@ const initializeRoles = async () => {
       value: "super_admin",
       active: true,
       permissions: permissions,
-      protected: true
+      protected: true,
     });
-  }
-  else {
-    await Role.updateOne({ value: "super_admin" }, { permissions: permissions });
+  } else {
+    await Role.updateOne(
+      { value: "super_admin" },
+      { permissions: permissions }
+    );
   }
 
   const userRole = await Role.findOne({ value: "user" });
@@ -32,7 +29,7 @@ const initializeRoles = async () => {
       value: "user",
       active: true,
       permissions: [],
-      protected: true
+      protected: true,
     });
   }
   // else {
@@ -56,70 +53,80 @@ const initializeSuperAdmin = async () => {
   const superAdmins = await User.find({ role: superAdminRole._id });
 
   // Step 3: Check if there's a Super Admin with the specified email
-  const superAdminUser = superAdmins.find(user => user.emailAddress === config.superAdmin.email);
+  const superAdminUser = superAdmins.find(
+    (user) => user.emailAddress === config.superAdmin.email
+  );
 
   if (superAdminUser) {
     // If there’s a Super Admin with the correct email, delete all other Super Admin users
     // await User.deleteMany({ role: superAdminRole._id, _id: { $ne: superAdminUser._id } });
     // update isDeleted to true
-    await User.updateMany({
-      role: superAdminRole._id,
-      _id: { $ne: superAdminUser._id }
-    }, {
-      role: null,
-      password: generateTempPassword(),
-      active: false,
-      protected: false,
-      isDeleted: true,
-      deletedAt: Date.now(),
-    });
+    await User.updateMany(
+      {
+        role: superAdminRole._id,
+        _id: { $ne: superAdminUser._id },
+      },
+      {
+        role: null,
+        password: generateTempPassword(),
+        active: false,
+        protected: false,
+        isDeleted: true,
+        deletedAt: Date.now(),
+      }
+    );
 
     // ensure the current super admin is active
     if (!superAdminUser.active) {
       superAdminUser.active = true;
       await superAdminUser.save();
     }
-  }
-  else {
+  } else {
     // If no Super Admin has the specified email, delete all Super Admins and create a new one
     // await User.deleteMany({ role: superAdminRole._id });
     // update isDeleted to true
-    await User.updateMany({ role: superAdminRole._id }, {
-      role: null,
-      password: generateTempPassword(),
-      active: false,
-      protected: false,
-      isDeleted: true,
-      deletedAt: Date.now(),
-    });
+    await User.updateMany(
+      { role: superAdminRole._id },
+      {
+        role: null,
+        password: generateTempPassword(),
+        active: false,
+        protected: false,
+        isDeleted: true,
+        deletedAt: Date.now(),
+      }
+    );
 
     const newUser = await userService.createUser({
       firstName: "Super",
       lastName: "Admin",
       emailAddress: config.superAdmin.email,
       phoneNumber: config.superAdmin.phone,
-      password: config.superAdmin.password,
-      role: superAdminRole._id,
+      role: superAdminRole._id?.toString(),
       active: true,
       password: tempPassword,
       firstTimeLogin: true,
-      protected: true
+      protected: true,
     });
 
     // Generate registration token
-    const registrationToken = await tokenService.generateRegistrationToken(newUser);
+    const registrationToken = await tokenService.generateRegistrationToken(
+      newUser
+    );
 
     // Send user one time registration email to set up their account credentials
-    await emailService.sendCreateUserEmail(newUser, registrationToken, tempPassword);
+    await emailService.sendCreateUserEmail(
+      newUser,
+      registrationToken || "",
+      tempPassword
+    );
   }
 };
-
 
 const initializeDatabase = async () => {
   try {
     await initializeRoles();
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error);
   }
 };

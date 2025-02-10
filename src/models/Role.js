@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const { toJSON, paginate } = require("./plugins");
-const permissions = require("../constants/permissions");
-
+const { permissions } = require("../constants");
 
 const roleSchema = new mongoose.Schema(
   {
@@ -19,17 +18,16 @@ const roleSchema = new mongoose.Schema(
     },
     active: {
       type: Boolean,
-      required: true,
       default: true,
     },
-    permissions: {
-      type: [{ type: String, enum: permissions }],
-      required: true,
-      default: [],
-    },
+    permissions: [
+      {
+        type: String,
+        enum: permissions,
+      },
+    ],
     protected: {
       type: Boolean,
-      required: true,
       default: false,
     },
     createdAt: {
@@ -49,20 +47,6 @@ const roleSchema = new mongoose.Schema(
 roleSchema.plugin(toJSON);
 roleSchema.plugin(paginate);
 
-/**
- * Check if role already exists
- * @param {string} name - role name
- * @param {ObjectId} [excludeRoleId] - The id of the role to be excluded
- * @returns {Promise<boolean>}
- */
-roleSchema.statics.isRoleExisting = async (name, excludeRoleId) => {
-  const role = await Role.findOne({
-    name,
-    value: name.toLowerCase(),
-    _id: { $ne: excludeRoleId }
-  });
-  return !!role;
-};
 /**
  * @typedef Role
  */

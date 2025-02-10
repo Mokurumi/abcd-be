@@ -1,6 +1,4 @@
 const Joi = require("joi");
-const { objectId } = require("./custom.validation");
-
 
 const lookupUsers = {
   query: Joi.object().keys({
@@ -8,7 +6,6 @@ const lookupUsers = {
   }),
 };
 
-
 module.exports = {
-  lookupUsers
+  lookupUsers,
 };

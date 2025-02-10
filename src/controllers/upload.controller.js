@@ -1,20 +1,13 @@
-const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
-const { catchAsync } = require("../utils/catchAsync");
-const {
-  userService,
-  uploadService,
-} = require("../services");
-
+const catchAsync = require("../utils/catchAsync");
+const { userService, uploadService } = require("../services");
 
 const getUser = async (owner, currentUser) => {
-  if (currentUser._id.toString() === owner) {
+  if (currentUser?._id?.toString() === owner) {
     return;
-  }
-  else if (!currentUser.role.permissions.includes("USER_MANAGEMENT")) {
+  } else if (!currentUser.role?.permissions?.includes("USER_MANAGEMENT")) {
     throw new ApiError(403, "Forbidden");
-  }
-  else {
+  } else {
     const user = await userService.getUserById(owner);
     if (!user) {
       throw new ApiError(404, "User not found");
@@ -38,8 +31,11 @@ const userProfileImage = catchAsync(async (req, res) => {
     file,
     "PROFILE_IMG",
     owner,
-    req.user._id
+    req.user?._id
   );
+  if (!upload) {
+    throw new ApiError(400, "File not saved");
+  }
 
   // update user profile image
   await userService.updateUserById(owner, { profile_img: upload.docURL });

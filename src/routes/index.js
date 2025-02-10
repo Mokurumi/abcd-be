@@ -1,9 +1,8 @@
 // routes index file
 const express = require("express");
-const config = require("../config/config");
+const config = require("../config");
 const docsRoute = require("./docs.routes");
 const cron = require("node-cron");
-
 
 // Route
 const authRoute = require("./auth.routes");
@@ -12,7 +11,6 @@ const roleRoute = require("./role.routes");
 const uploadRoute = require("./upload.routes");
 // lookup routes
 const lookupRoute = require("./lookups.routes");
-
 
 const router = express.Router();
 
@@ -33,7 +31,6 @@ const devRoutes = [
     route: docsRoute,
   },
 ];
-
 
 defaultRoutes.forEach((route) => {
   router.use(route.path, route.route);

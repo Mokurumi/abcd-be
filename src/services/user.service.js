@@ -2,15 +2,31 @@ const ApiError = require("../utils/ApiError");
 const { User, Role } = require("../models");
 
 /**
+ * Get user by phoneNumber or emailAddress
+ * @param {string} username
+ * @returns {Promise<User>}
+ */
+const getUserByPhoneNumberOrEmail = async (username) => {
+  return await User.findOne({
+    $or: [{ emailAddress: username }, { phoneNumber: username }],
+    isDeleted: false,
+  });
+};
+
+/**
  * Create a user:
  * @param {Object} requestBody
  * @returns {Promise<User>}
  */
 const createUser = async (requestBody) => {
-  const checkEmail = await User.isEmailTaken(requestBody.emailAddress);
-  const checkPhoneNumber = await User.isPhoneNumberTaken(requestBody.phoneNumber);
+  const userExists = await User.findOne({
+    $or: [
+      { emailAddress: requestBody.emailAddress },
+      { phoneNumber: requestBody.phoneNumber },
+    ],
+  });
 
-  if (checkEmail || checkPhoneNumber) {
+  if (userExists) {
     throw new ApiError(400, "User already exists.");
   }
 
@@ -31,12 +47,13 @@ const queryUsers = async (filter, options) => {
     {
       ...filter,
       protected: false,
-      isDeleted: false
+      isDeleted: false,
     },
     {
       ...options,
       populate: "role",
-    });
+    }
+  );
   return users;
 };
 
@@ -50,23 +67,7 @@ const getUserById = async (id) => {
   return User.findById({
     _id: id,
     isDeleted: false,
-  })
-    .populate({ path: "role" });
-};
-
-/**
- * Get user by phoneNumber or emailAddress
- * @param {string} username
- * @returns {Promise<User>}
- */
-const getUserByPhoneNumberOrEmail = async (username) => {
-  return await User.findOne({
-    $or: [
-      { emailAddress: username },
-      { phoneNumber: username }
-    ],
-    isDeleted: false,
-  });
+  }).populate({ path: "role" });
 };
 
 /**
@@ -81,11 +82,19 @@ const updateUserById = async (userId, updateBody) => {
     throw new ApiError(400, "User not found");
   }
 
-  if (updateBody.emailAddress && (await User.isEmailTaken(updateBody.emailAddress, userId))) {
+  const isEmailTaken = await User.findOne({
+    emailAddress: updateBody.emailAddress,
+    _id: { $ne: userId },
+  });
+  if (isEmailTaken) {
     throw new ApiError(400, "Email already taken");
   }
 
-  if (updateBody.phoneNumber && (await User.isPhoneNumberTaken(updateBody.phoneNumber, userId))) {
+  const isPhoneNumberTaken = await User.findOne({
+    phoneNumber: updateBody.phoneNumber,
+    _id: { $ne: userId },
+  });
+  if (isPhoneNumberTaken) {
     throw new ApiError(400, "Mobile number already taken");
   }
 
@@ -102,7 +111,7 @@ const updateUserById = async (userId, updateBody) => {
     }
 
     // if the user is super_admin, raise an error
-    if (user.role.value === "super_admin") {
+    if (user.role?.value === "super_admin") {
       throw new ApiError(400, "You cannot update a super admin user");
     }
   }
@@ -118,7 +127,6 @@ const updateUserById = async (userId, updateBody) => {
  * @returns {Promise<User>}
  */
 const lookupUsers = async (query = {}) => {
-
   const newQuery = {
     ...query,
     // active: true,

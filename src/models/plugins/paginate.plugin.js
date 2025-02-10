@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-
 const paginate = (schema) => {
   /**
    * @typedef {Object} QueryResult
@@ -22,23 +20,19 @@ const paginate = (schema) => {
   schema.statics.paginate = async function (filter, options) {
     let sort = "";
     if (options.sortBy) {
-      const sortingCriteria = [];
-      options.sortBy.split(",").forEach((sortOption) => {
-        const [key, order] = sortOption.split(":");
-        sortingCriteria.push((order === "desc" ? "-" : "") + key);
-      });
-      sort = sortingCriteria.join(" ");
-    }
-    else {
+      sort = options.sortBy
+        .split(",")
+        .map((sortOption) => {
+          const [key, order] = sortOption.split(":");
+          return (order === "desc" ? "-" : "") + key;
+        })
+        .join(" ");
+    } else {
       sort = "-createdAt";
     }
 
-    const size = options.size && parseInt(options.size, 10) > 0
-      ? parseInt(options.size, 10)
-      : 10;
-    const page = options.page && parseInt(options.page, 10) > 0
-      ? parseInt(options.page, 10)
-      : 1;
+    const size = options.size && options.size > 0 ? options.size : 10;
+    const page = options.page && options.page > 0 ? options.page : 1;
     const skip = (page - 1) * size;
 
     const filterObject = { ...filter };
@@ -47,13 +41,13 @@ const paginate = (schema) => {
     if (filter.search) {
       const search = filter.search;
       const searchFilter = Object.keys(schema.obj).reduce((acc, key) => {
-        if (schema.obj[key].type === String) {
+        if (schema.obj[key]?.type === String) {
           acc.push({ [key]: { $regex: search, $options: "i" } });
         }
         return acc;
       }, []);
       filterObject.$or = searchFilter;
-      delete filterObject.search; // Remove the search key from filter
+      delete filterObject.search;
     }
 
     /**
@@ -62,10 +56,12 @@ const paginate = (schema) => {
      * and then convert it to an array of values
      */
     Object.keys(filterObject).forEach((key) => {
-      if (typeof filterObject[key] === "string" && filterObject[key].includes(",")) {
+      if (
+        typeof filterObject[key] === "string" &&
+        filterObject[key].includes(",")
+      ) {
         filterObject[key] = { $in: filterObject[key].split(",") };
-      }
-      if (Array.isArray(filterObject[key])) {
+      } else if (Array.isArray(filterObject[key])) {
         filterObject[key] = { $in: filterObject[key] };
       }
     });
@@ -73,44 +69,39 @@ const paginate = (schema) => {
     const countPromise = this.countDocuments(filterObject).exec();
     let docsPromise = this.find(filterObject).sort(sort).skip(skip).limit(size);
 
-    // Updated populate handling
     if (options.populate) {
       if (typeof options.populate === "string") {
-        // Populate as string (e.g., "user,comments.user")
         options.populate.split(",").forEach((populateOption) => {
-          docsPromise = docsPromise.populate(
-            populateOption
-              .split(".")
-              .reverse()
-              .reduce((a, b) => ({ path: b, populate: a }))
-          );
+          docsPromise = docsPromise.populate({ path: populateOption.trim() });
         });
-      }
-      else if (Array.isArray(options.populate)) {
+      } else if (Array.isArray(options.populate)) {
         // Populate as array of objects with fields
-        options.populate.forEach((populateObj) => {
-          docsPromise = docsPromise.populate(populateObj);
+        options.populate.forEach((populateOption) => {
+          if (typeof populateOption === "string") {
+            docsPromise = docsPromise.populate({ path: populateOption.trim() });
+          } else {
+            docsPromise = docsPromise.populate(populateOption);
+          }
         });
-      } else if (typeof options.populate === "object") {
+      } else {
         // Populate as a single object with fields
         docsPromise = docsPromise.populate(options.populate);
       }
     }
 
-    docsPromise = docsPromise.exec();
+    const [totalResults, results] = await Promise.all([
+      countPromise,
+      docsPromise.exec(),
+    ]);
+    const totalPages = Math.ceil(totalResults / size);
 
-    return Promise.all([countPromise, docsPromise]).then((values) => {
-      const [totalResults, results] = values;
-      const totalPages = Math.ceil(totalResults / size);
-      const result = {
-        results,
-        page,
-        size,
-        totalPages,
-        totalResults,
-      };
-      return Promise.resolve(result);
-    });
+    return {
+      results,
+      page,
+      size,
+      totalPages,
+      totalResults,
+    };
   };
 };
 

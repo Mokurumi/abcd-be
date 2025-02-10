@@ -1,12 +1,12 @@
+
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
-// const mongoose = require("mongoose");
 
-const config = require("../config/config");
+const config = require("../config");
 const userService = require("./user.service");
 const { Token } = require("../models");
 const ApiError = require("../utils/ApiError");
-const { tokenTypes } = require("../constants/tokens");
+const { tokenTypes } = require("../constants");
 
 /**
  * Generate token
@@ -20,7 +20,7 @@ const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
   const payload = {
     sub: userId,
     iat: moment().unix(),
-    exp: expires.unix(),
+    exp: moment(expires).unix(),
     type,
   };
   // TODO: use rsa keys for jwt
@@ -62,15 +62,14 @@ const saveToken = async (
  * @param {string} type
  * @returns {Promise<Token>}
  */
-const verifyToken = async (token, type, user) => {
+const verifyToken = async (token, type, userId) => {
   const payload = jwt.verify(token, config.jwt.secret);
 
-  if (user?._id) {
-    if (payload.sub !== user._id?.toString()) {
+  if (userId) {
+    if (payload.sub !== userId) {
       throw new ApiError(401, "Unauthorized user");
     }
-  }
-  else {
+  } else {
     const user = await userService.getUserById(payload.sub);
 
     if (!user) {
@@ -102,7 +101,7 @@ const generateRegistrationToken = async (user) => {
     "minutes"
   );
   const registerEmailToken = generateToken(
-    user._id,
+    user._id?.toString(),
     expires,
     tokenTypes.VERIFY_REGISTRATION
   );
@@ -120,13 +119,13 @@ const generateRegistrationToken = async (user) => {
  * @param {User} user
  * @returns {Promise<Object>}
  */
-const generateAuthTokens = async (user) => {
+const generateAuthTokens = async (userId) => {
   const accessTokenExpires = moment().add(
     config.jwt.accessExpiration,
     "minutes"
   );
   const accessToken = generateToken(
-    user._id,
+    userId,
     accessTokenExpires,
     tokenTypes.ACCESS
   );
@@ -136,13 +135,13 @@ const generateAuthTokens = async (user) => {
     "minutes"
   );
   const refreshToken = generateToken(
-    user._id,
+    userId,
     refreshTokenExpires,
     tokenTypes.REFRESH
   );
   await saveToken(
     refreshToken,
-    user._id?.toString(),
+    userId,
     refreshTokenExpires,
     tokenTypes.REFRESH,
     false,
@@ -172,7 +171,7 @@ const generateVerifyEmailToken = async (user) => {
     "minutes"
   );
   const verifyEmailToken = generateToken(
-    user._id,
+    user._id?.toString(),
     expires,
     tokenTypes.VERIFY_REGISTRATION
   );
@@ -187,11 +186,12 @@ const generateVerifyEmailToken = async (user) => {
 
 /**
  * Delete token
- * @param {ObjectId} userId
+ * @param {string} token
+ * @param {string} type
  * @returns {Promise<User>}
  */
 const deleteToken = async (token, type) => {
-  const payload = jwt.verify(token, config.jwt.secret);
+  const payload = jwt.verify(token || "", config.jwt.secret);
   const tokenDoc = await Token.findOne({
     token,
     type,
@@ -217,7 +217,7 @@ const generateDeleteProfileToken = async (user) => {
     "minutes"
   );
   const deleteProfileToken = generateToken(
-    user._id,
+    user._id?.toString(),
     expires,
     tokenTypes.DELETE_PROFILE
   );
@@ -238,5 +238,5 @@ module.exports = {
   generateAuthTokens,
   generateVerifyEmailToken,
   generateRegistrationToken,
-  generateDeleteProfileToken
+  generateDeleteProfileToken,
 };

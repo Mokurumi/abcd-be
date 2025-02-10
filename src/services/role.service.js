@@ -1,6 +1,21 @@
 const ApiError = require("../utils/ApiError");
 const { Role, User } = require("../models");
-const permissions = require("../constants/permissions");
+const { permissions } = require("../constants");
+
+/**
+ * Check if role exists
+ * @param {string} name
+ * @param {ObjectId} roleId
+ * @returns {Promise<boolean>}
+ */
+const isRoleExisting = async (name, roleId) => {
+  const role = await Role.findOne({
+    name,
+    value: name.toLowerCase(),
+    _id: { $ne: roleId },
+  });
+  return !!role;
+};
 
 /**
  * Add Role
@@ -8,7 +23,7 @@ const permissions = require("../constants/permissions");
  * @returns {Promise<Role>}
  */
 const createRole = async (requestBody) => {
-  if (await Role.isRoleExisting(requestBody.name)) {
+  if (await isRoleExisting(requestBody.name, null)) {
     throw new ApiError(400, "Role already exists");
   }
 
@@ -21,14 +36,6 @@ const createRole = async (requestBody) => {
       }
     }
   }
-
-  // // make sure the role has ANY_WITH_AUTH and OWNER permissions, by adding them if they do not exist
-  // const defaultPermissions = ['ANY_WITH_AUTH', 'OWNER'];
-  // for (let i = 0; i < defaultPermissions.length; i++) {
-  //   if (!rPermissions.includes(defaultPermissions[i])) {
-  //     rPermissions.push(defaultPermissions[i]);
-  //   }
-  // }
 
   return Role.create(requestBody);
 };
@@ -76,9 +83,7 @@ const getRoleByValue = async (value) => {
 const updateRoleById = async (roleId, updateBody) => {
   const role = await getRoleById(roleId);
 
-  if (role.protected) {
-    // // if it is protected, do not update
-    // throw new ApiError(400, "Cannot update protected role");
+  if (role?.protected) {
     // if it is protected, update only the permissions and name
     delete updateBody.value;
   }
@@ -86,10 +91,7 @@ const updateRoleById = async (roleId, updateBody) => {
   if (!role) {
     throw new ApiError(404, "Role not found");
   }
-  if (
-    updateBody.name &&
-    (await Role.isRoleExisting(updateBody.name, roleId))
-  ) {
+  if (updateBody.name && (await isRoleExisting(updateBody.name, roleId))) {
     throw new ApiError(400, "Role already exists");
   }
 
@@ -103,14 +105,6 @@ const updateRoleById = async (roleId, updateBody) => {
     }
   }
 
-  // // make sure the role has ANY_WITH_AUTH and OWNER permissions, by adding them if they do not exist
-  // const defaultPermissions = ['ANY_WITH_AUTH', 'OWNER'];
-  // for (let i = 0; i < defaultPermissions.length; i++) {
-  //   if (!rPermissions.includes(defaultPermissions[i])) {
-  //     rPermissions.push(defaultPermissions[i]);
-  //   }
-  // }
-
   Object.assign(role, updateBody);
   await role.save();
   return role;
@@ -121,7 +115,9 @@ const updateRoleById = async (roleId, updateBody) => {
  * @returns {Promise<Role>}
  */
 const lookupRoles = async () => {
-  return Role.find({ active: true, value: { $ne: "super_admin" } }).select("name _id");
+  return Role.find({ active: true, value: { $ne: "super_admin" } }).select(
+    "name _id"
+  );
 };
 
 /**
