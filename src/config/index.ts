@@ -68,7 +68,7 @@ if (error) {
 const config = {
   env: (envVars.NODE_ENV as "local" | "dev" | "qa" | "prod") || "local",
   version: envVars.VERSION,
-  port: envVars.PORT,
+  port: envVars.PORT || 4000,
   logo: envVars.LOGO,
   superAdmin: {
     email: envVars.SUPER_ADMIN_EMAIL,
