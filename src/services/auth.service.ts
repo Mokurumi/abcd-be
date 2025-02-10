@@ -124,15 +124,18 @@ const logoutAllInstances = async (
 /**
  * Refresh auth tokens
  * @param {string} refreshToken
- * @param {User} user
+ * @param {string} userId
  * @returns {Promise<Object>}
  */
-const refreshAuth = async (refreshToken: string, user: IUser) => {
+const refreshAuth = async (
+  refreshToken: string,
+  userId: string | mongoose.Types.ObjectId | undefined
+) => {
   try {
     const refreshTokenDoc = await tokenService.verifyToken(
       refreshToken,
       tokenTypes.REFRESH,
-      user._id?.toString()
+      userId
     );
     if (!refreshTokenDoc) {
       throw new ApiError(401, "Invalid token");
