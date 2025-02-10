@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Request, Response, NextFunction } from "express";
+
 import ApiError from "../utils/ApiError";
-import { roleService } from "../services";
 import { IRole, IUser } from "../types";
 
 // Verify callback function
@@ -20,11 +20,8 @@ const verifyCallback =
     req.user = user; // Attach user to the request
 
     if (requiredRights.length > 0) {
-      const role: IRole | null = await roleService.getRoleById(
-        user.role?.toString()
-      );
-
-      if (!role) {
+      const role = user.role as IRole;
+      if (!role || !role.permissions) {
         return reject(new ApiError(403, "Forbidden"));
       }
 
