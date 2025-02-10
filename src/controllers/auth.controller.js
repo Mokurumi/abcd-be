@@ -135,7 +135,7 @@ const logout = catchAsync(async (req, res) => {
  */
 const refreshToken = catchAsync(async (req, res) => {
   const { token } = req.body;
-  const tokens = await authService.refreshAuth(token, req.user);
+  const tokens = await authService.refreshAuth(token, req.user?._id);
   res.send({ tokens });
 });
 

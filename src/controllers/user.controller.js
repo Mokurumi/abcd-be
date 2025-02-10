@@ -68,7 +68,7 @@ const getUsers = catchAsync(async (req, res) => {
 
 const getUser = catchAsync(async (req, res) => {
   // if req.user is equal to the user being fetched, return the user object
-  if (req.user?.id === req.params.userId) {
+  if (req.user?._id === req.params.userId) {
     return res.send(req.user);
   } else {
     const permissions = [
@@ -97,7 +97,7 @@ const updateUser = catchAsync(async (req, res) => {
   // ensure req.user is the same as the user being updated or the user has USER_MANAGEMENT permission
   if (
     !req.user?.role.permissions.includes("USER_MANAGEMENT") &&
-    req.user?.id !== req.params.userId
+    req.user?._id !== req.params.userId
   ) {
     throw new ApiError(403, "Forbidden");
   }
@@ -118,12 +118,12 @@ const lookupUsers = catchAsync(async (req, res) => {
     const users = await userService.lookupUsers(
       req.query.active
         ? {
-            active: req.query.active,
-            _id: req.user?._id,
-          }
+          active: req.query.active,
+          _id: req.user?._id,
+        }
         : {
-            _id: req.user?._id,
-          }
+          _id: req.user?._id,
+        }
     );
     res.send(users);
   } else {
