@@ -1,6 +1,5 @@
 import express from "express";
 import helmet from "helmet";
-// import xss from "xss-clean";
 import mongoSanitize from "express-mongo-sanitize";
 import compression from "compression";
 import cors from "cors";
@@ -13,6 +12,7 @@ import { jwtStrategy } from "./config/passport";
 import { authLimiter } from "./middlewares/rateLimiter";
 import routes from "./routes";
 import { errorConverter, errorHandler } from "./middlewares/error";
+import xssSanitize from "./middlewares/xssSanitize";
 import ApiError from "./utils/ApiError";
 
 const app = express();
@@ -33,7 +33,7 @@ app.use(express.urlencoded({ extended: false, limit: "50mb" }));
 app.use(express.json({ limit: "50mb" }));
 
 // sanitize request data
-// app.use(xss());
+app.use(xssSanitize);
 app.use(mongoSanitize());
 
 // gzip compression

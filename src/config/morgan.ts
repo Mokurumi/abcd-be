@@ -1,5 +1,5 @@
 import morgan from "morgan";
-import config from ".";
+import config from "./index";
 import logger from "./logger";
 
 // convert to ts

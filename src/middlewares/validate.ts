@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import Joi, { Schema, ValidationError } from "joi";
+import Joi, { Schema } from "joi";
 import pick from "../utils/pick";
 import ApiError from "../utils/ApiError";
 

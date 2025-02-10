@@ -1,4 +1,4 @@
-import mongoose, { Model, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import validator from "validator";
 import { toJSON, paginate } from "./plugins";
 import { uploadCategories } from "../constants";

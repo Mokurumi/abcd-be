@@ -1,5 +1,5 @@
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
-import config from ".";
+import config from "./index";
 import { tokenTypes } from "../constants";
 import { userService } from "../services";
 
