@@ -1,7 +1,6 @@
 // packages
 const express = require("express");
 const helmet = require("helmet");
-const xss = require("xss-clean");
 const mongoSanitize = require("express-mongo-sanitize");
 const compression = require("compression");
 const cors = require("cors");
@@ -14,6 +13,7 @@ const { jwtStrategy } = require("./config/passport");
 const { authLimiter } = require("./middlewares/rateLimiter");
 const routes = require("./routes");
 const { errorConverter, errorHandler } = require("./middlewares/error");
+const xssSanitize = require("./middlewares/xssSanitize");
 const ApiError = require("./utils/ApiError");
 
 const app = express();
@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: false, limit: "50mb" }));
 app.use(express.json({ limit: "50mb" }));
 
 // sanitize request data
-// app.use(xss());
+app.use(xssSanitize);
 app.use(mongoSanitize());
 
 // gzip compression
