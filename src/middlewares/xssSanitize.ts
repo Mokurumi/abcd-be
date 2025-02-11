@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from "express";
 import validator from "validator";
 
-const xssSanitize = (req: Request, res: Response, next: NextFunction) => {
+const xssSanitize = () => (req: Request, res: Response, next: NextFunction) => {
   // Sanitize request body
   if (req.body) {
     for (const key in req.body) {
