@@ -1,8 +1,8 @@
 // middlewares/xssSanitize.ts
-import validator from 'validator';
+const validator = require('validator');
 
 
-const xssSanitize = (req, res, next) => {
+const xssSanitize = () => (req, res, next) => {
   // Sanitize request body
   if (req.body) {
     for (const key in req.body) {
@@ -33,4 +33,4 @@ const xssSanitize = (req, res, next) => {
   next();
 };
 
-export default xssSanitize;
+module.exports = xssSanitize;
