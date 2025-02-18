@@ -6,11 +6,25 @@
   "author": "Alpha Mokurumi",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node --trace-warnings src/index.js",
+    "dev": "nodemon --exec ts-node --transpile-only src/index.ts",
+    "start": "ts-node --transpile-only src/index.ts",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/compression": "^1.7.5",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
+    "@types/multer": "^1.4.12",
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^6.4.17",
+    "@types/passport": "^1.0.17",
+    "@types/passport-jwt": "^4.0.1",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.7",
+    "@types/validator": "^13.12.2",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.1",
     "compression": "^1.7.4",
@@ -37,6 +51,10 @@
     "winston": "^3.14.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
+    "@types/node": "^22.13.1",
+    "nodemon": "^3.1.4",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
   }
 }
