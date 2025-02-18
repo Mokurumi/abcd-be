@@ -4,7 +4,6 @@
   "description": "ABCD BE",
   "main": "src/index.ts",
   "author": "Alpha Mokurumi",
-  "type": "commonjs",
   "license": "MIT",
   "scripts": {
     "dev": "nodemon --exec ts-node --transpile-only src/index.ts",
@@ -55,6 +54,7 @@
     "@types/node": "^22.13.1",
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   }
 }
