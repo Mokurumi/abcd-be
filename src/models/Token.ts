@@ -1,10 +1,6 @@
-import mongoose, { Model, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { toJSON } from "./plugins";
 import { tokenTypes } from "../constants";
-import { IToken } from "../types";
-
-// Define an interface for the Token Model
-export interface TokenModel extends Model<IToken> {}
 
 const tokenSchema = new Schema<IToken, TokenModel>(
   {

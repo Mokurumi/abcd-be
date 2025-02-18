@@ -3,7 +3,6 @@ import validator from "validator";
 import bcrypt from "bcryptjs";
 import { toJSON, paginate } from "./plugins";
 import { formatPhoneNumber } from "../utils";
-import { IUser, UserModel } from "../types";
 
 const userSchema = new Schema(
   {

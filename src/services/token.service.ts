@@ -7,7 +7,6 @@ import userService from "./user.service";
 import { Token } from "../models";
 import ApiError from "../utils/ApiError";
 import { tokenTypes } from "../constants";
-import { IToken, IUser } from "../types";
 
 /**
  * Generate token

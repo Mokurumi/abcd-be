@@ -1,7 +1,6 @@
 import nodemailer from "nodemailer";
 import config from "../config";
 import logger from "../config/logger";
-import { IUser } from "../types";
 
 const transport = nodemailer.createTransport(config.email.smtp);
 if (config.env !== "prod") {

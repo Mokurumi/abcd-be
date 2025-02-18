@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 import ApiError from "../utils/ApiError";
 import { User, Role } from "../models";
-import { IRole, IUser } from "../types";
 
 /**
  * Get user by phoneNumber or emailAddress

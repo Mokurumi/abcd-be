@@ -1,7 +1,6 @@
 import ApiError from "../utils/ApiError";
 import catchAsync from "../utils/catchAsync";
 import { userService, uploadService } from "../services";
-import { IRole, IUser } from "../types";
 
 const getUser = async (owner: string, currentUser: IUser) => {
   if (currentUser?._id?.toString() === owner) {

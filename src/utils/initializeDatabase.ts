@@ -1,4 +1,3 @@
-import { IUser } from "../types";
 import { Role, User } from "../models";
 import { permissions } from "../constants";
 import config from "../config";

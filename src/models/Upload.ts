@@ -2,7 +2,6 @@ import mongoose, { Schema } from "mongoose";
 import validator from "validator";
 import { toJSON, paginate } from "./plugins";
 import { uploadCategories } from "../constants";
-import { IUpload, UploadModel } from "../types";
 
 const uploadSchema = new Schema<IUpload, UploadModel>(
   {

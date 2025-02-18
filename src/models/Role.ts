@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import { toJSON, paginate } from "./plugins";
 import { permissions } from "../constants";
-import { IRole, RoleModel } from "../types";
 
 const roleSchema = new mongoose.Schema(
   {
@@ -39,9 +38,7 @@ const roleSchema = new mongoose.Schema(
       type: Date,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 // add plugin that converts mongoose to json

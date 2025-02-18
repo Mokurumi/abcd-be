@@ -2,7 +2,6 @@ import passport from "passport";
 import { Request, Response, NextFunction } from "express";
 
 import ApiError from "../utils/ApiError";
-import { IRole, IUser } from "../types";
 
 // Verify callback function
 const verifyCallback =

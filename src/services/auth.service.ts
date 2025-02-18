@@ -6,7 +6,6 @@ import userService from "./user.service";
 import emailService from "./email.service";
 import ApiError from "../utils/ApiError";
 import { tokenTypes } from "../constants";
-import { IUser } from "../types";
 
 /**
  * Verify registration token

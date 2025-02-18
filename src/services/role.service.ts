@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import ApiError from "../utils/ApiError";
 import { User, Role } from "../models";
 import { permissions } from "../constants";
-import { IRole } from "../types";
 
 /**
  * Check if role exists
