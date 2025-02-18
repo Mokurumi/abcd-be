@@ -1,4 +1,3 @@
-export {};
 import type { Document, Model, Schema } from "mongoose";
 
 declare global {
@@ -98,3 +97,5 @@ declare global {
     isUploadExisting(category: string, owner: string): Promise<boolean>;
   }
 }
+
+export {};

@@ -7,8 +7,8 @@
   "type": "commonjs",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon src/index.ts",
-    "start": "node --trace-warnings src/index.ts",
+    "dev": "nodemon --exec ts-node --transpile-only src/index.ts",
+    "start": "ts-node --transpile-only src/index.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
