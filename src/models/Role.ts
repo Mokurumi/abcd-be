@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { toJSON, paginate } from "./plugins";
 import { permissions } from "../constants";
 
-const roleSchema = new mongoose.Schema(
+const roleSchema = new mongoose.Schema<IRole, RoleModel>(
   {
     name: {
       type: String,
@@ -48,6 +48,6 @@ roleSchema.plugin(paginate);
 /**
  * @typedef Role
  */
-const Role: RoleModel = mongoose.model<IRole, RoleModel>("Role", roleSchema);
+const Role = mongoose.model<IRole, RoleModel>("Role", roleSchema);
 
 export default Role;

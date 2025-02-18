@@ -52,8 +52,6 @@ declare global {
   }
 
   interface UserModel extends Model<IUser> {
-    setPassword(password: string): Promise<void>;
-
     paginate(
       filter: any,
       options: any
@@ -93,9 +91,7 @@ declare global {
     updatedAt?: Date | string | number | null;
   }
 
-  interface UploadModel extends Model<IUpload> {
-    isUploadExisting(category: string, owner: string): Promise<boolean>;
-  }
+  interface UploadModel extends Model<IUpload> {}
 }
 
 export {};

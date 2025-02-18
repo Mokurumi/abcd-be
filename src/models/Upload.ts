@@ -53,15 +53,6 @@ const uploadSchema = new Schema<IUpload, UploadModel>(
 uploadSchema.plugin(toJSON);
 uploadSchema.plugin(paginate);
 
-// Static method to check for existing upload
-uploadSchema.statics.isUploadExisting = async function (
-  category: string,
-  owner: string
-): Promise<boolean> {
-  const upload = await this.findOne({ category, owner });
-  return !!upload;
-};
-
 // Define and export the Upload model
 const Upload = mongoose.model<IUpload, UploadModel>("Upload", uploadSchema);
 

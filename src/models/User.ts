@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { toJSON, paginate } from "./plugins";
 import { formatPhoneNumber } from "../utils";
 
-const userSchema = new Schema(
+const userSchema = new Schema<IUser, UserModel>(
   {
     firstName: {
       type: String,
@@ -131,18 +131,6 @@ userSchema.methods.isPasswordMatch = async function (
 };
 
 /**
- * Set the user's password
- * @param {string} password - The user's password
- * @returns {Promise<void>}
- */
-userSchema.methods.setPassword = async function (
-  password: string
-): Promise<void> {
-  // TODO: encrypt using RSA
-  this.password = await bcrypt.hash(password, 8);
-};
-
-/**
  * pre-save hook
  * - password hash
  * - updated at
@@ -166,6 +154,6 @@ userSchema.pre("save", async function (next) {
 /**
  * @typedef User
  */
-const User: UserModel = mongoose.model<IUser, UserModel>("User", userSchema);
+const User = mongoose.model<IUser, UserModel>("User", userSchema);
 
 export default User;
