@@ -1,6 +1,28 @@
 import type { Document, Model, Schema } from "mongoose";
 
 declare global {
+  interface QueryOptions {
+    sortBy?: any;
+    populate?:
+      | string
+      | { path: string; populate?: string; select?: string }[]
+      | (string | { path: string; populate?: string })[];
+    size?: any;
+    page?: any;
+  }
+
+  interface QueryResult<T> {
+    results: T[];
+    page: number;
+    size: number;
+    totalPages: number;
+    totalResults: number;
+  }
+
+  /**
+   * Role interfaces
+   */
+
   interface IRole extends Document {
     name: string;
     value?: string;
@@ -12,22 +34,13 @@ declare global {
   }
 
   interface RoleModel extends Model<IRole> {
-    paginate(
-      filter: any,
-      options: any
-    ): Promise<{
-      docs: IRole[];
-      totalDocs: number;
-      limit: number;
-      page: number;
-      totalPages: number;
-      nextPage?: number;
-      prevPage?: number;
-    }>;
-
+    paginate(filter: any, options: QueryOptions): Promise<QueryResult<IRole>>;
     toJSON(): any;
   }
 
+  /**
+   * User interfaces
+   */
   interface IUser extends Document {
     firstName: string;
     lastName: string;
@@ -52,22 +65,13 @@ declare global {
   }
 
   interface UserModel extends Model<IUser> {
-    paginate(
-      filter: any,
-      options: any
-    ): Promise<{
-      docs: IUser[];
-      totalDocs: number;
-      limit: number;
-      page: number;
-      totalPages: number;
-      nextPage?: number;
-      prevPage?: number;
-    }>;
-
+    paginate(filter: any, options: QueryOptions): Promise<QueryResult<IUser>>;
     toJSON(): any;
   }
 
+  /**
+   * Token interfaces
+   */
   interface IToken extends Document {
     token: string;
     user: Schema.Types.ObjectId;
@@ -81,6 +85,9 @@ declare global {
 
   interface TokenModel extends Model<IToken> {}
 
+  /**
+   * Upload interfaces
+   */
   interface IUpload extends Document {
     docURL: string;
     public_id: string;

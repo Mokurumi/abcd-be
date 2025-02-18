@@ -1,23 +1,5 @@
 import { Document, Model, Schema } from "mongoose";
 
-interface QueryOptions {
-  sortBy?: string;
-  populate?:
-    | string
-    | { path: string; populate?: string }
-    | (string | { path: string; populate?: string })[];
-  size?: number;
-  page?: number;
-}
-
-interface QueryResult<T> {
-  results: T[];
-  page: number;
-  size: number;
-  totalPages: number;
-  totalResults: number;
-}
-
 const paginate = <T extends Document>(schema: Schema<T>) => {
   /**
    * @typedef {Object} QueryResult
@@ -46,7 +28,7 @@ const paginate = <T extends Document>(schema: Schema<T>) => {
     if (options.sortBy) {
       sort = options.sortBy
         .split(",")
-        .map((sortOption) => {
+        .map((sortOption: string) => {
           const [key, order] = sortOption.split(":");
           return (order === "desc" ? "-" : "") + key;
         })
@@ -98,8 +80,10 @@ const paginate = <T extends Document>(schema: Schema<T>) => {
       .skip(skip)
       .limit(size);
 
+    // Updated populate handling
     if (options.populate) {
       if (typeof options.populate === "string") {
+        // Populate as string (e.g., "user,comments.user")
         options.populate.split(",").forEach((populateOption) => {
           docsPromise = docsPromise.populate({ path: populateOption.trim() });
         });
