@@ -5,7 +5,7 @@ import { permissionMapping } from "../constants";
  * @param {string[]} permissions - The permissions to resolve
  * @returns {string[]} Resolved permissions
  */
-function resolvePermissions(permissions: string[]): string[] {
+const resolvePermissions = (permissions: permissionType[]) => {
   const resolvedPermissions = new Set<string>();
 
   // Iterate over each permission the user has
@@ -23,7 +23,7 @@ function resolvePermissions(permissions: string[]): string[] {
   });
 
   return Array.from(resolvedPermissions);
-}
+};
 
 /**
  * Generate a random OTP (One Time Password) of given length

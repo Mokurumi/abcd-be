@@ -15,7 +15,7 @@ import { tokenTypes } from "../constants";
  */
 const verifyRegistrationToken = async (
   token: string,
-  userId: string | mongoose.ObjectId | undefined
+  userId: string | undefined
 ) => {
   const user = await userService.getUserById(userId);
   if (!user) {
@@ -128,7 +128,7 @@ const logoutAllInstances = async (
  */
 const refreshAuth = async (
   refreshToken: string,
-  userId: string | mongoose.ObjectId | undefined
+  userId: string | undefined
 ) => {
   try {
     const refreshTokenDoc = await tokenService.verifyToken(

@@ -70,7 +70,7 @@ const saveToken = async (
 const verifyToken = async (
   token: string,
   type: string,
-  userId: string | mongoose.ObjectId | undefined
+  userId: string | undefined
 ): Promise<IToken | null> => {
   const payload = jwt.verify(token, config.jwt.secret);
 

@@ -113,7 +113,7 @@ const logout = catchAsync(async (req, res) => {
     const refreshTokenDoc = await tokenService.verifyToken(
       token,
       tokenTypes.REFRESH,
-      (req.user as any)?._id
+      (req.user as any)?._id?.toString()
     );
     if (!refreshTokenDoc) {
       throw new ApiError(401, "Invalid token");
@@ -130,7 +130,10 @@ const logout = catchAsync(async (req, res) => {
  */
 const refreshToken = catchAsync(async (req, res) => {
   const { token } = req.body;
-  const tokens = await authService.refreshAuth(token, (req.user as any)?._id);
+  const tokens = await authService.refreshAuth(
+    token,
+    (req.user as any)?._id?.toString()
+  );
   res.send({ tokens });
 });
 

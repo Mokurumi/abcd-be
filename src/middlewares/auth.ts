@@ -2,7 +2,6 @@ import passport from "passport";
 import { Request, Response, NextFunction } from "express";
 
 import ApiError from "../utils/ApiError";
-import { resolvePermissions } from "../utils";
 
 // Verify callback function
 const verifyCallback =
@@ -26,11 +25,7 @@ const verifyCallback =
       }
 
       // Add default permissions
-      role.permissions = [
-        // ...role.permissions,
-        ...resolvePermissions(role.permissions),
-        "ANY_WITH_AUTH",
-      ];
+      role.permissions = [...role.permissions, "ANY_WITH_AUTH"];
 
       const userRights = role.permissions;
       const hasRequiredRights = requiredRights.some((requiredRight) =>

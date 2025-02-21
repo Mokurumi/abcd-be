@@ -20,7 +20,7 @@ const createUser = catchAsync(async (req, res) => {
 
   // if the role.value is super_admin, raise an error
   if (role.value === "super_admin") {
-    throw new ApiError(400, "You cannot create a super admin user");
+    throw new ApiError(403, "Forbidden");
   }
 
   // Create user account
@@ -67,14 +67,16 @@ const getUsers = catchAsync(async (req, res) => {
 });
 
 const getUser = catchAsync(async (req, res) => {
-  // if req.user is equal to the user being fetched, return the user object
-  if ((req.user as any)?._id === req.params.userId) {
+  if ((req.user as any)?._id?.toString() === req.params.userId) {
     return res.send(req.user);
   } else {
-    const permissions = ["ANY_WITH_AUTH", "USER_MANAGEMENT"];
+    const permissions: permissionType[] = [
+      "ANY_WITH_AUTH",
+      "USER_MANAGEMENT.READ_USER",
+    ];
     if (
       !permissions.some((permission) =>
-        (req.user as any)?.role.permissions.includes(permission)
+        ((req.user as IUser)?.role as IRole).permissions.includes(permission)
       )
     ) {
       throw new ApiError(403, "Forbidden");
@@ -89,14 +91,6 @@ const getUser = catchAsync(async (req, res) => {
 });
 
 const updateUser = catchAsync(async (req, res) => {
-  // ensure req.user is the same as the user being updated or the user has USER_MANAGEMENT permission
-  if (
-    !(req.user as any)?.role.permissions.includes("USER_MANAGEMENT") &&
-    (req.user as any)?._id !== req.params.userId
-  ) {
-    throw new ApiError(403, "Forbidden");
-  }
-
   const user = await userService.updateUserById(req.params.userId, {
     ...req.body,
   });
@@ -109,7 +103,9 @@ const updateUser = catchAsync(async (req, res) => {
 
 const lookupUsers = catchAsync(async (req, res) => {
   // if the current user does not have USER_MANAGEMENT permission, add their id to the query
-  if (!(req.user as any).role.permissions.includes("USER_MANAGEMENT")) {
+  if (
+    !(req.user as any).role.permissions.includes("USER_MANAGEMENT.READ_USER")
+  ) {
     const users = await userService.lookupUsers(
       req.query.active
         ? {

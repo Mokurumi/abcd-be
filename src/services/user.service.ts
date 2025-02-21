@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 import ApiError from "../utils/ApiError";
 import { User, Role } from "../models";
+import { resolvePermissions } from "../utils";
 
 /**
  * Get user by phoneNumber or emailAddress
@@ -70,10 +71,16 @@ const getUserById = async (
   id: string | mongoose.ObjectId | undefined
 ): Promise<IUser | null> => {
   // populate role
-  return User.findById({
+  const user = await User.findById({
     _id: id,
     isDeleted: false,
   }).populate({ path: "role" });
+
+  (user?.role as IRole).permissions = resolvePermissions(
+    (user?.role as IRole)?.permissions
+  );
+
+  return user;
 };
 
 /**
