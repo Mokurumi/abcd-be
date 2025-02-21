@@ -20,16 +20,16 @@ components:
           items:
             type: string
             enum:
-              - ROLE_MANAGEMENT
-              - USER_MANAGEMENT
+              - ROLES
+              - USERS
       example:
         _id: 5ebac534954b54139806c112
         name: Admin
         value: admin
         active: true
         permissions:
-          - ROLE_MANAGEMENT
-          - USER_MANAGEMENT
+          - ROLES
+          - USERS
 
   responses:
 
@@ -72,8 +72,8 @@ components:
                 items:
                   type: string
                   enum:
-                    - ROLE_MANAGEMENT
-                    - USER_MANAGEMENT
+                    - ROLES
+                    - USERS
     responses:
       "201":
         description: Created
@@ -215,8 +215,8 @@ components:
                 items:
                   type: string
                   enum:
-                    - ROLE_MANAGEMENT
-                    - USER_MANAGEMENT
+                    - ROLES
+                    - USERS
     responses:
       "200":
         description: OK

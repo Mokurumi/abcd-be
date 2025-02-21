@@ -6,16 +6,16 @@ import type { Document, Model, Schema, ObjectId } from "mongoose";
 declare global {
   type permissionType =
     | "ANY_WITH_AUTH"
-    | "ROLE_MANAGEMENT"
-    | "ROLE_MANAGEMENT.CREATE_ROLE"
-    | "ROLE_MANAGEMENT.READ_ROLE"
-    | "ROLE_MANAGEMENT.UPDATE_ROLE"
-    | "ROLE_MANAGEMENT.DELETE_ROLE"
-    | "USER_MANAGEMENT"
-    | "USER_MANAGEMENT.CREATE_USER"
-    | "USER_MANAGEMENT.READ_USER"
-    | "USER_MANAGEMENT.UPDATE_USER"
-    | "USER_MANAGEMENT.DELETE_USER";
+    | "ROLES"
+    | "ROLES.CREATE_ROLE"
+    | "ROLES.READ_ROLE"
+    | "ROLES.UPDATE_ROLE"
+    | "ROLES.DELETE_ROLE"
+    | "USERS"
+    | "USERS.CREATE_USER"
+    | "USERS.READ_USER"
+    | "USERS.UPDATE_USER"
+    | "USERS.DELETE_USER";
 
   interface IRole extends Document {
     name: string;

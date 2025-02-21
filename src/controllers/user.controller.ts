@@ -1,13 +1,13 @@
-import ApiError from "../utils/ApiError";
-import catchAsync from "../utils/catchAsync";
 import pick from "../utils/pick";
+import ApiError from "../utils/ApiError";
+import { generateTempPassword } from "../utils";
+import catchAsync from "../utils/catchAsync";
 import {
   emailService,
   roleService,
   tokenService,
   userService,
 } from "../services";
-import { generateTempPassword } from "../utils";
 
 const createUser = catchAsync(async (req, res) => {
   const tempPassword = generateTempPassword();
@@ -70,10 +70,7 @@ const getUser = catchAsync(async (req, res) => {
   if ((req.user as any)?._id?.toString() === req.params.userId) {
     return res.send(req.user);
   } else {
-    const permissions: permissionType[] = [
-      "ANY_WITH_AUTH",
-      "USER_MANAGEMENT.READ_USER",
-    ];
+    const permissions: permissionType[] = ["ANY_WITH_AUTH", "USERS.READ_USER"];
     if (
       !permissions.some((permission) =>
         ((req.user as IUser)?.role as IRole).permissions.includes(permission)
@@ -91,6 +88,14 @@ const getUser = catchAsync(async (req, res) => {
 });
 
 const updateUser = catchAsync(async (req, res) => {
+  const userReq = req.user as IUser;
+  if (
+    !(userReq?.role as IRole).permissions.includes("USERS.UPDATE_USER") &&
+    userReq?._id?.toString() !== req.params.userId
+  ) {
+    throw new ApiError(403, "Forbidden");
+  }
+
   const user = await userService.updateUserById(req.params.userId, {
     ...req.body,
   });
@@ -102,10 +107,7 @@ const updateUser = catchAsync(async (req, res) => {
 });
 
 const lookupUsers = catchAsync(async (req, res) => {
-  // if the current user does not have USER_MANAGEMENT permission, add their id to the query
-  if (
-    !(req.user as any).role.permissions.includes("USER_MANAGEMENT.READ_USER")
-  ) {
+  if (!(req.user as any).role.permissions.includes("USERS.READ_USER")) {
     const users = await userService.lookupUsers(
       req.query.active
         ? {

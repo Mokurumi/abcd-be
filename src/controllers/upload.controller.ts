@@ -6,9 +6,7 @@ const getUser = async (owner: string, currentUser: IUser) => {
   if (currentUser?._id?.toString() === owner) {
     return;
   } else if (
-    !(currentUser.role as IRole)?.permissions?.includes(
-      "USER_MANAGEMENT.READ_USER"
-    )
+    !(currentUser.role as IRole)?.permissions?.includes("USERS.READ_USER")
   ) {
     throw new ApiError(403, "Forbidden");
   } else {
