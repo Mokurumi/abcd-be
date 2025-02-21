@@ -2,6 +2,7 @@ import ApiError from "../utils/ApiError";
 import catchAsync from "../utils/catchAsync";
 import pick from "../utils/pick";
 import { roleService } from "../services";
+import { resolvePermissions } from "../utils";
 
 const createRole = catchAsync(async (req, res) => {
   const role = await roleService.createRole(req.body);
@@ -23,6 +24,9 @@ const getRole = catchAsync(async (req, res) => {
   if (!role) {
     throw new ApiError(404, "Role not found");
   }
+
+  role.permissions = resolvePermissions(role.permissions);
+
   res.send(role);
 });
 
