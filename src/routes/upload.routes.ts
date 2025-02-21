@@ -20,15 +20,22 @@ router.post(
 );
 
 router.delete(
+  "/deleteUserProfileImage/:userId",
+  auth("OWNER", "USER_MANAGEMENT"),
+  validate(uploadValidation.deleteUserProfileImage),
+  uploadController.deleteUserProfileImage
+);
+
+router.delete(
   "/deleteUploads/:owner/:category",
-  auth("ANY_WITH_AUTH", "USER_MANAGEMENT"),
+  auth("OWNER", "USER_MANAGEMENT"),
   validate(uploadValidation.deleteUploads),
   uploadController.deleteUploads
 );
 
 router.delete(
   "/deleteUpload/:owner/:uploadId",
-  auth("ANY_WITH_AUTH", "USER_MANAGEMENT"),
+  auth("OWNER", "USER_MANAGEMENT"),
   validate(uploadValidation.deleteUpload),
   uploadController.deleteUpload
 );

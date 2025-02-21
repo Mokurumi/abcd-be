@@ -40,7 +40,24 @@ const userProfileImage = catchAsync(async (req, res) => {
   // update user profile image
   await userService.updateUserById(owner, { profile_img: upload.docURL });
 
-  res.status(201).send({ url: upload.docURL });
+  res.status(201).send({
+    url: upload.docURL,
+    message: "Profile image uploaded successfully",
+  });
+});
+
+const deleteUserProfileImage = catchAsync(async (req, res) => {
+  const owner = req.params.userId;
+
+  await getUser(owner, (req as any).user);
+
+  // delete file from cloudinary
+  await uploadService.deleteMultipleFiles(owner, "PROFILE_IMG");
+
+  // update user profile image
+  await userService.updateUserById(owner, { profile_img: "" });
+
+  res.status(204).send({ message: "Profile image deleted successfully" });
 });
 
 const deleteUpload = catchAsync(async (req, res) => {
@@ -66,6 +83,7 @@ const deleteUploads = catchAsync(async (req, res) => {
 
 export default {
   userProfileImage,
+  deleteUserProfileImage,
   deleteUpload,
   deleteUploads,
 };

@@ -9,6 +9,12 @@ const userProfileImage = {
   }),
 };
 
+const deleteUserProfileImage = {
+  params: Joi.object().keys({
+    userId: Joi.string().required().custom(objectId),
+  }),
+};
+
 const deleteUpload = {
   params: Joi.object().keys({
     owner: Joi.string().required().custom(objectId),
@@ -23,4 +29,9 @@ const deleteUploads = {
   }),
 };
 
-export default { userProfileImage, deleteUpload, deleteUploads };
+export default {
+  userProfileImage,
+  deleteUserProfileImage,
+  deleteUpload,
+  deleteUploads,
+};
