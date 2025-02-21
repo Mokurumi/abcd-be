@@ -1,11 +1,18 @@
 import Joi from "joi";
 import { objectId } from "./custom.validation";
+import { permissionMapping } from "../constants";
 
 const createRole = {
   body: Joi.object().keys({
     name: Joi.string().required(),
     value: Joi.string().required(),
-    permissions: Joi.array().items(Joi.string()),
+    permissions: Joi.array().items(
+      Joi.string().valid(
+        ...Object.keys(permissionMapping)
+          .map((key) => permissionMapping[key])
+          .flat()
+      )
+    ),
   }),
 };
 
@@ -36,7 +43,13 @@ const updateRole = {
       name: Joi.string(),
       value: Joi.string(),
       active: Joi.boolean(),
-      permissions: Joi.array().items(Joi.string()),
+      permissions: Joi.array().items(
+        Joi.string().valid(
+          ...Object.keys(permissionMapping)
+            .map((key) => permissionMapping[key])
+            .flat()
+        )
+      ),
     })
     .min(1),
 };

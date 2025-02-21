@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError";
 import { User, Role } from "../models";
-import { permissions } from "../constants";
+import { permissions, permissionMapping } from "../constants";
 
 /**
  * Check if role exists
@@ -22,16 +22,45 @@ const isRoleExisting = async (
 };
 
 /**
+ * Optimize permissions
+ * @param {string[]} requestedPermissions
+ * @returns {string[]}
+ */
+const optimizePermissions = (requestedPermissions: string[]): string[] => {
+  const optimizedPermissions = new Set(requestedPermissions);
+
+  // Check each modular permission
+  for (const [modularPermission, granularPermissions] of Object.entries(
+    permissionMapping
+  )) {
+    // Check if all granular permissions for the module are present
+    const hasAllGranularPermissions = granularPermissions.every((permission) =>
+      optimizedPermissions.has(permission)
+    );
+
+    // If all granular permissions are present, add the modular permission and remove the granular ones
+    if (hasAllGranularPermissions) {
+      optimizedPermissions.add(modularPermission);
+      granularPermissions.forEach((permission) =>
+        optimizedPermissions.delete(permission)
+      );
+    }
+  }
+
+  return Array.from(optimizedPermissions);
+};
+
+/**
  * Add Role
  * @param {Object} requestBody
- * @returns {Promise<Role>}
+ * @returns {Promise<IRole>}
  */
-const createRole = async (requestBody: IRole) => {
+const createRole = async (requestBody: IRole): Promise<IRole> => {
   if (await isRoleExisting(requestBody.name, null)) {
     throw new ApiError(400, "Role already exists");
   }
 
-  // check if permissions are in the permissions list
+  // Check if permissions are valid
   const rPermissions = requestBody.permissions || [];
   if (rPermissions && rPermissions.length > 0) {
     for (let i = 0; i < rPermissions.length; i++) {
@@ -41,7 +70,13 @@ const createRole = async (requestBody: IRole) => {
     }
   }
 
-  return Role.create(requestBody);
+  const optimizedPermissions = optimizePermissions(rPermissions);
+
+  // Create the role with optimized permissions
+  return await Role.create({
+    ...requestBody,
+    permissions: optimizedPermissions,
+  });
 };
 
 /**
@@ -51,13 +86,18 @@ const createRole = async (requestBody: IRole) => {
  * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
  * @param {number} [options.size] - Maximum number of results per page (default = 10)
  * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * @returns {Promise<QueryResult<IRole>>}
  */
-const queryRoles = async (filter: any, options: any) => {
-  let roles: any = await Role.paginate(filter, options);
-  // filter out the super_admin role
-  roles.results = roles.results.filter(
-    (role: IRole) => role.value !== "super_admin"
+const queryRoles = async (
+  filter: any,
+  options: any
+): Promise<QueryResult<IRole>> => {
+  let roles: any = await Role.paginate(
+    {
+      ...filter,
+      value: { $ne: "super_admin" },
+    },
+    options
   );
   return roles;
 };
@@ -65,20 +105,20 @@ const queryRoles = async (filter: any, options: any) => {
 /**
  * Get Role by id
  * @param {ObjectId} id
- * @returns {Promise<Role>}
+ * @returns {Promise<IRole>}
  */
 const getRoleById = async (
   id: string | mongoose.Types.ObjectId | undefined
-) => {
+): Promise<IRole | null> => {
   return await Role.findById(id);
 };
 
 /**
  * Get Role by value
  * @param {string} value
- * @returns {Promise<Role>}
+ * @returns {Promise<IRole>}
  */
-const getRoleByValue = async (value: string) => {
+const getRoleByValue = async (value: string): Promise<IRole | null> => {
   return Role.findOne({ value });
 };
 
@@ -86,12 +126,12 @@ const getRoleByValue = async (value: string) => {
  * Update Role by id
  * @param {ObjectId} roleId
  * @param {Object} updateBody
- * @returns {Promise<Role>}
+ * @returns {Promise<IRole>}
  */
 const updateRoleById = async (
   roleId: string | mongoose.Types.ObjectId | undefined,
   updateBody: IRole
-) => {
+): Promise<IRole | null> => {
   const role = await getRoleById(roleId);
 
   if (role?.protected) {
@@ -106,7 +146,7 @@ const updateRoleById = async (
     throw new ApiError(400, "Role already exists");
   }
 
-  // check if permissions are valid such that they exist in the database
+  // Check if permissions are valid
   const rPermissions = updateBody.permissions || [];
   if (rPermissions && rPermissions.length > 0) {
     for (let i = 0; i < rPermissions.length; i++) {
@@ -116,16 +156,18 @@ const updateRoleById = async (
     }
   }
 
-  Object.assign(role, updateBody);
+  const optimizedPermissions = optimizePermissions(rPermissions);
+
+  Object.assign(role, { ...updateBody, permissions: optimizedPermissions });
   await role.save();
   return role;
 };
 
 /**
  * Lookup Roles
- * @returns {Promise<Role>}
+ * @returns {Promise<IRole[]>}
  */
-const lookupRoles = async () => {
+const lookupRoles = async (): Promise<IRole[]> => {
   return Role.find({ active: true, value: { $ne: "super_admin" } }).select(
     "name _id"
   );
@@ -134,11 +176,11 @@ const lookupRoles = async () => {
 /**
  * delete Role by id
  * @param {ObjectId} roleId
- * @returns {Promise<Role>}
+ * @returns {Promise<IRole>}
  */
 const deleteRoleById = async (
   roleId: string | mongoose.Types.ObjectId | undefined
-) => {
+): Promise<IRole | null> => {
   const role = await getRoleById(roleId);
   if (!role) {
     throw new ApiError(404, "Role not found");

@@ -26,9 +26,10 @@ const validate = (schema: {
 
     // Handle validation error
     if (error) {
-      const errorMessage = error.details
-        .map((details: Joi.ValidationErrorItem) => details.message)
-        .join(", ");
+      // const errorMessage = error.details
+      //   .map((details: Joi.ValidationErrorItem) => details.message)
+      //   .join(", ");
+      const errorMessage = error.details[0].message;
       return next(new ApiError(400, errorMessage));
     }
 

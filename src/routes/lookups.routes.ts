@@ -10,7 +10,7 @@ router.get("/roles", auth("ANY_WITH_AUTH"), roleController.lookupRoles);
 
 router.get(
   "/users",
-  auth("ANY_WITH_AUTH", "USER_MANAGEMENT.READ"),
+  auth("ANY_WITH_AUTH", "USER_MANAGEMENT.READ_USER"),
   validate(lookupsValidation.lookupUsers),
   userController.lookupUsers
 );
