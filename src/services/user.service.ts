@@ -46,7 +46,7 @@ const createUser = async (requestBody: any): Promise<IUser> => {
  * @param {number} [options.page] - Current page (default = 1)
  * @returns {Promise<QueryResult>}
  */
-const queryUsers = async (filter: any, options: any) => {
+const queryUsers = async (filter: any, options: QueryOptions) => {
   const users = await User.paginate(
     {
       ...filter,
@@ -67,7 +67,7 @@ const queryUsers = async (filter: any, options: any) => {
  * @returns {Promise<User>}
  */
 const getUserById = async (
-  id: string | mongoose.Types.ObjectId | undefined
+  id: string | mongoose.ObjectId | undefined
 ): Promise<IUser | null> => {
   // populate role
   return User.findById({
@@ -83,7 +83,7 @@ const getUserById = async (
  * @returns {Promise<User>}
  */
 const updateUserById = async (
-  userId: string | mongoose.Types.ObjectId | undefined,
+  userId: string | mongoose.ObjectId | undefined,
   updateBody: any
 ) => {
   const user = (await getUserById(userId)) as IUser;
@@ -154,7 +154,7 @@ const lookupUsers = async (query = {}) => {
  * @returns {Promise<User>}
  */
 const deleteUserById = async (
-  userId: string | mongoose.Types.ObjectId | undefined
+  userId: string | mongoose.ObjectId | undefined
 ) => {
   const user = await getUserById(userId);
   if (!user) {

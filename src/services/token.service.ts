@@ -17,7 +17,7 @@ import { tokenTypes } from "../constants";
  * @returns {string}
  */
 const generateToken = (
-  userId: string | mongoose.Types.ObjectId | undefined,
+  userId: string | mongoose.ObjectId | undefined,
   expires: any,
   type: string,
   secret = config.jwt.secret
@@ -44,7 +44,7 @@ const generateToken = (
  */
 const saveToken = async (
   token: string,
-  userId: string | mongoose.Types.ObjectId | undefined,
+  userId: string | mongoose.ObjectId | undefined,
   expires: any,
   type: string,
   blacklisted: boolean = false,
@@ -70,7 +70,7 @@ const saveToken = async (
 const verifyToken = async (
   token: string,
   type: string,
-  userId: string | mongoose.Types.ObjectId | undefined
+  userId: string | mongoose.ObjectId | undefined
 ): Promise<IToken | null> => {
   const payload = jwt.verify(token, config.jwt.secret);
 
@@ -80,7 +80,7 @@ const verifyToken = async (
     }
   } else {
     const user = await userService.getUserById(
-      payload.sub as string | mongoose.Types.ObjectId | undefined
+      payload.sub as string | mongoose.ObjectId | undefined
     );
 
     if (!user) {
@@ -133,7 +133,7 @@ const generateRegistrationToken = async (
  * @returns {Promise<Object>}
  */
 const generateAuthTokens = async (
-  userId: string | mongoose.Types.ObjectId | undefined
+  userId: string | mongoose.ObjectId | undefined
 ): Promise<any> => {
   const accessTokenExpires = moment().add(
     config.jwt.accessExpiration,

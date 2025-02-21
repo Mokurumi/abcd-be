@@ -11,7 +11,7 @@ import { permissions, permissionMapping } from "../constants";
  */
 const isRoleExisting = async (
   name: string,
-  roleId: string | mongoose.Types.ObjectId | undefined | null
+  roleId: string | mongoose.ObjectId | undefined | null
 ): Promise<boolean> => {
   const role = await Role.findOne({
     name,
@@ -108,7 +108,7 @@ const queryRoles = async (
  * @returns {Promise<IRole>}
  */
 const getRoleById = async (
-  id: string | mongoose.Types.ObjectId | undefined
+  id: string | mongoose.ObjectId | undefined
 ): Promise<IRole | null> => {
   return await Role.findById(id);
 };
@@ -129,7 +129,7 @@ const getRoleByValue = async (value: string): Promise<IRole | null> => {
  * @returns {Promise<IRole>}
  */
 const updateRoleById = async (
-  roleId: string | mongoose.Types.ObjectId | undefined,
+  roleId: string | mongoose.ObjectId | undefined,
   updateBody: IRole
 ): Promise<IRole | null> => {
   const role = await getRoleById(roleId);
@@ -179,7 +179,7 @@ const lookupRoles = async (): Promise<IRole[]> => {
  * @returns {Promise<IRole>}
  */
 const deleteRoleById = async (
-  roleId: string | mongoose.Types.ObjectId | undefined
+  roleId: string | mongoose.ObjectId | undefined
 ): Promise<IRole | null> => {
   const role = await getRoleById(roleId);
   if (!role) {
@@ -191,8 +191,8 @@ const deleteRoleById = async (
   }
 
   // check if there are users with the role
-  const users = await User.find({ role: roleId });
-  if (users.length > 0) {
+  const user = await User.findOne({ role: roleId });
+  if (user) {
     throw new ApiError(400, "Cannot delete role with users");
   }
 

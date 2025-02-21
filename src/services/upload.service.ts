@@ -16,8 +16,8 @@ import { uploadCategories } from "../constants";
 const saveFile = async (
   file: any,
   category: string,
-  owner: string | mongoose.Types.ObjectId | undefined,
-  createdBy: string | mongoose.Types.ObjectId | undefined
+  owner: string | mongoose.ObjectId | undefined,
+  createdBy: string | mongoose.ObjectId | undefined
 ): Promise<IUpload | null> => {
   if (!uploadCategories.includes(category)) {
     throw new ApiError(400, "Invalid category");
@@ -46,8 +46,8 @@ const saveFile = async (
 const saveAndReplace = async (
   file: any,
   category: string,
-  owner: string | mongoose.Types.ObjectId | undefined,
-  createdBy: string | mongoose.Types.ObjectId | undefined
+  owner: string | mongoose.ObjectId | undefined,
+  createdBy: string | mongoose.ObjectId | undefined
 ): Promise<IUpload | null> => {
   if (!uploadCategories.includes(category)) {
     throw new ApiError(400, "Invalid category");
@@ -79,7 +79,7 @@ const saveAndReplace = async (
  * @returns {Promise<Upload>}
  */
 const getFilesByOwner = async (
-  owner: string | mongoose.Types.ObjectId | undefined
+  owner: string | mongoose.ObjectId | undefined
 ) => {
   const uploads = await Upload.find({ owner });
   return uploads;
@@ -92,7 +92,7 @@ const getFilesByOwner = async (
  * @returns {Promise<Upload>}
  */
 const getFilesByOwnerAndCategory = async (
-  owner: string | mongoose.Types.ObjectId | undefined,
+  owner: string | mongoose.ObjectId | undefined,
   category: string
 ) => {
   //DEPT_FILES
@@ -111,8 +111,8 @@ const getFilesByOwnerAndCategory = async (
  * @returns {Promise}
  */
 const deleteUpload = async (
-  owner: string | mongoose.Types.ObjectId | undefined,
-  uploadId: string | mongoose.Types.ObjectId | undefined
+  owner: string | mongoose.ObjectId | undefined,
+  uploadId: string | mongoose.ObjectId | undefined
 ) => {
   const upload = await Upload.findOne({ owner, _id: uploadId });
   if (!upload) {
@@ -130,7 +130,7 @@ const deleteUpload = async (
  * @returns {Promise}
  */
 const deleteMultipleFiles = async (
-  owner: string | mongoose.Types.ObjectId | undefined,
+  owner: string | mongoose.ObjectId | undefined,
   category: string
 ) => {
   if (!uploadCategories.includes(category)) {

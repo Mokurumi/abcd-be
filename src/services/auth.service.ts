@@ -15,7 +15,7 @@ import { tokenTypes } from "../constants";
  */
 const verifyRegistrationToken = async (
   token: string,
-  userId: string | mongoose.Types.ObjectId | undefined
+  userId: string | mongoose.ObjectId | undefined
 ) => {
   const user = await userService.getUserById(userId);
   if (!user) {
@@ -112,7 +112,7 @@ const loginUser = async (
  * @returns {Promise}
  */
 const logoutAllInstances = async (
-  userId: string | mongoose.Types.ObjectId | undefined
+  userId: string | mongoose.ObjectId | undefined
 ) => {
   await Token.deleteMany({
     user: userId,
@@ -128,7 +128,7 @@ const logoutAllInstances = async (
  */
 const refreshAuth = async (
   refreshToken: string,
-  userId: string | mongoose.Types.ObjectId | undefined
+  userId: string | mongoose.ObjectId | undefined
 ) => {
   try {
     const refreshTokenDoc = await tokenService.verifyToken(
@@ -158,7 +158,7 @@ const refreshAuth = async (
  */
 const verifyDeleteProfileToken = async (
   token: string,
-  userId: string | mongoose.Types.ObjectId | undefined
+  userId: string | mongoose.ObjectId | undefined
 ) => {
   const user = await userService.getUserById(userId);
   if (!user) {
