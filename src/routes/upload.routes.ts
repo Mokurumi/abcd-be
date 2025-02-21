@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.post(
   "/userProfileImage",
-  auth("OWNER", "USER_MANAGEMENT"),
+  auth("ANY_WITH_AUTH"),
   upload.single("file"),
   validate(uploadValidation.userProfileImage),
   uploadController.userProfileImage
@@ -21,14 +21,14 @@ router.post(
 
 router.delete(
   "/deleteUploads/:owner/:category",
-  auth("OWNER", "USER_MANAGEMENT"),
+  auth("ANY_WITH_AUTH", "USER_MANAGEMENT"),
   validate(uploadValidation.deleteUploads),
   uploadController.deleteUploads
 );
 
 router.delete(
   "/deleteUpload/:owner/:uploadId",
-  auth("OWNER", "USER_MANAGEMENT"),
+  auth("ANY_WITH_AUTH", "USER_MANAGEMENT"),
   validate(uploadValidation.deleteUpload),
   uploadController.deleteUpload
 );

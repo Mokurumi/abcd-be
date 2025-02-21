@@ -1,11 +1,35 @@
 const permissions = [
-  "ANY_WITH_AUTH",
-  "OWNER", // filters by owner unless parent permission is present
+  // "ANY_WITH_AUTH",
   // Roles
   "ROLE_MANAGEMENT",
+  "ROLE_MANAGEMENT.CREATE",
+  "ROLE_MANAGEMENT.READ",
+  "ROLE_MANAGEMENT.UPDATE",
+  "ROLE_MANAGEMENT.DELETE",
   // Users
   "USER_MANAGEMENT",
+  "USER_MANAGEMENT.CREATE",
+  "USER_MANAGEMENT.READ",
+  "USER_MANAGEMENT.UPDATE",
+  "USER_MANAGEMENT.DELETE",
 ];
+
+const permissionMapping: { [key: string]: string[] } = {
+  // Roles
+  ROLE_MANAGEMENT: [
+    "ROLE_MANAGEMENT.CREATE",
+    "ROLE_MANAGEMENT.READ",
+    "ROLE_MANAGEMENT.UPDATE",
+    "ROLE_MANAGEMENT.DELETE",
+  ],
+  // Users
+  USER_MANAGEMENT: [
+    "USER_MANAGEMENT.CREATE",
+    "USER_MANAGEMENT.READ",
+    "USER_MANAGEMENT.UPDATE",
+    "USER_MANAGEMENT.DELETE",
+  ],
+};
 
 const tokenTypes = {
   ACCESS: "access",
@@ -22,4 +46,4 @@ const uploadCategories = [
   // OTHER MODULES
 ];
 
-export { permissions, tokenTypes, uploadCategories };
+export { permissions, permissionMapping, tokenTypes, uploadCategories };

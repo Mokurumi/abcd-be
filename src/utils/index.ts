@@ -1,3 +1,30 @@
+import { permissionMapping } from "../constants";
+
+/**
+ * Resolve modular permissions to granular permissions
+ * @param {string[]} permissions - The permissions to resolve
+ * @returns {string[]} Resolved permissions
+ */
+function resolvePermissions(permissions: string[]): string[] {
+  const resolvedPermissions = new Set<string>();
+
+  // Iterate over each permission the user has
+  permissions.forEach((permission) => {
+    // Add the permission itself
+    resolvedPermissions.add(permission);
+
+    // Check if the permission is a modular permission
+    if (permissionMapping[permission]) {
+      // Add all granular permissions for the modular permission
+      permissionMapping[permission].forEach((granularPermission) => {
+        resolvedPermissions.add(granularPermission);
+      });
+    }
+  });
+
+  return Array.from(resolvedPermissions);
+}
+
 /**
  * Generate a random OTP (One Time Password) of given length
  * @param {number} charNumber - Number of characters in the OTP
@@ -77,6 +104,7 @@ const extractDate = (date: Date | string): string => {
 };
 
 export {
+  resolvePermissions,
   generateTempPassword,
   generateOTP,
   generateUniqueId,

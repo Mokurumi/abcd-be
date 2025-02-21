@@ -21,8 +21,6 @@ const userProfileImage = catchAsync(async (req, res) => {
   const file = (req as any).file;
   const owner = req.body.owner;
 
-  await getUser(owner, (req as any).user);
-
   // verify that the file exists
   if (!file) {
     throw new ApiError(400, "File is required");

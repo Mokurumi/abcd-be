@@ -23,7 +23,7 @@ router.post(
 // Resend email registration
 router.post(
   "/resend-registration-email",
-  auth("USER_MANAGEMENT"),
+  auth("USER_MANAGEMENT.CREATE"),
   validate(authValidation.resendRegistrationEmail),
   authController.resendRegistrationEmail
 );

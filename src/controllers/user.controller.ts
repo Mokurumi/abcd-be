@@ -71,12 +71,7 @@ const getUser = catchAsync(async (req, res) => {
   if ((req.user as any)?._id === req.params.userId) {
     return res.send(req.user);
   } else {
-    const permissions = [
-      "OWNER",
-      "USER_MANAGEMENT",
-      "TRANSACTION_MANAGEMENT",
-      "LOAN_MANAGEMENT",
-    ];
+    const permissions = ["ANY_WITH_AUTH", "USER_MANAGEMENT"];
     if (
       !permissions.some((permission) =>
         (req.user as any)?.role.permissions.includes(permission)

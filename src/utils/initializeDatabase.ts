@@ -5,37 +5,41 @@ import { emailService, tokenService, userService } from "../services";
 import { generateTempPassword } from "../utils";
 
 const initializeRoles = async () => {
-  // add if not exist
+  // Get modular permissions (parent permissions)
+  const modularPermissions = permissions.filter(
+    (permission) => !permission.includes(".")
+  );
+
+  // Add or update super_admin role with modular permissions
   const adminRole = await Role.findOne({ value: "super_admin" });
   if (!adminRole) {
     await Role.create({
       name: "Super Admin",
       value: "super_admin",
       active: true,
-      permissions: permissions,
+      permissions: modularPermissions, // Assign only modular permissions
       protected: true,
     });
   } else {
     await Role.updateOne(
       { value: "super_admin" },
-      { permissions: permissions }
+      { permissions: modularPermissions } // Update with only modular permissions
     );
   }
 
+  // Add or update user role
   const userRole = await Role.findOne({ value: "user" });
   if (!userRole) {
     await Role.create({
       name: "User",
       value: "user",
       active: true,
-      permissions: [],
+      permissions: [], // No permissions for regular users
       protected: true,
     });
   }
-  // else {
-  //   await Role.updateOne({ value: "user" }, { permissions: [] });
-  // }
 
+  // Initialize super admin user
   await initializeSuperAdmin();
 };
 

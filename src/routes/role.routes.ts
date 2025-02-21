@@ -9,12 +9,12 @@ const router = express.Router();
 router
   .route("/")
   .post(
-    auth("ROLE_MANAGEMENT"),
+    auth("ROLE_MANAGEMENT.CREATE"),
     validate(roleValidation.createRole),
     roleController.createRole
   )
   .get(
-    auth("ROLE_MANAGEMENT"),
+    auth("ROLE_MANAGEMENT.READ"),
     validate(roleValidation.getRoles),
     roleController.getRoles
   );
@@ -27,12 +27,12 @@ router
     roleController.getRole
   )
   .patch(
-    auth("ROLE_MANAGEMENT"),
+    auth("ROLE_MANAGEMENT.UPDATE"),
     validate(roleValidation.updateRole),
     roleController.updateRole
   )
   .delete(
-    auth("ROLE_MANAGEMENT"),
+    auth("ROLE_MANAGEMENT.DELETE"),
     validate(roleValidation.deleteRole),
     roleController.deleteRole
   );
