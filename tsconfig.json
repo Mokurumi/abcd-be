@@ -2,14 +2,15 @@
   "compilerOptions": {
     "target": "ESNext",
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
+    "module": "NodeNext",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "typeRoots": ["./node_modules/@types", "./global.d.ts"],
+    "typeRoots": ["./node_modules/@types", "src/types"],
   },
-  "include": ["./src/**/*", "./global.d.ts"],
+  "include": ["./src/**/*", "src/types"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }
