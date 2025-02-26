@@ -46,15 +46,21 @@ const paginate = <T extends Document>(schema: Schema<T>) => {
     // Apply search filter directly to filterObject before counting documents
     if (filter.search) {
       const search = filter.search;
+
       const searchFilter = Object.keys(schema.obj as any).reduce<
         Record<string, any>[]
       >((acc, key) => {
         if ((schema.obj as any)[key]?.type === String) {
           acc.push({ [key]: { $regex: search, $options: "i" } });
         }
+
         return acc;
       }, []);
-      filterObject.$or = searchFilter;
+
+      if (searchFilter.length > 0) {
+        filterObject.$or = searchFilter; // Ensure `$or` is directly an array
+      }
+
       delete filterObject.search;
     }
 
@@ -64,13 +70,16 @@ const paginate = <T extends Document>(schema: Schema<T>) => {
      * and then convert it to an array of values
      */
     Object.keys(filterObject).forEach((key) => {
-      if (
-        typeof filterObject[key] === "string" &&
-        filterObject[key].includes(",")
-      ) {
-        filterObject[key] = { $in: filterObject[key].split(",") };
-      } else if (Array.isArray(filterObject[key])) {
-        filterObject[key] = { $in: filterObject[key] };
+      if (key !== "$or") {
+        // 🚀 Ensure we don't accidentally modify `$or`
+        if (
+          typeof filterObject[key] === "string" &&
+          filterObject[key].includes(",")
+        ) {
+          filterObject[key] = { $in: filterObject[key].split(",") };
+        } else if (Array.isArray(filterObject[key])) {
+          filterObject[key] = { $in: filterObject[key] };
+        }
       }
     });
 
