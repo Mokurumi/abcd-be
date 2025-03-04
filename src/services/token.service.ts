@@ -3,10 +3,11 @@ import jwt from "jsonwebtoken";
 import moment from "moment";
 
 import config from "../config";
-import userService from "./user.service";
-import { Token } from "../models";
 import ApiError from "../utils/ApiError";
 import { tokenTypes } from "../constants";
+
+import { Token } from "../models";
+import userService from "./user.service";
 
 /**
  * Generate token

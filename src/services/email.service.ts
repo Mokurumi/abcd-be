@@ -214,12 +214,18 @@ const sendCustomEmail = async (
  * @param {object} subject
  * @param {object} message
  */
-const sendMassEmail = async (to: string, subject: string, message: string) => {
-  const html = emailTemplate(
-    { firstName: to },
-    `<p style="font-size: 16px; margin-bottom: 40px;">${message}</p>`
-  );
-  await sendEmail(to, subject, null, html);
+const sendMassEmail = async (
+  recipients: IUser[],
+  subject: string,
+  message: string
+) => {
+  recipients.forEach(async (recipient) => {
+    const html = emailTemplate(
+      recipient,
+      `<p style="font-size: 16px; margin-bottom: 40px;">${message}</p>`
+    );
+    await sendEmail(recipient.emailAddress, subject, null, html);
+  });
 };
 
 /**

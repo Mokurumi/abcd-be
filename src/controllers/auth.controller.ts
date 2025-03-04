@@ -1,6 +1,8 @@
 import ApiError from "../utils/ApiError";
 import catchAsync from "../utils/catchAsync";
+import { tokenTypes } from "../constants";
 import { formatPhoneNumber, generateTempPassword } from "../utils";
+// import sendSMS from "../config/sendSMS";
 import {
   authService,
   userService,
@@ -8,8 +10,6 @@ import {
   tokenService,
   emailService,
 } from "../services";
-// import sendSMS from "../config/sendSMS";
-import { tokenTypes } from "../constants";
 
 /**
  * Register a new user

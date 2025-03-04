@@ -84,6 +84,15 @@ const getUserById = async (
 };
 
 /**
+ * Get users by ids
+ * @param {ObjectId[]} ids
+ * @returns {Promise<User>}
+ */
+const getUsersByIds = async (ids: string[] | mongoose.ObjectId[]) => {
+  return User.find({ _id: { $in: ids } });
+};
+
+/**
  * Update user by id
  * @param {ObjectId} userId
  * @param {Object} updateBody
@@ -163,7 +172,7 @@ const lookupUsers = async (query = {}) => {
 const deleteUserById = async (
   userId: string | mongoose.ObjectId | undefined
 ) => {
-  const user = await getUserById(userId);
+  const user = await User.findById(userId);
   if (!user) {
     throw new ApiError(400, "User not found");
   }
@@ -178,6 +187,7 @@ export default {
   createUser,
   queryUsers,
   getUserById,
+  getUsersByIds,
   getUserByPhoneNumberOrEmail,
   updateUserById,
   lookupUsers,

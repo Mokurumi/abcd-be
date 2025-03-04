@@ -5,7 +5,7 @@ const register = {
   body: Joi.object().keys({
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
-    middleName: Joi.string(),
+    middleName: Joi.string().allow("").allow(null),
     emailAddress: Joi.string().email().required(),
     phoneNumber: Joi.string().required().custom(phoneNumber),
     password: Joi.string().required().custom(password),
@@ -69,8 +69,8 @@ const updateProfile = {
   body: Joi.object().keys({
     firstName: Joi.string(),
     lastName: Joi.string(),
-    middleName: Joi.string(),
-    emailAddress: Joi.string().email(),
+    middleName: Joi.string().allow("").allow(null),
+    // emailAddress: Joi.string().email(),
     phoneNumber: Joi.string().custom(phoneNumber),
   }),
 };

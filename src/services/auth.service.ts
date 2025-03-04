@@ -1,11 +1,13 @@
 import mongoose from "mongoose";
 
+import ApiError from "../utils/ApiError";
+import { tokenTypes } from "../constants";
+
 import { Token } from "../models";
+
 import tokenService from "./token.service";
 import userService from "./user.service";
 import emailService from "./email.service";
-import ApiError from "../utils/ApiError";
-import { tokenTypes } from "../constants";
 
 /**
  * Verify registration token

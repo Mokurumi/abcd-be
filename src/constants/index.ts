@@ -1,16 +1,14 @@
 const permissionMapping: { [key: string]: string[] } = {
-  // Roles
   ROLES: [
     "ROLES.CREATE_ROLE",
     "ROLES.READ_ROLE",
     "ROLES.UPDATE_ROLE",
     "ROLES.DELETE_ROLE",
   ],
-  // Users
   USERS: [
     "USERS.CREATE_USER",
-    "USERS.READ_USER",
-    "USERS.UPDATE_USER",
+    "USERS.READ_ALL_USERS",
+    "USERS.UPDATE_ALL_USERS",
     "USERS.DELETE_USER",
   ],
 };

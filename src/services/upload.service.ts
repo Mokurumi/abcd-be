@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 
 import ApiError from "../utils/ApiError";
-import { Upload } from "../models";
 import { uploadFile, deleteFiles } from "../utils/docUtil";
 import { uploadCategories } from "../constants";
+
+import { Upload } from "../models";
 
 /**
  * Save file

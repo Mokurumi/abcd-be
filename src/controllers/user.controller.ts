@@ -70,7 +70,10 @@ const getUser = catchAsync(async (req, res) => {
   if ((req.user as any)?._id?.toString() === req.params.userId) {
     return res.send(req.user);
   } else {
-    const permissions: permissionType[] = ["ANY_WITH_AUTH", "USERS.READ_USER"];
+    const permissions: permissionType[] = [
+      "ANY_WITH_AUTH",
+      "USERS.READ_ALL_USERS",
+    ];
     if (
       !permissions.some((permission) =>
         ((req.user as IUser)?.role as IRole).permissions.includes(permission)
@@ -90,7 +93,7 @@ const getUser = catchAsync(async (req, res) => {
 const updateUser = catchAsync(async (req, res) => {
   const userReq = req.user as IUser;
   if (
-    !(userReq?.role as IRole).permissions.includes("USERS.UPDATE_USER") &&
+    !(userReq?.role as IRole).permissions.includes("USERS.UPDATE_ALL_USERS") &&
     userReq?._id?.toString() !== req.params.userId
   ) {
     throw new ApiError(403, "Forbidden");
@@ -107,7 +110,8 @@ const updateUser = catchAsync(async (req, res) => {
 });
 
 const lookupUsers = catchAsync(async (req, res) => {
-  if (!(req.user as any).role.permissions.includes("USERS.READ_USER")) {
+  // not current user and has no USERS.READ_ALL_USERS
+  if (!(req.user as any).role.permissions.includes("USERS.READ_ALL_USERS")) {
     const users = await userService.lookupUsers(
       req.query.active
         ? {
