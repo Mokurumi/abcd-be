@@ -14,7 +14,7 @@ router
     userController.createUser
   )
   .get(
-    auth("USERS.READ_USER"),
+    auth("USERS.READ_ALL_USERS"),
     validate(userValidation.getUsers),
     userController.getUsers
   );
