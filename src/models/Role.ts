@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { toJSON, paginate } from "./plugins";
+import paginate from "../utils/paginate.plugin";
 import { permissions } from "../constants";
 
 const roleSchema = new mongoose.Schema<IRole, RoleModel>(
@@ -42,7 +42,6 @@ const roleSchema = new mongoose.Schema<IRole, RoleModel>(
 );
 
 // add plugin that converts mongoose to json
-roleSchema.plugin(toJSON);
 roleSchema.plugin(paginate);
 
 /**

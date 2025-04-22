@@ -202,16 +202,13 @@ const getUserProfile = catchAsync(async (req, res) => {
  * Update user profile
  */
 const updateUserProfile = catchAsync(async (req, res) => {
-  const updatedUser = await userService.updateUserById(
+  const user = await userService.updateUserById(
     (req.user as any)?._id,
     req.body
   );
   res.send({
     message: "Profile updated successfully.",
-    user: {
-      ...updatedUser.toJSON(),
-      role: (req.user as any)?.role,
-    },
+    user,
   });
 });
 

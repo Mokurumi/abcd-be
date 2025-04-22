@@ -29,8 +29,6 @@ declare global {
 
   interface UserModel extends Model<IUser> {
     paginate(filter: any, options: QueryOptions): Promise<QueryResult<IUser>>;
-
-    toJSON(): any;
   }
 }
 

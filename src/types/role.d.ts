@@ -32,7 +32,6 @@ declare global {
 
   interface RoleModel extends Model<IRole> {
     paginate(filter: any, options: QueryOptions): Promise<QueryResult<IRole>>;
-    toJSON(): any;
   }
 }
 
