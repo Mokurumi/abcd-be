@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
-import paginate from "../utils/paginate.plugin";
+import { toJSON, paginate } from "./plugins";
 import { formatPhoneNumber } from "../utils";
 
 const userSchema = new Schema<IUser, UserModel>(
@@ -59,7 +59,7 @@ const userSchema = new Schema<IUser, UserModel>(
           throw new Error("Password is not strong enough");
         }
       },
-      private: true,
+      private: true, // used by the toJSON plugin
     },
     role: {
       type: mongoose.SchemaTypes.ObjectId,
@@ -116,6 +116,7 @@ const userSchema = new Schema<IUser, UserModel>(
 );
 
 // add plugin that converts mongoose to json
+userSchema.plugin(toJSON);
 userSchema.plugin(paginate);
 
 /**

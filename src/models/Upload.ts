@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import validator from "validator";
-import paginate from "../utils/paginate.plugin";
+import { toJSON, paginate } from "./plugins";
 import { uploadCategories } from "../constants";
 
 const uploadSchema = new Schema<IUpload, UploadModel>(
@@ -50,6 +50,7 @@ const uploadSchema = new Schema<IUpload, UploadModel>(
 );
 
 // Add plugins for JSON conversion and pagination
+uploadSchema.plugin(toJSON);
 uploadSchema.plugin(paginate);
 
 // Define and export the Upload model

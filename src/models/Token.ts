@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { toJSON } from "./plugins";
 import { tokenTypes } from "../constants";
 
 const tokenSchema = new Schema<IToken, TokenModel>(
@@ -43,6 +44,8 @@ const tokenSchema = new Schema<IToken, TokenModel>(
   }
 );
 
+// Add plugin that converts mongoose to JSON
+tokenSchema.plugin(toJSON);
 
 // Define and export the Token model
 const Token = mongoose.model<IToken, TokenModel>("Token", tokenSchema);
