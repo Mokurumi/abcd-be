@@ -48,16 +48,10 @@ const createUser = catchAsync(async (req, res) => {
 
 const getUsers = catchAsync(async (req, res) => {
   const filter = pick(req.query, [
-    "firstName",
-    "middleName",
-    "lastName",
-    "emailAddress",
-    "phoneNumber",
     "isPhoneVerified",
     "isEmailVerified",
     "role",
     "active",
-    "createdAt",
     "search",
   ]);
 
@@ -67,17 +61,13 @@ const getUsers = catchAsync(async (req, res) => {
 });
 
 const getUser = catchAsync(async (req, res) => {
-  if ((req.user as any)?._id?.toString() === req.params.userId) {
+  const userReq = req.user as IUser;
+
+  if (userReq?._id?.toString() === req.params.userId) {
     return res.send(req.user);
   } else {
-    const permissions: permissionType[] = [
-      "ANY_WITH_AUTH",
-      "USERS.READ_ALL_USERS",
-    ];
     if (
-      !permissions.some((permission) =>
-        ((req.user as IUser)?.role as IRole).permissions.includes(permission)
-      )
+      !(userReq?.role as IRole).permissions.includes("USERS.READ_ALL_USERS")
     ) {
       throw new ApiError(403, "Forbidden");
     } else {

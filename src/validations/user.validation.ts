@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { customDate, objectId, phoneNumber } from "./custom.validation";
+import { objectId, phoneNumber } from "./custom.validation";
 
 const createUser = {
   body: Joi.object().keys({
@@ -14,15 +14,10 @@ const createUser = {
 
 const getUsers = {
   query: Joi.object().keys({
-    firstName: Joi.string(),
-    lastName: Joi.string(),
-    emailAddress: Joi.string().email(),
-    phoneNumber: Joi.string().custom(phoneNumber),
-    active: Joi.boolean(),
-    role: Joi.string().custom(objectId),
     isPhoneVerified: Joi.boolean(),
     isEmailVerified: Joi.boolean(),
-    dateCreated: Joi.custom(customDate),
+    role: Joi.string().custom(objectId),
+    active: Joi.boolean(),
     search: Joi.string(),
     sortBy: Joi.string(),
     size: Joi.number().integer(),

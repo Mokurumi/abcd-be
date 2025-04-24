@@ -3,11 +3,27 @@ import mongoose from "mongoose";
 import ApiError from "../utils/ApiError";
 import { tokenTypes } from "../constants";
 
-import { Token } from "../models";
+import { Token, User } from "../models";
 
 import tokenService from "./token.service";
 import userService from "./user.service";
 import emailService from "./email.service";
+
+const raiseErrorForExistingUser = async (
+  user: IUser,
+  code: number,
+  message: string
+) => {
+  if (!user) {
+    throw new ApiError(code, message);
+  }
+
+  await User.updateOne(
+    { _id: user._id },
+    { $set: { lastFailedLogin: Date.now() } }
+  ).exec();
+  throw new ApiError(code, message);
+};
 
 /**
  * Verify registration token
@@ -54,8 +70,6 @@ const loginUser = async (
     throw new ApiError(404, "Incorrect username or password");
   }
 
-  let failedLogin = false;
-
   // Existing users (imported users) and they have no password
   if (user && user.password?.trim() === "") {
     // Generate registration token for email
@@ -66,8 +80,8 @@ const loginUser = async (
     // Send user one time registration email to set up their account credentials
     await emailService.sendRegistrationEmail(user, registrationToken || "");
 
-    failedLogin = true;
-    throw new ApiError(
+    raiseErrorForExistingUser(
+      user,
       403,
       "Check your email for an activation link to set up your account"
     );
@@ -75,8 +89,8 @@ const loginUser = async (
 
   // Account not active
   if (!user.active && !user.isEmailVerified) {
-    failedLogin = true;
-    throw new ApiError(
+    raiseErrorForExistingUser(
+      user,
       401,
       "Your account is not yet active. Please check your email for activation link."
     );
@@ -84,25 +98,20 @@ const loginUser = async (
 
   // Email or password incorrect
   if (!user || !(await user.isPasswordMatch(password))) {
-    failedLogin = true;
-    throw new ApiError(401, "Incorrect username or password");
+    raiseErrorForExistingUser(user, 401, "Incorrect username or password");
   }
 
   // Account is disabled
   if (!user.active && !!user.isEmailVerified) {
-    failedLogin = true;
-    throw new ApiError(
+    raiseErrorForExistingUser(
+      user,
       401,
       "Your account is disabled. Kindly contact support."
     );
   }
 
   // update lastLogin date
-  if (failedLogin) {
-    user.lastFailedLogin = Date.now();
-  } else {
-    user.lastLogin = Date.now();
-  }
+  user.lastLogin = Date.now();
   await user.save();
 
   return user;
