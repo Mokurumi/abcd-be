@@ -35,22 +35,18 @@ const verifyRegistrationToken = async (
   token: string,
   userId: string | undefined
 ) => {
-  const user = await userService.getUserById(userId);
-  if (!user) {
-    throw new ApiError(404, "User not found");
-  }
-  const isValid = await tokenService.verifyToken(
+  const validToken = await tokenService.verifyToken(
     token,
-    tokenTypes.VERIFY_REGISTRATION,
-    user._id?.toString()
+    tokenTypes.VERIFY_REGISTRATION
   );
-  if (!isValid) {
-    throw new ApiError(401, "Invalid token");
+  if (!validToken || validToken.user?.toString() !== userId) {
+    throw new ApiError(401, "Invalid link");
   }
-  user.isEmailVerified = true;
-  user.active = true;
-  await user.save();
-  return user;
+
+  await User.updateOne(
+    { _id: userId },
+    { $set: { isEmailVerified: true, active: true } }
+  ).exec();
 };
 
 /**
@@ -137,28 +133,17 @@ const logoutAllInstances = async (
  * @param {string} userId
  * @returns {Promise<Object>}
  */
-const refreshAuth = async (
-  refreshToken: string,
-  userId: string | undefined
-) => {
-  try {
-    const refreshTokenDoc = await tokenService.verifyToken(
-      refreshToken,
-      tokenTypes.REFRESH,
-      userId
-    );
-    if (!refreshTokenDoc) {
-      throw new ApiError(401, "Invalid token");
-    }
-
-    await tokenService.deleteToken(refreshTokenDoc.token, tokenTypes.REFRESH);
-    return await tokenService.generateAuthTokens(
-      refreshTokenDoc.user.toString()
-    );
-  } catch (error) {
-    console.log(error);
+const refreshAuth = async (refreshToken: string) => {
+  const refreshTokenDoc = await tokenService.verifyToken(
+    refreshToken,
+    tokenTypes.REFRESH
+  );
+  if (!refreshTokenDoc) {
     throw new ApiError(401, "Invalid token");
   }
+
+  await tokenService.deleteToken(refreshTokenDoc.token, tokenTypes.REFRESH);
+  return await tokenService.generateAuthTokens(refreshTokenDoc.user.toString());
 };
 
 /**
@@ -169,21 +154,18 @@ const refreshAuth = async (
  */
 const verifyDeleteProfileToken = async (
   token: string,
-  userId: string | mongoose.ObjectId | undefined
+  userId: string | undefined
 ) => {
-  const user = await userService.getUserById(userId);
-  if (!user) {
-    throw new ApiError(404, "User not found");
-  }
-  const isValid = await tokenService.verifyToken(
+  const validToken = await tokenService.verifyToken(
     token,
-    tokenTypes.DELETE_PROFILE,
-    user._id?.toString()
+    tokenTypes.DELETE_PROFILE
   );
-  if (!isValid) {
-    throw new ApiError(401, "Invalid token");
+  if (!validToken || validToken.user?.toString() !== userId) {
+    throw new ApiError(401, "Invalid link");
   }
-  return user;
+
+  await Token.deleteMany({ user: userId });
+  await userService.deleteUserById(userId);
 };
 
 export default {

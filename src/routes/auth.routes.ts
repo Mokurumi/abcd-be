@@ -32,7 +32,7 @@ router.post(
 router.post("/login", validate(authValidation.login), authController.login);
 
 // logout user
-router.post("/logout", authController.logout);
+router.post("/logout", auth("ANY_WITH_AUTH"), authController.logout);
 
 // refresh token
 router.post(

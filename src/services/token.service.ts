@@ -70,23 +70,16 @@ const saveToken = async (
  */
 const verifyToken = async (
   token: string,
-  type: string,
-  userId: string | undefined
+  type: string
 ): Promise<IToken | null> => {
   const payload = jwt.verify(token, config.jwt.secret);
 
-  if (userId) {
-    if (payload.sub !== userId) {
-      throw new ApiError(401, "Unauthorized user");
-    }
-  } else {
-    const user = await userService.getUserById(
-      payload.sub as string | mongoose.ObjectId | undefined
-    );
+  const user = await userService.getUserById(
+    payload.sub as string | mongoose.ObjectId | undefined
+  );
 
-    if (!user) {
-      throw new ApiError(404, "User not found");
-    }
+  if (!user) {
+    throw new ApiError(404, "User not found");
   }
 
   const tokenDoc = await Token.findOne({

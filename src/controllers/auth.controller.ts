@@ -48,11 +48,8 @@ const register = catchAsync(async (req, res) => {
  */
 const verifyRegistration = catchAsync(async (req, res) => {
   const { token, userId } = req.body;
-  const user = await authService.verifyRegistrationToken(token, userId);
+  await authService.verifyRegistrationToken(token, userId);
 
-  if (!user) {
-    throw new ApiError(401, "Invalid token");
-  }
   res.status(200).send({
     message: "Email verified successfully. Please login to continue.",
   });
@@ -103,26 +100,24 @@ const login = catchAsync(async (req, res) => {
  * Logout
  */
 const logout = catchAsync(async (req, res) => {
+  const { token } = req.body;
+
+  const refreshTokenDoc = await tokenService.verifyToken(
+    token,
+    tokenTypes.REFRESH
+  );
+  if (
+    !refreshTokenDoc ||
+    refreshTokenDoc.user?.toString() !== (req.user as IUser)?._id?.toString()
+  ) {
+    throw new ApiError(400, "Invalid token");
+  }
+
+  await tokenService.deleteToken(refreshTokenDoc.token, tokenTypes.REFRESH);
+
   res.status(202).send({
     message: "Logout successful.",
   });
-
-  try {
-    const { token } = req.body;
-
-    const refreshTokenDoc = await tokenService.verifyToken(
-      token,
-      tokenTypes.REFRESH,
-      (req.user as any)?._id?.toString()
-    );
-    if (!refreshTokenDoc) {
-      throw new ApiError(401, "Invalid token");
-    }
-
-    await tokenService.deleteToken(refreshTokenDoc.token, tokenTypes.REFRESH);
-  } catch (err) {
-    console.log(err);
-  }
 });
 
 /**
@@ -130,10 +125,7 @@ const logout = catchAsync(async (req, res) => {
  */
 const refreshToken = catchAsync(async (req, res) => {
   const { token } = req.body;
-  const tokens = await authService.refreshAuth(
-    token,
-    (req.user as any)?._id?.toString()
-  );
+  const tokens = await authService.refreshAuth(token);
   res.send({ tokens });
 });
 
@@ -237,13 +229,7 @@ const deleteUserProfile = catchAsync(async (req, res) => {
  */
 const verifyDeleteProfile = catchAsync(async (req, res) => {
   const { token, userId } = req.body;
-  const user = await authService.verifyDeleteProfileToken(token, userId);
-
-  if (!user) {
-    throw new ApiError(401, "Invalid link");
-  }
-
-  await userService.deleteUserById(userId);
+  await authService.verifyDeleteProfileToken(token, userId);
 
   res.status(200).send({
     message: "Profile deleted successfully.",
