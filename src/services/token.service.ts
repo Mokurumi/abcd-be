@@ -199,23 +199,8 @@ const generateVerifyEmailToken = async (user: IUser) => {
  * @param {string} type
  * @returns {Promise<User>}
  */
-const deleteToken = async (
-  token: string | null,
-  type: string
-): Promise<IToken | null> => {
-  const payload = jwt.verify(token || "", config.jwt.secret);
-  const tokenDoc = await Token.findOne({
-    token,
-    type,
-    user: payload.sub,
-    blacklisted: false,
-  });
-  if (!tokenDoc) {
-    throw new ApiError(404, "Token not found");
-  }
-  // await tokenDoc.remove();
-  await Token.findOneAndDelete({ token, type });
-  return tokenDoc;
+const deleteToken = async (token: string | null) => {
+  await Token.findOneAndDelete({ token });
 };
 
 /**

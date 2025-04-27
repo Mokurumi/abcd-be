@@ -113,7 +113,7 @@ const logout = catchAsync(async (req, res) => {
     throw new ApiError(400, "Invalid token");
   }
 
-  await tokenService.deleteToken(refreshTokenDoc.token, tokenTypes.REFRESH);
+  await tokenService.deleteToken(refreshTokenDoc.token);
 
   res.status(202).send({
     message: "Logout successful.",

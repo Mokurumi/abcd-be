@@ -142,7 +142,7 @@ const refreshAuth = async (refreshToken: string) => {
     throw new ApiError(401, "Invalid token");
   }
 
-  await tokenService.deleteToken(refreshTokenDoc.token, tokenTypes.REFRESH);
+  await tokenService.deleteToken(refreshTokenDoc.token);
   return await tokenService.generateAuthTokens(refreshTokenDoc.user.toString());
 };
 
