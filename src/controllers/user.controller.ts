@@ -81,14 +81,6 @@ const getUser = catchAsync(async (req, res) => {
 });
 
 const updateUser = catchAsync(async (req, res) => {
-  const userReq = req.user as IUser;
-  if (
-    !(userReq?.role as IRole).permissions.includes("USERS.UPDATE_ALL_USERS") &&
-    userReq?._id?.toString() !== req.params.userId
-  ) {
-    throw new ApiError(403, "Forbidden");
-  }
-
   const user = await userService.updateUserById(req.params.userId, {
     ...req.body,
   });

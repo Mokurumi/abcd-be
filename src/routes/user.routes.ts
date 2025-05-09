@@ -27,7 +27,7 @@ router
     userController.getUser
   )
   .patch(
-    auth("ANY_WITH_AUTH"),
+    auth("USERS.UPDATE_ALL_USERS"),
     validate(userValidation.updateUser),
     userController.updateUser
   )
