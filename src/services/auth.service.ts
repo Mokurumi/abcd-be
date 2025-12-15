@@ -76,7 +76,7 @@ const loginUser = async (
     // Send user one time registration email to set up their account credentials
     await emailService.sendRegistrationEmail(user, registrationToken || "");
 
-    raiseErrorForExistingUser(
+    await raiseErrorForExistingUser(
       user,
       403,
       "Check your email for an activation link to set up your account"
@@ -85,7 +85,7 @@ const loginUser = async (
 
   // Account not active
   if (!user.active && !user.isEmailVerified) {
-    raiseErrorForExistingUser(
+    await raiseErrorForExistingUser(
       user,
       401,
       "Your account is not yet active. Please check your email for activation link."
@@ -94,12 +94,16 @@ const loginUser = async (
 
   // Email or password incorrect
   if (!user || !(await user.isPasswordMatch(password))) {
-    raiseErrorForExistingUser(user, 401, "Incorrect username or password");
+    await raiseErrorForExistingUser(
+      user,
+      401,
+      "Incorrect username or password"
+    );
   }
 
   // Account is disabled
   if (!user.active && !!user.isEmailVerified) {
-    raiseErrorForExistingUser(
+    await raiseErrorForExistingUser(
       user,
       401,
       "Your account is disabled. Kindly contact support."
