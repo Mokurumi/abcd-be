@@ -4,7 +4,6 @@ import { objectId } from "./custom.validation";
 const userProfileImage = {
   body: Joi.object().keys({
     file: Joi.string(),
-    // category: Joi.string().required(),
     owner: Joi.string().required().custom(objectId),
   }),
 };
@@ -15,10 +14,23 @@ const deleteUserProfileImage = {
   }),
 };
 
+const getUploadsByOwner = {
+  params: Joi.object().keys({
+    owner: Joi.string().required().custom(objectId),
+  }),
+  query: Joi.object().keys({
+    category: Joi.string(),
+    type: Joi.string().valid("document", "image", "video", "other"),
+    sortBy: Joi.string(),
+    size: Joi.number().integer(),
+    page: Joi.number().integer(),
+  }),
+};
+
 const deleteUpload = {
   params: Joi.object().keys({
     owner: Joi.string().required().custom(objectId),
-    uploadId: Joi.string().custom(objectId),
+    uploadId: Joi.string().required().custom(objectId),
   }),
 };
 
@@ -32,6 +44,7 @@ const deleteUploads = {
 export default {
   userProfileImage,
   deleteUserProfileImage,
+  getUploadsByOwner,
   deleteUpload,
   deleteUploads,
 };

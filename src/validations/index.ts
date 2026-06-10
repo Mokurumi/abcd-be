@@ -4,6 +4,7 @@ import userValidation from "./user.validation";
 import roleValidation from "./role.validation";
 // common validations
 import uploadValidation from "./upload.validation";
+import notificationValidation from "./notification.validation";
 
 // lookup validations
 import lookupsValidation from "./lookups.validation";
@@ -13,5 +14,6 @@ export {
   userValidation,
   roleValidation,
   uploadValidation,
+  notificationValidation,
   lookupsValidation,
 };

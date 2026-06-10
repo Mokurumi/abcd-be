@@ -1,39 +1,45 @@
-# tags:
-#   name: Uploads
-#   description: Uploads management
-
 components:
   schemas:
-    Uploads:
+    Upload:
       type: object
       properties:
         _id:
           type: string
+        owner:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+          enum: ["document", "image", "video", "other"]
         docURL:
           type: string
         public_id:
           type: string
         category:
           type: string
-          enum:
-            - PROFILE_IMG
-        owner:
-          type: string
+          enum: ["PROFILE_IMG"]
         createdBy:
           type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
       example:
         _id: 5ebac534954b54139806c112
-        docURL: https://res.cloudinary.com/dx3wzv7xv/image/upload/v1589426820/5ebac534954b54139806c112-2020-05-14T14:33:40.000Z-user1.jpg
-        public_id: 5ebac534954b54139806c112-2020-05-14T14:33:40.000Z-user1.jpg
-        category: PROFILE_IMG
         owner: 5ebac534954b54139806c112
+        label: Profile Image
+        type: image
+        docURL: https://res.cloudinary.com/example/image/upload/v1/PROFILE_IMG/sample.jpg
+        public_id: PROFILE_IMG/sample
+        category: PROFILE_IMG
         createdBy: 5ebac534954b54139806c112
 
   responses:
-
-    # Upload already defined
     DuplicateUpload:
-      description: Duplicate Upload
+      description: Upload already exists
       content:
         application/json:
           schema:
@@ -43,11 +49,9 @@ components:
             message: Upload already exists
 
 /uploads/userProfileImage:
-  # Upload a user profile image
   post:
     operationId: uploadUserProfileImage
     summary: Upload a user profile image
-    description: Upload a user profile image
     tags: [Uploads]
     security:
       - bearerAuth: []
@@ -57,38 +61,36 @@ components:
         multipart/form-data:
           schema:
             type: object
+            required:
+              - file
+              - owner
             properties:
               file:
                 type: string
                 format: binary
-              # category:
-              #   type: string
-              #   enum: [PROFILE_IMG]
               owner:
                 type: string
     responses:
-      '200':
+      '201':
         description: Upload successful
         content:
           application/json:
             schema:
-              # $ref: '#/components/schemas/Uploads'
               type: object
               properties:
                 url:
                   type: string
-            example:
-              url: https://res.cloudinary.com/dx3wzv7xv/image/upload/v1589426820/5ebac534954b54139806c112-2020-05-14T14:33:40.000Z-user1.jpg
-
+                message:
+                  type: string
       '400':
         $ref: '#/components/responses/DuplicateUpload'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
 
 /uploads/deleteUserProfileImage/{userId}:
-  # Delete a user profile image
   delete:
     operationId: deleteUserProfileImage
     summary: Delete a user profile image
-    description: Delete a user profile image
     tags: [Uploads]
     security:
       - bearerAuth: []
@@ -96,38 +98,87 @@ components:
       - name: userId
         in: path
         required: true
-        description: The id of the user
+        schema:
+          type: string
+    responses:
+      '204':
+        description: Deleted
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '404':
+        $ref: '#/components/responses/NotFound'
+
+/uploads/{owner}:
+  parameters:
+    - name: owner
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Owner ID (user ID)
+
+  get:
+    operationId: getUploadsByOwner
+    summary: Get uploads for an owner
+    tags: [Uploads]
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: category
+        in: query
+        schema:
+          type: string
+          enum: ["PROFILE_IMG"]
+      - name: type
+        in: query
+        schema:
+          type: string
+          enum: ["document", "image", "video", "other"]
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 1
+      - name: size
+        in: query
+        schema:
+          type: integer
+          default: 10
+      - name: sortBy
+        in: query
         schema:
           type: string
     responses:
       '200':
-        description: Upload deleted
+        description: OK
         content:
           application/json:
             schema:
               type: object
               properties:
-                message:
-                  type: string
-            example:
-              message: Image deleted
-
-      '404':
-        description: Upload not found
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Error'
-            example:
-              code: 404
-              message: Upload not found
+                results:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Upload'
+                totalPages:
+                  type: number
+                totalResults:
+                  type: number
+                page:
+                  type: number
+                size:
+                  type: number
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
 
 /uploads/deleteUploads/{owner}/{category}:
-  # Delete an upload
   delete:
-    operationId: deleteUploadByCategory
-    summary: Delete multiple uploads
-    description: Delete multiple uploads by category for one owner
+    operationId: deleteUploadsByCategory
+    summary: Delete all uploads for an owner by category
     tags: [Uploads]
     security:
       - bearerAuth: []
@@ -135,40 +186,28 @@ components:
       - name: owner
         in: path
         required: true
-        description: The owner of the upload
         schema:
           type: string
       - name: category
         in: path
         required: true
-        description: enum \[PROFILE_IMG\]
         schema:
           type: string
-        enum: [PROFILE_IMG]
+          enum: ["PROFILE_IMG"]
     responses:
-      '200':
-        description: Upload deleted
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Uploads'
-
+      '204':
+        description: Deleted
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
       '404':
-        description: Upload not found
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Error'
-            example:
-              code: 404
-              message: Upload not found
+        $ref: '#/components/responses/NotFound'
 
 /uploads/deleteUpload/{owner}/{uploadId}:
-  # Delete an upload
   delete:
     operationId: deleteUploadById
-    summary: Delete an upload
-    description: Delete an upload
+    summary: Delete a single upload by ID
     tags: [Uploads]
     security:
       - bearerAuth: []
@@ -176,29 +215,19 @@ components:
       - name: owner
         in: path
         required: true
-        description: The owner of the upload
         schema:
           type: string
       - name: uploadId
         in: path
         required: true
-        description: The id of the upload
         schema:
           type: string
     responses:
-      '200':
-        description: Upload deleted
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Uploads'
-
+      '204':
+        description: Deleted
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
       '404':
-        description: Upload not found
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Error'
-            example:
-              code: 404
-              message: Upload not found
+        $ref: '#/components/responses/NotFound'

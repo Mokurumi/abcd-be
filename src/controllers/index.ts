@@ -4,5 +4,12 @@ import userController from "./user.controller";
 import roleController from "./role.controller";
 // common controllers
 import uploadController from "./upload.controller";
+import notificationController from "./notification.controller";
 
-export { authController, userController, roleController, uploadController };
+export {
+  authController,
+  userController,
+  roleController,
+  uploadController,
+  notificationController,
+};

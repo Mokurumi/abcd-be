@@ -5,9 +5,8 @@ import validate from "../middlewares/validate";
 import { uploadValidation } from "../validations";
 import { uploadController } from "../controllers";
 
-// Set up multer for handling file uploads
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
 const router = express.Router();
 
@@ -21,10 +20,18 @@ router.post(
 
 router.delete(
   "/deleteUserProfileImage/:userId",
-  auth("USERS.UPDATE_USER"),
+  auth("USERS.UPDATE_ALL_USERS"),
   validate(uploadValidation.deleteUserProfileImage),
   uploadController.deleteUserProfileImage
 );
+
+router
+  .route("/:owner")
+  .get(
+    auth("ANY_WITH_AUTH"),
+    validate(uploadValidation.getUploadsByOwner),
+    uploadController.getUploadsByOwner
+  );
 
 router.delete(
   "/deleteUploads/:owner/:category",

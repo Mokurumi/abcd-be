@@ -6,111 +6,91 @@ import { uploadCategories } from "../constants";
 
 import { Upload } from "../models";
 
-/**
- * Save file
- * @param {Object} file
- * @param {string} category
- * @param {string} owner
- * @param {string} createdBy
- * @returns {Promise<Upload>}
- */
 const saveFile = async (
-  file: any,
-  category: string,
-  owner: string | mongoose.ObjectId | undefined,
+  requestBody: UploadRequest,
   createdBy: string | mongoose.ObjectId | undefined
 ): Promise<IUpload | null> => {
+  const { file, category, owner, label, type } = requestBody;
+
   if (!uploadCategories.includes(category)) {
     throw new ApiError(400, "Invalid category");
   }
 
   const upload = await uploadFile(file, category);
-  const uploadDoc = await Upload.create({
+  return Upload.create({
     owner,
     category,
+    label,
+    type,
     createdBy,
     public_id: upload.public_id,
     docURL: upload.url,
   });
-
-  return uploadDoc;
 };
 
-/**
- * Save and replace file
- * @param {Object} file
- * @param {string} category
- * @param {string} owner
- * @param {string} createdBy
- * @returns {Promise<Upload>}
- */
 const saveAndReplace = async (
-  file: any,
-  category: string,
-  owner: string | mongoose.ObjectId | undefined,
+  requestBody: UploadRequest,
   createdBy: string | mongoose.ObjectId | undefined
 ): Promise<IUpload | null> => {
+  const { file, category, owner, label, type } = requestBody;
+
   if (!uploadCategories.includes(category)) {
     throw new ApiError(400, "Invalid category");
   }
 
+  const upload = await uploadFile(file, category);
   const existingUpload = await Upload.findOne({ owner, category });
+
   if (existingUpload) {
-    // delete from cloudinary
     await deleteFiles([existingUpload.public_id]);
-    // delete from db
-    await Upload.deleteOne({ _id: existingUpload._id });
+    existingUpload.docURL = upload.url;
+    existingUpload.public_id = upload.public_id;
+    existingUpload.label = label;
+    existingUpload.type = type;
+    await existingUpload.save();
+    return existingUpload;
   }
 
-  const upload = await uploadFile(file, category);
-  const uploadDoc = await Upload.create({
+  return Upload.create({
     owner,
     category,
+    label,
+    type,
     createdBy,
     public_id: upload.public_id,
     docURL: upload.url,
   });
-
-  return uploadDoc;
 };
 
-/**
- * Get files by owner
- * @param {string} owner
- * @returns {Promise<Upload>}
- */
+const queryUploads = async (
+  filter: UploadFilter,
+  options?: QueryOptions,
+  paginated: boolean = false
+) => {
+  return paginated && options
+    ? Upload.paginate(filter, {
+        ...options,
+        populate: [{ path: "createdBy", select: "firstName lastName" }],
+      })
+    : Upload.find(filter);
+};
+
 const getFilesByOwner = async (
   owner: string | mongoose.ObjectId | undefined
 ) => {
-  const uploads = await Upload.find({ owner });
-  return uploads;
+  return Upload.find({ owner });
 };
 
-/**
- * Get files by owner and category
- * @param {string} owner
- * @param {string} category
- * @returns {Promise<Upload>}
- */
 const getFilesByOwnerAndCategory = async (
   owner: string | mongoose.ObjectId | undefined,
   category: string
 ) => {
-  //DEPT_FILES
   if (!uploadCategories.includes(category)) {
     throw new ApiError(400, "Invalid category");
   }
-
-  const uploads = await Upload.find({ owner, category });
-  return uploads;
+  return Upload.find({ owner, category });
 };
 
-/**
- * Delete file
- * @param {string} owner
- * @param {string} publicId
- * @returns {Promise}
- */
 const deleteUpload = async (
   owner: string | mongoose.ObjectId | undefined,
   uploadId: string | mongoose.ObjectId | undefined
@@ -119,37 +99,45 @@ const deleteUpload = async (
   if (!upload) {
     throw new ApiError(404, "File not found");
   }
-
   await deleteFiles([upload.public_id]);
   await Upload.deleteOne({ owner, _id: uploadId });
 };
 
-/**
- * Delete multiple files
- * @param {string} owner,
- * @param {string} category
- * @returns {Promise}
- */
-const deleteMultipleFiles = async (
+const deleteMultipleByOwner = async (
   owner: string | mongoose.ObjectId | undefined,
   category: string
 ) => {
   if (!uploadCategories.includes(category)) {
     throw new ApiError(400, "Invalid category");
   }
-
   const uploads = await Upload.find({ owner, category });
-  const publicIds = uploads.map((upload) => upload.public_id);
-
-  await deleteFiles(publicIds);
+  if (!uploads || uploads.length === 0) return;
+  await deleteFiles(uploads.map((u) => u.public_id));
   await Upload.deleteMany({ owner, category });
+};
+
+const deleteMultipleByIds = async (
+  ids: string[] | undefined,
+  owner: string | undefined
+) => {
+  if (!ids || ids.length === 0) {
+    throw new ApiError(400, "Ids are required");
+  }
+  const uploads = await Upload.find({ _id: { $in: ids }, owner });
+  if (!uploads || uploads.length === 0) {
+    throw new ApiError(404, "Files not found");
+  }
+  await deleteFiles(uploads.map((u) => u.public_id));
+  await Upload.deleteMany({ _id: { $in: ids }, owner });
 };
 
 export default {
   saveFile,
   saveAndReplace,
+  queryUploads,
   getFilesByOwner,
   getFilesByOwnerAndCategory,
   deleteUpload,
-  deleteMultipleFiles,
+  deleteMultipleByOwner,
+  deleteMultipleByIds,
 };

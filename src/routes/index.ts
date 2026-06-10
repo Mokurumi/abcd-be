@@ -9,6 +9,7 @@ import authRoute from "./auth.routes";
 import userRoute from "./user.routes";
 import roleRoute from "./role.routes";
 import uploadRoute from "./upload.routes";
+import notificationRoute from "./notification.routes";
 // lookup routes
 import lookupRoute from "./lookups.routes";
 
@@ -20,6 +21,7 @@ const defaultRoutes = [
   { path: "/users", route: userRoute },
   { path: "/roles", route: roleRoute },
   { path: "/uploads", route: uploadRoute },
+  { path: "/notifications", route: notificationRoute },
   // lookup routes
   { path: "/lookups", route: lookupRoute },
 ];

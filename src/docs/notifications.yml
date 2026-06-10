@@ -1,0 +1,269 @@
+components:
+  schemas:
+    Notification:
+      type: object
+      properties:
+        _id:
+          type: string
+        user:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+        category:
+          type: string
+          enum: ["general"]
+        type:
+          type: string
+          enum: ["info", "warning", "error", "success"]
+        viaEmail:
+          type: boolean
+        viaSMS:
+          type: boolean
+        viaPush:
+          type: boolean
+        read:
+          type: boolean
+        readAt:
+          type: string
+          format: date-time
+        isDeleted:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - _id
+        - user
+        - title
+        - message
+        - category
+        - type
+        - read
+        - createdAt
+      example:
+        _id: 5f7b1b3b7b9b4b001f3b3b3b
+        user: 5f7b1b3b7b9b4b001f3b3b3b
+        title: "Welcome"
+        message: "Your account has been set up successfully"
+        category: "general"
+        type: "info"
+        viaEmail: true
+        viaSMS: false
+        viaPush: false
+        read: false
+        isDeleted: false
+        createdAt: "2024-01-01T12:00:00.000Z"
+        createdBy: "5f7b1b3b7b9b4b001f3b3b3c"
+        updatedAt: "2024-01-01T12:00:00.000Z"
+
+/notifications:
+  post:
+    operationId: createNotification
+    summary: Create notifications for one or more users
+    tags: [Notifications]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - users
+              - title
+              - message
+              - category
+              - type
+            properties:
+              users:
+                type: array
+                items:
+                  type: string
+              title:
+                type: string
+              message:
+                type: string
+              category:
+                type: string
+                enum: ["general"]
+              type:
+                type: string
+                enum: ["info", "warning", "error", "success"]
+              viaEmail:
+                type: boolean
+              viaSMS:
+                type: boolean
+              viaPush:
+                type: boolean
+    responses:
+      "201":
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Notification"
+      "400":
+        $ref: "#/components/responses/NotFound"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "403":
+        $ref: "#/components/responses/Forbidden"
+
+  get:
+    operationId: getNotifications
+    summary: Get notifications (own unless READ_ALL_NOTIFICATIONS permission)
+    tags: [Notifications]
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: category
+        in: query
+        schema:
+          type: string
+          enum: ["general"]
+      - name: type
+        in: query
+        schema:
+          type: string
+          enum: ["info", "warning", "error", "success"]
+      - name: read
+        in: query
+        schema:
+          type: boolean
+      - name: search
+        in: query
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 1
+      - name: size
+        in: query
+        schema:
+          type: integer
+          default: 10
+      - name: sortBy
+        in: query
+        schema:
+          type: string
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                results:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Notification"
+                totalPages:
+                  type: number
+                totalResults:
+                  type: number
+                page:
+                  type: number
+                size:
+                  type: number
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+
+  delete:
+    operationId: deleteNotifications
+    summary: Soft-delete notifications (own only)
+    tags: [Notifications]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: string
+    responses:
+      "200":
+        description: Deleted
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+
+/notifications/read:
+  patch:
+    operationId: markNotificationsAsRead
+    summary: Mark notifications as read or unread
+    tags: [Notifications]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - notificationIds
+            properties:
+              notificationIds:
+                type: array
+                items:
+                  type: string
+              isRead:
+                type: boolean
+                default: true
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+
+/notifications/{notificationId}:
+  parameters:
+    - name: notificationId
+      in: path
+      required: true
+      schema:
+        type: string
+
+  get:
+    operationId: getNotification
+    summary: Get a single notification
+    tags: [Notifications]
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Notification"
+      "401":
+        $ref: "#/components/responses/Unauthorized"
+      "404":
+        $ref: "#/components/responses/NotFound"

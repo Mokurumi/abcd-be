@@ -5,6 +5,22 @@ import { uploadCategories } from "../constants";
 
 const uploadSchema = new Schema<IUpload, UploadModel>(
   {
+    owner: {
+      type: mongoose.SchemaTypes.ObjectId,
+      // ref: "User",
+      required: true,
+    },
+    label: {
+      type: String,
+      default: "Untitled",
+      required: true,
+    },
+    type: {
+      type: String,
+      enum: ["document", "image", "video", "other"],
+      default: "other",
+      required: true,
+    },
     docURL: {
       type: String,
       required: true,
@@ -26,22 +42,10 @@ const uploadSchema = new Schema<IUpload, UploadModel>(
       trim: true,
       enum: uploadCategories,
     },
-    owner: {
-      type: mongoose.SchemaTypes.ObjectId,
-      // ref: "User",
-      required: true,
-    },
     createdBy: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "User",
       required: true,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-    updatedAt: {
-      type: Date,
     },
   },
   {

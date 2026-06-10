@@ -1,43 +1,29 @@
+import pick from "../utils/pick";
 import ApiError from "../utils/ApiError";
 import catchAsync from "../utils/catchAsync";
 import { userService, uploadService } from "../services";
 
 const getUser = async (owner: string, currentUser: IUser) => {
-  if (currentUser?._id?.toString() === owner) {
-    return;
-  } else if (
-    !(currentUser.role as IRole)?.permissions?.includes("USERS.READ_ALL_USERS")
-  ) {
+  if (currentUser?._id?.toString() === owner) return;
+  if (!(currentUser.role as IRole)?.permissions?.includes("USERS.READ_ALL_USERS")) {
     throw new ApiError(403, "Forbidden");
-  } else {
-    const user = await userService.getUserById(owner);
-    if (!user) {
-      throw new ApiError(404, "User not found");
-    }
   }
+  const user = await userService.getUserById(owner);
+  if (!user) throw new ApiError(404, "User not found");
 };
 
 const userProfileImage = catchAsync(async (req, res) => {
   const file = (req as any).file;
   const owner = req.body.owner;
 
-  // verify that the file exists
-  if (!file) {
-    throw new ApiError(400, "File is required");
-  }
+  if (!file) throw new ApiError(400, "File is required");
 
-  // Save file to database
   const upload = await uploadService.saveAndReplace(
-    file,
-    "PROFILE_IMG",
-    owner,
+    { file, category: "PROFILE_IMG", owner, label: "Profile Image", type: "image" },
     (req.user as any)?._id
   );
-  if (!upload) {
-    throw new ApiError(400, "File not saved");
-  }
+  if (!upload) throw new ApiError(400, "File not saved");
 
-  // update user profile image
   await userService.updateUserById(owner, { profile_img: upload.docURL });
 
   res.status(201).send({
@@ -48,42 +34,44 @@ const userProfileImage = catchAsync(async (req, res) => {
 
 const deleteUserProfileImage = catchAsync(async (req, res) => {
   const owner = req.params.userId;
+  await getUser(owner, (req as any).user);
+  await uploadService.deleteMultipleByOwner(owner, "PROFILE_IMG");
+  await userService.updateUserById(owner, { profile_img: "" });
+  res.status(204).send({ message: "Profile image deleted successfully" });
+});
 
+const getUploadsByOwner = catchAsync(async (req, res) => {
+  const { owner } = req.params;
   await getUser(owner, (req as any).user);
 
-  // delete file from cloudinary
-  await uploadService.deleteMultipleFiles(owner, "PROFILE_IMG");
+  const filter = {
+    ...pick(req.query, ["category", "type"]),
+    owner,
+  };
+  const options = pick(req.query, ["sortBy", "size", "page"]);
 
-  // update user profile image
-  await userService.updateUserById(owner, { profile_img: "" });
-
-  res.status(204).send({ message: "Profile image deleted successfully" });
+  const uploads = await uploadService.queryUploads(filter as UploadFilter, options, true);
+  res.send(uploads);
 });
 
 const deleteUpload = catchAsync(async (req, res) => {
   const { owner, uploadId } = req.params;
-
   await getUser(owner, (req as any).user);
-
-  // delete file from cloudinary
   await uploadService.deleteUpload(owner, uploadId);
-
   res.status(204).send({ message: "File deleted successfully" });
 });
 
 const deleteUploads = catchAsync(async (req, res) => {
   const { owner, category } = req.params;
-
   await getUser(owner, (req as any).user);
-
-  await uploadService.deleteMultipleFiles(owner, category);
-
+  await uploadService.deleteMultipleByOwner(owner, category);
   res.status(204).send({ message: "Files deleted successfully" });
 });
 
 export default {
   userProfileImage,
   deleteUserProfileImage,
+  getUploadsByOwner,
   deleteUpload,
   deleteUploads,
 };

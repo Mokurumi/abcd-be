@@ -7,6 +7,7 @@ import roleService from "./role.service";
 import emailService from "./email.service";
 // common
 import uploadService from "./upload.service";
+import notificationService from "./notification.service";
 
 export {
   authService,
@@ -15,4 +16,5 @@ export {
   roleService,
   emailService,
   uploadService,
+  notificationService,
 };
