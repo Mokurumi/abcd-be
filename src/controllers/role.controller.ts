@@ -20,7 +20,7 @@ const getRoles = catchAsync(async (req, res) => {
 });
 
 const getRole = catchAsync(async (req, res) => {
-  const role = await roleService.getRoleById(req.params.roleId);
+  const role = await roleService.getRoleById(req.params.roleId as string);
   if (!role) {
     throw new ApiError(404, "Role not found");
   }
@@ -31,7 +31,7 @@ const getRole = catchAsync(async (req, res) => {
 });
 
 const updateRole = catchAsync(async (req, res) => {
-  const role = await roleService.updateRoleById(req.params.roleId, req.body);
+  const role = await roleService.updateRoleById(req.params.roleId as string, req.body);
   res.send({
     role,
     message: "Role updated successfully",
@@ -44,7 +44,7 @@ const lookupRoles = catchAsync(async (req, res) => {
 });
 
 const deleteRole = catchAsync(async (req, res) => {
-  await roleService.deleteRoleById(req.params.roleId);
+  await roleService.deleteRoleById(req.params.roleId as string);
   res.send({
     message: "Role deleted successfully",
   });

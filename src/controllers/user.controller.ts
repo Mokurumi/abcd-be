@@ -71,7 +71,7 @@ const getUser = catchAsync(async (req, res) => {
     ) {
       throw new ApiError(403, "Forbidden");
     } else {
-      const user = await userService.getUserById(req.params.userId);
+      const user = await userService.getUserById(req.params.userId as string);
       if (!user) {
         throw new ApiError(404, "User not found");
       }
@@ -81,7 +81,7 @@ const getUser = catchAsync(async (req, res) => {
 });
 
 const updateUser = catchAsync(async (req, res) => {
-  const user = await userService.updateUserById(req.params.userId, {
+  const user = await userService.updateUserById(req.params.userId as string, {
     ...req.body,
   });
 
@@ -114,7 +114,7 @@ const lookupUsers = catchAsync(async (req, res) => {
 });
 
 const deleteUser = catchAsync(async (req, res) => {
-  const { userId } = req.params;
+  const userId = req.params.userId as string;
 
   await userService.deleteUserById(userId);
 

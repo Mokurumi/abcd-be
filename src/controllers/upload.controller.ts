@@ -33,7 +33,7 @@ const userProfileImage = catchAsync(async (req, res) => {
 });
 
 const deleteUserProfileImage = catchAsync(async (req, res) => {
-  const owner = req.params.userId;
+  const owner = req.params.userId as string;
   await getUser(owner, (req as any).user);
   await uploadService.deleteMultipleByOwner(owner, "PROFILE_IMG");
   await userService.updateUserById(owner, { profile_img: "" });
@@ -41,7 +41,7 @@ const deleteUserProfileImage = catchAsync(async (req, res) => {
 });
 
 const getUploadsByOwner = catchAsync(async (req, res) => {
-  const { owner } = req.params;
+  const owner = req.params.owner as string;
   await getUser(owner, (req as any).user);
 
   const filter = {
@@ -55,14 +55,16 @@ const getUploadsByOwner = catchAsync(async (req, res) => {
 });
 
 const deleteUpload = catchAsync(async (req, res) => {
-  const { owner, uploadId } = req.params;
+  const owner = req.params.owner as string;
+  const uploadId = req.params.uploadId as string;
   await getUser(owner, (req as any).user);
   await uploadService.deleteUpload(owner, uploadId);
   res.status(204).send({ message: "File deleted successfully" });
 });
 
 const deleteUploads = catchAsync(async (req, res) => {
-  const { owner, category } = req.params;
+  const owner = req.params.owner as string;
+  const category = req.params.category as string;
   await getUser(owner, (req as any).user);
   await uploadService.deleteMultipleByOwner(owner, category);
   res.status(204).send({ message: "Files deleted successfully" });
